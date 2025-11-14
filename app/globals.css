@@ -1,0 +1,430 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-box: var(--box);
+  --color-chat: var(--chat);
+  --color-blue: var(--blue);
+  --color-selection: var(--selection);
+  --color-selection-border: var(--selection-border);
+  --font-sans: var(--font-inter);
+  --font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --code-keyword: var(--code-keyword);
+  --code-string: var(--code-string);
+  --code-func: var(--code-func);
+  --code-num: var(--code-num);
+  --code-text: var(--code-text);
+}
+
+:root {
+  --radius: 0.625rem;
+  --box: #fafafa;
+  --chat: #ffffff;
+  --blue: #0095f6;
+  --selection: #0095f638;
+  --background: oklch(1 0 0);
+  --selection-border: #0095f6;
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: #0095f6;
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+  --code-keyword: #7c3aed;
+  --code-string: #16a34a;
+  --code-func: #0891b2;
+  --code-num: #d97706;
+  --code-text: #000000;
+}
+
+.dark {
+  --box: #0e0e0e;
+  --chat: #0a0a0a;
+  --blue: #0095f6;
+  --selection-border: #0095f6;
+  --selection: #0095f638;
+  --background: #0a0a0a;
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: #0095f6;
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+  --code-keyword: #a78bfa;
+  --code-string: #34d399;
+  --code-func: #22d3ee;
+  --code-num: #fbbf24;
+  --code-text: #e5e7eb;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+.table-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: var(--selection);
+}
+
+/* Para Firefox - scrollbar visible en tablas */
+.table-scroll {
+  scrollbar-width: 20px;
+  scrollbar-color: var(--border) #f5f5f5;
+}
+
+.box-scroll {
+  scrollbar-width: 20px;
+  scrollbar-color: var(--border) var(--box);
+}
+
+::selection {
+  background-color: var(--selection);
+  color: var(--primary);
+}
+
+/* For Firefox compatibility, use the -moz- prefix */
+::-moz-selection {
+  background-color: var(--selection);
+  color: var(--primary);
+}
+
+/* app/globals.css */
+[contenteditable="true"]:empty:before {
+  content: attr(data-placeholder);
+  color: var(
+    --muted-foreground
+  ); /* Usar variable de Tailwind si está disponible */
+  pointer-events: none;
+  display: block;
+}
+
+.rfm-marquee-container {
+  align-items: flex-start !important; /* en vez de center */
+}
+
+.rfm-child {
+  align-self: flex-start !important;
+  border-right: 1px solid var(--border);
+  height: 100%;
+  /* por las dudas en cada hijo */
+}
+
+/* Forzar tema light en la página principal */
+.force-light-theme {
+  --box: #fafafa;
+  --chat: #ffffff;
+  --blue: #0095f6;
+  --selection: #0095f638;
+  --background: oklch(1 0 0);
+  --selection-border: #0095f6;
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: #0095f6;
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+  --code-keyword: #7c3aed;
+  --code-string: #16a34a;
+  --code-func: #0891b2;
+  --code-num: #d97706;
+  --code-text: #111827;
+}
+
+.force-dark-theme {
+  --box: #0e0e0e;
+  --chat: #0a0a0a;
+  --blue: #0095f6;
+  --selection-border: #0095f6;
+  --selection: #0095f638;
+  --background: #080808;
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: #0095f6;
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+  --code-keyword: #a78bfa;
+  --code-string: #34d399;
+  --code-func: #22d3ee;
+  --code-num: #fbbf24;
+  --code-text: #e5e7eb;
+}
+
+.code-editor {
+  font-family:
+    ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--code-text);
+}
+
+/* Estilos personalizados para Prism que respetan las variables del tema */
+.code-editor .token.keyword,
+.code-editor .token.operator,
+.code-editor .token.boolean,
+.code-editor .token.atrule,
+.code-editor .token.important {
+  color: var(--code-keyword);
+}
+
+.code-editor .token.string,
+.code-editor .token.char,
+.code-editor .token.attr-value,
+.code-editor .token.regex,
+.code-editor .token.variable {
+  color: var(--code-string);
+}
+
+.code-editor .token.function,
+.code-editor .token.class-name,
+.code-editor .token.builtin,
+.code-editor .token.selector,
+.code-editor .token.tag {
+  color: var(--code-func);
+}
+
+.code-editor .token.number,
+.code-editor .token.constant,
+.code-editor .token.symbol,
+.code-editor .token.deleted {
+  color: var(--code-num);
+}
+
+.code-editor .token.comment,
+.code-editor .token.prolog,
+.code-editor .token.doctype,
+.code-editor .token.cdata {
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+
+.code-editor .token.punctuation {
+  color: var(--code-text);
+}
+
+.code-editor .token.inserted {
+  color: var(--code-string);
+}
+
+.code-editor .token.namespace {
+  opacity: 0.7;
+}
+
+/* Asegurar que el texto base use el color correcto */
+.code-editor,
+.code-editor .token {
+  color: var(--code-text);
+}
+
+.gradual-blur-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.gradual-blur-inner > div {
+  -webkit-backdrop-filter: inherit;
+  backdrop-filter: inherit;
+}
+
+.gradual-blur {
+  isolation: isolate;
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .gradual-blur-inner > div {
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 0.5;
+  }
+}
+
+.gradual-blur-fixed {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1000000;
+}
+
+.ios-safe {
+  min-height: 100dvh; /* evita bug de 100vh en iOS */
+  padding-top: calc(
+    var(--safe-top) + var(--nav-h)
+  ); /* empuja el contenido bajo la navbar + notch */
+  padding-bottom: var(--safe-bottom);
+}
+
+/* Contenedor del blur superior, respetando el notch */
+.top-blur {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(8rem + var(--safe-top)); /* tu 8rem + notch */
+  padding-top: var(--safe-top); /* hace que el blur empiece debajo del notch */
+  z-index: 40;
+  pointer-events: none; /* ya lo aplicás dentro, lo duplico por seguridad */
+}
+
+/* Si tu Navbar es fixed/sticky, dale safe-top también (si tienes acceso al CSS de Navbar) */
+.navbar-ios {
+  position: sticky; /* o fixed */
+  top: 0;
+  z-index: 50;
+  height: calc(var(--nav-h) + var(--safe-top));
+  padding-top: var(--safe-top);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  background: rgba(0, 0, 0, 0.35); /* ayuda a iOS con el blur */
+  background-clip: padding-box;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

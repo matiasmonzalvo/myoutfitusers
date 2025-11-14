@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Highlight Transition</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background: #f0f0f0;
+      }
+      .test-block {
+        width: 300px;
+        height: 200px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      button {
+        padding: 10px 20px;
+        background: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Test de Transición del Highlight</h1>
+    <button onclick="testHighlight()">Probar Highlight</button>
+
+    <div class="test-block" id="test-element">
+      Este es un elemento de prueba
+    </div>
+
+    <script>
+      function testHighlight() {
+        const targetElement = document.getElementById("test-element");
+
+        // Verificar si ya hay un highlight activo para evitar duplicados
+        if (targetElement.dataset.highlighting === "true") {
+          console.log(
+            "⚠️ Ya hay un highlight activo en este elemento, saltando..."
+          );
+          return;
+        }
+
+        // Marcar como activo
+        targetElement.dataset.highlighting = "true";
+
+        // Guardar estilos originales
+        const originalBoxShadow = targetElement.style.boxShadow;
+        const originalTransition = targetElement.style.transition;
+
+        console.log("🎯 Iniciando highlight...", {
+          originalBoxShadow,
+          originalTransition,
+          element: targetElement,
+        });
+
+        // Aplicar el highlight con transición
+        targetElement.style.transition = "box-shadow 300ms ease-in-out";
+        targetElement.style.boxShadow = "0 0 0 2px rgb(59 130 246 / 0.75)";
+
+        setTimeout(() => {
+          console.log("🔄 Iniciando fade out...");
+          // Fade out con transición
+          targetElement.style.boxShadow = "0 0 0 2px rgb(59 130 246 / 0)";
+
+          // Después de que termine la transición, restaurar estilos originales
+          setTimeout(() => {
+            console.log("✅ Restaurando estilos originales...", {
+              originalBoxShadow,
+              originalTransition,
+            });
+
+            // Solo restaurar si el valor original no es un shadow azul
+            if (
+              originalBoxShadow &&
+              !originalBoxShadow.includes("rgb(59 130 246")
+            ) {
+              targetElement.style.boxShadow = originalBoxShadow;
+            } else {
+              // Si no había shadow original o era nuestro highlight, limpiar completamente
+              targetElement.style.boxShadow = "";
+            }
+
+            targetElement.style.transition = originalTransition;
+
+            // Quitar la marca de activo
+            delete targetElement.dataset.highlighting;
+
+            console.log("🏁 Highlight terminado completamente");
+          }, 300);
+        }, 2500);
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,31 @@
+export type Gender = "male" | "female" | "other";
+export type BodyType =
+  | "underweight"
+  | "slim"
+  | "average"
+  | "athletic"
+  | "overweight";
+
+export interface UserProfile {
+  id: string;
+  username: string;
+  age: number;
+  gender: Gender;
+  height: number; // in centimeters
+  weight: number; // in kilograms
+  body_type: BodyType;
+  avatar_url: string | null;
+  avatar_regenerations_left: number;
+  onboarding_completed: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface OnboardingFormData {
+  username: string;
+  age: number;
+  gender: Gender;
+  height: number;
+  weight: number;
+  body_type: BodyType;
+}
