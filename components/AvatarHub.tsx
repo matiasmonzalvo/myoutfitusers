@@ -292,22 +292,22 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
   if (!isAuthenticated) {
     return (
       <div className="w-full lg:w-auto lg:p-10 lg:h-screen relative flex items-center justify-start">
-        <div className="w-full lg:w-auto lg:h-full border border-border rounded-[30px] overflow-hidden relative flex flex-col items-center justify-center bg-white dark:bg-black/50">
+        <div className="w-full lg:w-auto lg:h-full border border-border rounded-[30px] overflow-hidden relative flex flex-col items-center justify-center bg-white dark:bg-black/50 p-6 lg:p-0 gap-2 lg:gap-0">
           <img
             src="/myoutfitgif2.gif"
             alt="Home"
-            className="w-[20%] lg:w-[35%] 2xl:w-[30%] h-auto object-cover "
+            className="w-[40%] lg:w-[35%] 2xl:w-[30%] h-auto object-cover "
           />
-          <div className="w-full h-auto relative flex flex-col items-center justify-center px-4 p-0 lg:p-8 gap-3 lg:gap-6">
+          <div className="w-full h-auto relative flex flex-col items-center justify-center p-0 lg:p-8 gap-3 lg:gap-6">
             <div className="text-center space-y-3">
-              <h3 className="text-2xl lg:text-4xl 2xl:text-5xl font-bold text-foreground tracking-tight">
+              <h3 className="text-3xl lg:text-4xl 2xl:text-5xl font-bold text-foreground tracking-tight">
                 Wear your outfits
               </h3>
               <p className="text-base 2xl:text-lg text-muted-foreground">
                 Your real self, dressed in real products.
               </p>
             </div>
-            <div className="flex  gap-3 w-full max-w-[80%] sm:max-w-sm">
+            <div className="flex mt-2 lg:mt-0 gap-3 w-full max-w-[80%] sm:max-w-sm">
               <button
                 onClick={() => router.push("/login")}
                 className="w-full rounded-full border border-border cursor-pointer py-1.5 lg:py-2 text-sm 2xl:text-base"
