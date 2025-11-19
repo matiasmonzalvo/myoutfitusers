@@ -291,32 +291,32 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
 
   if (!isAuthenticated) {
     return (
-      <div className="w-full lg:w-auto p-10 lg:h-screen relative flex items-center justify-start">
+      <div className="w-full lg:w-auto lg:p-10 lg:h-screen relative flex items-center justify-start">
         <div className="w-full lg:w-auto lg:h-full border border-border rounded-[30px] overflow-hidden relative flex flex-col items-center justify-center bg-white dark:bg-black/50">
           <img
             src="/myoutfitgif2.gif"
             alt="Home"
-            className="w-[30%] h-auto object-cover "
+            className="w-[20%] lg:w-[35%] 2xl:w-[30%] h-auto object-cover "
           />
           <div className="w-full h-auto relative flex flex-col items-center justify-center px-4 p-0 lg:p-8 gap-3 lg:gap-6">
             <div className="text-center space-y-3">
-              <h3 className="text-3xl lg:text-5xl font-bold text-foreground tracking-tighter">
+              <h3 className="text-2xl lg:text-4xl 2xl:text-5xl font-bold text-foreground tracking-tight">
                 Wear your outfits
               </h3>
-              <p className="text-base lg:text-lg text-muted-foreground">
-                Create your account to start wearing your outfits
+              <p className="text-base 2xl:text-lg text-muted-foreground">
+                Your real self, dressed in real products.
               </p>
             </div>
             <div className="flex  gap-3 w-full max-w-[80%] sm:max-w-sm">
               <button
                 onClick={() => router.push("/login")}
-                className="w-full rounded-full border border-border cursor-pointer py-1.5 lg:py-2 text-sm lg:text-base"
+                className="w-full rounded-full border border-border cursor-pointer py-1.5 lg:py-2 text-sm 2xl:text-base"
               >
                 Login
               </button>
               <button
                 onClick={() => router.push("/register")}
-                className="w-full text-white rounded-full bg-primary cursor-pointer py-1.5 lg:py-2 text-sm lg:text-base"
+                className="w-full text-white rounded-full bg-primary cursor-pointer py-1.5 lg:py-2 text-sm 2xl:text-base"
               >
                 Sign up
               </button>
@@ -354,8 +354,8 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
 
   return (
     <TooltipProvider>
-      <div className="w-full h-screen p-10 flex flex-col items-center justify-start my-auto xl:my-0 relative ">
-        <div className="flex items-start relative justify-between w-full px-0 gap-2 lg:gap-2 lg:px-4 2xl:px-10 pb-3 self-start">
+      <div className="w-full pb-4 lg:pb-10 lg:h-screen p-0 lg:p-10 flex flex-col items-center justify-start my-auto xl:my-0 relative ">
+        <div className="flex items-start relative justify-between w-full px-3 gap-2 lg:gap-2 lg:px-4 2xl:px-10 pb-3 self-start">
           {/* Botón de rollback cuando hay un outfit aplicado */}
           <div className="flex items-center justify-start gap-2 w-1/3">
             <button
@@ -388,13 +388,13 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
                 </button>
               )} */}
           </div>
-          <div className="flex items-center justify-center lg:gap-2 w-auto">
+          <div className="flex items-center justify-center gap-2 w-auto">
             <DropdownMenu>
               <DropdownMenuTrigger
                 asChild
                 disabled={currentOutfitProducts.length === 0}
               >
-                <button className="w-auto rounded-full bg-muted border border-border transition-all cursor-pointer flex items-center justify-center  px-3 py-2.5 hover:opacity-80 focus:outline-none ring-0 focus:ring-0 focus:ring-offset-0 lg:relative lg:left-0 lg:top-0 lg:translate-x-0 absolute left-1/2 -translate-x-1/2 top-0 disabled:opacity-50 disabled:cursor-not-allowed">
+                <button className="w-auto rounded-full bg-muted border border-border transition-all cursor-pointer flex items-center justify-center  px-3 py-2.5 hover:opacity-80 focus:outline-none ring-0 focus:ring-0 focus:ring-offset-0 relative disabled:opacity-50 disabled:cursor-not-allowed">
                   <span className="text-sm font-medium">Outfit</span>
                   <div className="text-[10px] lg:text-[12px] mx-1 text-primary font-medium w-4.5 h-4.5 bg-primary/10 rounded-full flex items-center justify-center">
                     {currentOutfitProducts.length}
@@ -477,7 +477,7 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
             </button>
           </div>
         </div>
-        <div className="w-full h-full border border-border rounded-[24px] overflow-hidden relative flex items-center justify-center bg-white">
+        <div className="w-full h-auto lg:h-full border border-border rounded-[24px] overflow-hidden relative flex items-center justify-center bg-white">
           {avatarUrl && (
             <img
               src={avatarUrl}

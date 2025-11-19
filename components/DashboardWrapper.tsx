@@ -163,7 +163,7 @@ export function DashboardWrapper({
                 </CardLayout>
               </div>
               <div className="hidden lg:flex flex-row bg-background">
-                <div className="w-[60%] relative flex items-start justify-end bg-background pl-10 pb-10">
+                <div className="lg:w-[55%] xl:w-[65%] 2xl:w-[60%] relative flex items-start justify-end bg-background pl-10 pb-10">
                   <CardLayout
                     isAuthenticated={isAuthenticated}
                     onOpenSidebar={() => setIsMobileSidebarOpen(true)}
@@ -171,7 +171,7 @@ export function DashboardWrapper({
                     {children}
                   </CardLayout>
                 </div>
-                <div className="w-[40%] lg:h-screen sticky top-0 flex flex-col items-center justify-start">
+                <div className="lg:w-[45%] xl:w-[35%] 2xl:w-[40%] lg:h-screen sticky top-0 flex flex-col items-center justify-start">
                   <AvatarHub isAuthenticated={isAuthenticated} />
                 </div>
               </div>

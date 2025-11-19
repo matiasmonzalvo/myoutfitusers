@@ -150,7 +150,7 @@ export function ProductCard({ product, isAuthenticated }: ProductCardProps) {
             </Link>
             <Link
               href={`/product/${product.id}`}
-              className="rounded-2xl overflow-hidden border border-border aspect-[4/3] flex items-center justify-center bg-white px-12 transition-all relative"
+              className="rounded-2xl overflow-hidden border border-border aspect-[4/3] flex items-center justify-center bg-white px-8 2xl:px-12 transition-all relative"
             >
               <img
                 ref={imgRef}
@@ -177,12 +177,12 @@ export function ProductCard({ product, isAuthenticated }: ProductCardProps) {
         <CardContent className="p-2">
           <div className="space-y-3">
             <div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-0.5">
                 <Link
                   href={`/product/${product.id}`}
-                  className="flex-1 min-w-0"
+                  className="flex-1 min-w-0 mt-[1px]"
                 >
-                  <h3 className="font-semibold text-[15px]  truncate text-foreground ">
+                  <h3 className="font-semibold text-[14px] 2xl:text-[15px]  truncate text-foreground ">
                     {product.name}
                   </h3>
                 </Link>
