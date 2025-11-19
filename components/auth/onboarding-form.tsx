@@ -25,7 +25,12 @@ import {
   Loader,
 } from "lucide-react";
 import { Dropzone } from "@/components/ui/dropzone";
-import type { Gender, BodyType, OnboardingFormData, AvatarHistory } from "@/lib/types/user";
+import type {
+  Gender,
+  BodyType,
+  OnboardingFormData,
+  AvatarHistory,
+} from "@/lib/types/user";
 import Image from "next/image";
 
 type OnboardingStep = "username" | "profile" | "photos" | "preview";
@@ -86,9 +91,9 @@ export function OnboardingForm() {
 
       if (history && history.length > 0) {
         setAvatarHistory(history);
-        
+
         // Buscar el avatar seleccionado
-        const selected = history.find((a) => a.is_selected);
+        const selected = history.find((a: any) => a.is_selected);
         if (selected) {
           setSelectedAvatarId(selected.id);
           setGeneratedAvatar(selected.avatar_url);
@@ -416,13 +421,13 @@ export function OnboardingForm() {
       setGeneratedAvatar(data.avatarUrl);
       setRegenerationsLeft(data.regenerationsLeft);
       setAvatarHistory(data.avatarHistory || []);
-      
+
       // Seleccionar automáticamente el avatar recién generado
       if (data.avatarHistory && data.avatarHistory.length > 0) {
         const latestAvatar = data.avatarHistory[data.avatarHistory.length - 1];
         setSelectedAvatarId(latestAvatar.id);
       }
-      
+
       setStep("preview");
     } catch (err) {
       console.error("Error generating avatar:", err);
@@ -759,7 +764,9 @@ export function OnboardingForm() {
               {avatarHistory.map((avatar) => (
                 <button
                   key={avatar.id}
-                  onClick={() => handleSelectAvatar(avatar.id, avatar.avatar_url)}
+                  onClick={() =>
+                    handleSelectAvatar(avatar.id, avatar.avatar_url)
+                  }
                   className={`relative aspect-square rounded-2xl overflow-hidden border-2 transition-all cursor-pointer ${
                     selectedAvatarId === avatar.id
                       ? "border-primary ring-2 ring-primary ring-offset-2"
