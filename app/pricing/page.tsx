@@ -137,10 +137,10 @@ export default function PricingPage() {
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="text-center mb-10">
-            <h1 className="text-5xl md:text-6xl font-bold tracking-tighter mb-4">
+            <h1 className="text-5xl 2xl:text-6xl font-bold tracking-tighter mb-4">
               We're just starting
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg 2xl:text-xl text-muted-foreground max-w-2xl mx-auto">
               Pay only for items that aren’t from partner brands on the
               platform.
             </p>
@@ -158,8 +158,7 @@ export default function PricingPage() {
                     </CardTitle>
                     <CardDescription className="text-lg text-muted-foreground font-medium tracking-tight leading-tight w-[70%]">
                       Pay only for items that aren't from partner brands on the
-                      platform.
-                      <br /> Choose your try-ons package.
+                      platform. Choose your try-ons package.
                     </CardDescription>
                   </div>
                 </CardHeader>
@@ -290,7 +289,7 @@ export default function PricingPage() {
                         </div>
                       </div>
 
-                      <div className="text-[42px] font-bold tracking-tight flex flex-col items-end gap-2 leading-[1]">
+                      <div className="text-2xl font-bold tracking-tight flex flex-col items-end gap-1.5">
                         {pack.price}{" "}
                         <span className="text-base text-muted-foreground font-medium">
                           ({pack.pricePerTryOn} / try-on)
