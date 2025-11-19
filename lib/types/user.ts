@@ -15,6 +15,7 @@ export interface UserProfile {
   weight: number; // in kilograms
   body_type: BodyType;
   avatar_url: string | null;
+  profile_photo_url: string | null;
   avatar_regenerations_left: number;
   onboarding_completed: boolean;
   created_at: string;
@@ -28,4 +29,13 @@ export interface OnboardingFormData {
   height: number;
   weight: number;
   body_type: BodyType;
+}
+
+export interface AvatarHistory {
+  id: string;
+  user_id: string;
+  avatar_url: string;
+  is_selected: boolean;
+  generation_number: number;
+  created_at: string;
 }

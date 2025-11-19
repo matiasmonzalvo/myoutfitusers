@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { createServerClient } from "@/lib/supabase/client";
-import { User, LogOut, Settings, Triangle, Table } from "lucide-react";
+import { User, LogOut, Settings, Triangle, Table, DollarSign } from "lucide-react";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import Image from "next/image";
 
@@ -170,6 +170,12 @@ export function Header() {
                   <Link href="/settings">
                     <Settings className="mr-2 h-4 w-4" />
                     Settings
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/billing">
+                    <DollarSign className="mr-2 h-4 w-4" />
+                    Billing
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />

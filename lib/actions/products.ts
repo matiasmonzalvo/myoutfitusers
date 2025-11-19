@@ -20,6 +20,7 @@ export interface Product {
     brand_username: string;
     logo_url?: string;
     website_url?: string;
+    is_verified_brand?: boolean;
   };
 }
 
@@ -50,7 +51,8 @@ export async function getProducts(
           brand_name,
           brand_username,
           logo_url,
-          website_url
+          website_url,
+          is_verified_brand
         )
       `
       )
@@ -166,7 +168,8 @@ export async function getProductsByCategory() {
           brand_name,
           brand_username,
           logo_url,
-          website_url
+          website_url,
+          is_verified_brand
         )
       `
       )
@@ -247,7 +250,8 @@ export async function getProductById(id: string): Promise<Product | null> {
           brand_name,
           brand_username,
           logo_url,
-          website_url
+          website_url,
+          is_verified_brand
         )
       `
       )
@@ -294,7 +298,8 @@ export async function getSuggestedProducts(
           brand_name,
           brand_username,
           logo_url,
-          website_url
+          website_url,
+          is_verified_brand
         )
       `
       )
@@ -327,7 +332,8 @@ export async function getSuggestedProducts(
             brand_name,
             brand_username,
             logo_url,
-            website_url
+            website_url,
+            is_verified_brand
           )
         `
         )
@@ -366,7 +372,8 @@ export async function getSuggestedProducts(
             brand_name,
             brand_username,
             logo_url,
-            website_url
+            website_url,
+            is_verified_brand
           )
         `
         )
@@ -399,7 +406,8 @@ export async function getSuggestedProducts(
             brand_name,
             brand_username,
             logo_url,
-            website_url
+            website_url,
+            is_verified_brand
           )
         `
         )

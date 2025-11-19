@@ -20,6 +20,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { SaveOutfitDialog } from "@/components/SaveOutfitDialog";
+import { BuyTryonsDialog } from "@/components/BuyTryonsDialog";
 import { useState, useRef, useEffect } from "react";
 import {
   DropdownMenu,
@@ -74,6 +75,8 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
   const imgRefs = useRef<Record<string, HTMLImageElement>>({});
   const [isLargeScreen, setIsLargeScreen] = useState(false);
   const [isAvatarLoading, setIsAvatarLoading] = useState(true);
+  const [showBuyTryonsDialog, setShowBuyTryonsDialog] = useState(false);
+  const [tryOnsLeft, setTryOnsLeft] = useState<number>(0);
 
   // Detectar el tamaño de la pantalla
   useEffect(() => {
@@ -133,6 +136,36 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
     setIsGeneratingOutfit(true);
 
     try {
+      // PASO 1: Verificar si el usuario tiene try-ons disponibles ANTES de generar
+      console.log("Checking try-ons availability...");
+      const checkResponse = await fetch("/api/check-tryons", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          products: selectedProducts,
+        }),
+      });
+
+      if (!checkResponse.ok) {
+        const errorData = await checkResponse.json();
+        throw new Error(errorData.error || "Error checking try-ons");
+      }
+
+      const checkData = await checkResponse.json();
+
+      // Si no puede proceder (no tiene try-ons y no es gratis), mostrar dialog
+      if (!checkData.canProceed) {
+        setTryOnsLeft(checkData.tryOnsLeft);
+        setShowBuyTryonsDialog(true);
+        setIsGeneratingOutfit(false);
+        return;
+      }
+
+      console.log("Try-ons check passed. Generating outfit...");
+
+      // PASO 2: Si puede proceder, generar el outfit
       const response = await fetch("/api/generate-outfit", {
         method: "POST",
         headers: {
@@ -147,6 +180,15 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
 
       if (!response.ok) {
         const errorData = await response.json();
+
+        // Si el error es por falta de try-ons (aunque no debería pasar), mostrar dialog
+        if (errorData.code === "NO_TRYONS_LEFT") {
+          setTryOnsLeft(0);
+          setShowBuyTryonsDialog(true);
+          setIsGeneratingOutfit(false);
+          return;
+        }
+
         throw new Error(errorData.error || "Error al generar el outfit");
       }
 
@@ -313,13 +355,13 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
   return (
     <TooltipProvider>
       <div className="w-full h-screen p-10 flex flex-col items-center justify-start my-auto xl:my-0 relative ">
-        <div className="flex items-start relative justify-between w-full px-0 gap-2 lg:gap-2 lg:px-4 2xl:px-10 pb-2 self-start">
+        <div className="flex items-start relative justify-between w-full px-0 gap-2 lg:gap-2 lg:px-4 2xl:px-10 pb-3 self-start">
           {/* Botón de rollback cuando hay un outfit aplicado */}
           <div className="flex items-center justify-start gap-2 w-1/3">
             <button
               onClick={rollbackOutfit}
               disabled={!showRestoreButton}
-              className="rounded-full bg-white border border-border transition-all cursor-pointer flex items-center justify-center gap-2 px-2.5 lg:px-3 py-2.5 hover:bg-neutral-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="rounded-full bg-muted border border-border transition-all cursor-pointer flex items-center justify-center gap-2 px-2.5 lg:px-3 py-2.5 hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <RotateCcw className="w-4 h-4" />
               <span className="text-sm">Rollback</span>
@@ -352,7 +394,7 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
                 asChild
                 disabled={currentOutfitProducts.length === 0}
               >
-                <button className="w-auto rounded-full bg-white/90 backdrop-blur-sm border border-border transition-all cursor-pointer flex items-center justify-center  px-3 py-2.5 hover:bg-white focus:outline-none ring-0 focus:ring-0 focus:ring-offset-0 lg:relative lg:left-0 lg:top-0 lg:translate-x-0 absolute left-1/2 -translate-x-1/2 top-0 disabled:opacity-50 disabled:cursor-not-allowed">
+                <button className="w-auto rounded-full bg-muted border border-border transition-all cursor-pointer flex items-center justify-center  px-3 py-2.5 hover:opacity-80 focus:outline-none ring-0 focus:ring-0 focus:ring-offset-0 lg:relative lg:left-0 lg:top-0 lg:translate-x-0 absolute left-1/2 -translate-x-1/2 top-0 disabled:opacity-50 disabled:cursor-not-allowed">
                   <span className="text-sm font-medium">Outfit</span>
                   <div className="text-[10px] lg:text-[12px] mx-1 text-primary font-medium w-4.5 h-4.5 bg-primary/10 rounded-full flex items-center justify-center">
                     {currentOutfitProducts.length}
@@ -448,7 +490,7 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
 
           {/* Shopping Cart */}
           <div
-            className={`fixed hidden lg:block lg:absolute bottom-1 left-1/2 -translate-x-1/2 z-[40] w-full bg-gradient-to-b from-transparent via-background/80 to-background rounded-[20px] pb-2.5 pt-40 transition-opacity duration-300 ease-in-out pointer-events-auto ${
+            className={`fixed hidden lg:block lg:absolute bottom-0 left-1/2 -translate-x-1/2 z-[40] w-full bg-gradient-to-b from-transparent via-background/80 to-background rounded-[20px] pb-3.5 pt-40 transition-opacity duration-300 ease-in-out pointer-events-auto ${
               selectedProducts.length > 0 ? "opacity-100" : "opacity-0 "
             }`}
           >
@@ -718,6 +760,13 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
             }}
           />
         )}
+
+        {/* Buy Try-ons Dialog */}
+        <BuyTryonsDialog
+          open={showBuyTryonsDialog}
+          onOpenChange={setShowBuyTryonsDialog}
+          tryOnsLeft={tryOnsLeft}
+        />
 
         {/* Products Canvas Dialog */}
         {showProductsCanvas && productsCanvasUrl && (

@@ -15,8 +15,6 @@ interface AppShellProps {
 
 export function AppShell({ isAuthenticated, children }: AppShellProps) {
   const pathname = usePathname();
-  const isPricingRoute =
-    pathname === "/pricing" || pathname?.startsWith("/pricing/");
   const isFeedbackRoute =
     pathname === "/feedback" || pathname?.startsWith("/feedback/");
   const isAdminRoute = pathname === "/admin" || pathname?.startsWith("/admin/");
@@ -27,7 +25,6 @@ export function AppShell({ isAuthenticated, children }: AppShellProps) {
     pathname === "/onboarding" || pathname?.startsWith("/onboarding/");
 
   if (
-    !isPricingRoute &&
     !isFeedbackRoute &&
     !isAdminRoute &&
     !isRegisterRoute &&

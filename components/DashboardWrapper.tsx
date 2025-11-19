@@ -147,11 +147,11 @@ export function DashboardWrapper({
           <SidebarInset ref={insetRef} className="relative flex-1 min-w-0 z-50">
             <div
               className={
-                "relative min-h-screen w-full transition-all duration-700 ease-in-out bg-neutral-100 overflow-y-auto " +
+                "relative min-h-screen w-full transition-all duration-700 ease-in-out bg-background overflow-y-auto " +
                 (false ? "blur-sm opacity-0" : "opacity-100")
               }
             >
-              <div className="w-full lg:hidden bg-neutral-100 p-4">
+              <div className="w-full lg:hidden bg-background p-4">
                 <CardLayout
                   isAuthenticated={isAuthenticated}
                   onOpenSidebar={() => setIsMobileSidebarOpen(true)}
@@ -162,8 +162,8 @@ export function DashboardWrapper({
                   {children}
                 </CardLayout>
               </div>
-              <div className="hidden lg:flex flex-row bg-neutral-100">
-                <div className="w-[60%] relative flex items-start justify-end bg-neutral-100 pl-10 pb-10">
+              <div className="hidden lg:flex flex-row bg-background">
+                <div className="w-[60%] relative flex items-start justify-end bg-background pl-10 pb-10">
                   <CardLayout
                     isAuthenticated={isAuthenticated}
                     onOpenSidebar={() => setIsMobileSidebarOpen(true)}

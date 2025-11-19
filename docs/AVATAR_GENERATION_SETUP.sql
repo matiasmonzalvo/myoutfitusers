@@ -92,7 +92,51 @@ USING (
 );
 
 -- =====================================================
--- 5. FUNCTION TO DECREMENT REGENERATIONS
+-- 5. AVATAR HISTORY TABLE
+-- =====================================================
+-- Table to store all generated avatars for each user
+CREATE TABLE IF NOT EXISTS avatar_history (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  avatar_url TEXT NOT NULL,
+  is_selected BOOLEAN DEFAULT false NOT NULL,
+  generation_number INTEGER NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+-- Index for performance
+CREATE INDEX IF NOT EXISTS idx_avatar_history_user_id ON avatar_history(user_id);
+CREATE INDEX IF NOT EXISTS idx_avatar_history_selected ON avatar_history(user_id, is_selected);
+
+-- Enable RLS
+ALTER TABLE avatar_history ENABLE ROW LEVEL SECURITY;
+
+-- Policy: Users can read their own avatar history
+CREATE POLICY "Users can read own avatar history"
+ON avatar_history
+FOR SELECT
+USING (auth.uid() = user_id);
+
+-- Policy: Users can insert their own avatar history
+CREATE POLICY "Users can insert own avatar history"
+ON avatar_history
+FOR INSERT
+WITH CHECK (auth.uid() = user_id);
+
+-- Policy: Users can update their own avatar history
+CREATE POLICY "Users can update own avatar history"
+ON avatar_history
+FOR UPDATE
+USING (auth.uid() = user_id);
+
+-- Policy: Users can delete their own avatar history
+CREATE POLICY "Users can delete own avatar history"
+ON avatar_history
+FOR DELETE
+USING (auth.uid() = user_id);
+
+-- =====================================================
+-- 6. FUNCTION TO DECREMENT REGENERATIONS
 -- =====================================================
 CREATE OR REPLACE FUNCTION decrement_avatar_regenerations(user_id UUID)
 RETURNS INTEGER AS $$

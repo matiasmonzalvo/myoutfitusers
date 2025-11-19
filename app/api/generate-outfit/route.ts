@@ -235,6 +235,98 @@ IMPORTANT:
       outfitIndex
     );
 
+    // Sistema de try-ons prepagados
+    try {
+      // Verificar si los productos son de marcas verificadas
+      const { data: productsData, error: productsError } = await supabase
+        .from("products")
+        .select(`
+          id,
+          brands (
+            is_verified_brand
+          )
+        `)
+        .in("id", products.map((p: any) => p.id));
+
+      if (productsError) {
+        console.error("Error fetching products for billing:", productsError);
+      }
+
+      // Verificar si TODOS los productos son de marcas verificadas
+      const allProductsVerified = productsData?.every(
+        (p: any) => p.brands?.is_verified_brand === true
+      );
+
+      if (allProductsVerified) {
+        // GRATIS - Todos los productos son de marcas verificadas
+        // Registrar el uso pero NO descontar try-ons
+        const { error: usageError } = await supabase.from("tryons_usage").insert({
+          user_id: user.id,
+          action: "generate_outfit",
+          products_used: products.map((p: any) => p.id),
+          was_free: true,
+        });
+
+        if (usageError) {
+          console.error("Error tracking free usage:", usageError);
+        }
+      } else {
+        // PAGO - Al menos un producto NO es de marca verificada
+        // Verificar que el usuario tenga try-ons disponibles
+        const { data: profileData, error: profileError } = await supabase
+          .from("user_profiles")
+          .select("try_ons_left")
+          .eq("id", user.id)
+          .single();
+
+        if (profileError || !profileData) {
+          return NextResponse.json(
+            { error: "Could not fetch user profile" },
+            { status: 500 }
+          );
+        }
+
+        if (profileData.try_ons_left <= 0) {
+          return NextResponse.json(
+            { 
+              error: "You don't have any try-ons left. Please purchase a package to continue.",
+              code: "NO_TRYONS_LEFT"
+            },
+            { status: 402 } // 402 Payment Required
+          );
+        }
+
+        // Descontar un try-on
+        const { error: updateError } = await supabase
+          .from("user_profiles")
+          .update({ try_ons_left: profileData.try_ons_left - 1 })
+          .eq("id", user.id);
+
+        if (updateError) {
+          console.error("Error updating try-ons:", updateError);
+          return NextResponse.json(
+            { error: "Error processing try-on" },
+            { status: 500 }
+          );
+        }
+
+        // Registrar el uso
+        const { error: usageError } = await supabase.from("tryons_usage").insert({
+          user_id: user.id,
+          action: "generate_outfit",
+          products_used: products.map((p: any) => p.id),
+          was_free: false,
+        });
+
+        if (usageError) {
+          console.error("Error tracking usage:", usageError);
+        }
+      }
+    } catch (trackingError) {
+      console.error("Error in try-ons system:", trackingError);
+      // No fallar la generación si el tracking falla
+    }
+
     // Devolver también el canvas de productos para debug (opcional, solo para desarrollo)
     const productsCanvasDebugUrl = `data:image/png;base64,${productsCanvasBase64}`;
 

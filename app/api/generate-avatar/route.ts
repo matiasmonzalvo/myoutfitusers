@@ -93,7 +93,7 @@ export async function POST(request: Request) {
     const pronounLower = pronoun.toLowerCase();
 
     // Construir el prompt para Gemini
-    const systemPrompt = `Create a 1:1 aspect ratio photo of the person standing straight centered with a white background. ${pronoun} weighs ${profileData.weight} kg and is ${profileData.height} cm tall, respect these body proportions. ${pronoun} is wearing a regular white tee, regular black shorts and crew socks with no shoes. Regardless of the expression in the reference photos (whether smiling, laughing, or any other expression), generate the face with a neutral expression featuring a very slight smile (lips closed, no teeth showing) and eyes looking directly at the camera. The background should have no studio lighting, no shadows. Completely pure white background (#FFFFFF), no gradients, no horizon, no floor, no reflections, no textures. Only the shape of the full body of the person.`;
+    const systemPrompt = `Create a 1:1 aspect ratio full body shot of the person standing straight centered with a white background. ${pronoun} weighs ${profileData.weight} kg and is ${profileData.height} cm tall, respect these body proportions. ${pronoun} is wearing a regular white tee, regular black shorts and crew socks with no shoes. Regardless of the expression in the reference photos (whether smiling, laughing, or any other expression) he should have a neutral expression. The background should have no studio lighting, no shadows. Completely pure white background (#FFFFFF), no gradients, no horizon, no floor, no reflections, no textures. Only the shape of the full body of the person.`;
 
     const prompt = [
       {
@@ -158,6 +158,29 @@ export async function POST(request: Request) {
       data: { publicUrl },
     } = supabase.storage.from("user-avatars").getPublicUrl(fileName);
 
+    // Obtener el número de generación actual
+    const { count: generationCount } = await supabase
+      .from("avatar_history")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user.id);
+
+    const generationNumber = (generationCount || 0) + 1;
+
+    // Guardar en el historial de avatares
+    const { error: historyError } = await supabase
+      .from("avatar_history")
+      .insert({
+        user_id: user.id,
+        avatar_url: publicUrl,
+        is_selected: false,
+        generation_number: generationNumber,
+      });
+
+    if (historyError) {
+      console.error("History insert error:", historyError);
+      // No fallar si no se puede guardar el historial
+    }
+
     // Decrementar las regeneraciones disponibles
     const { data: updatedProfile } = await supabase
       .from("user_profiles")
@@ -168,9 +191,17 @@ export async function POST(request: Request) {
       .select("avatar_regenerations_left")
       .single();
 
+    // Obtener todo el historial de avatares
+    const { data: avatarHistory } = await supabase
+      .from("avatar_history")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: true });
+
     return NextResponse.json({
       avatarUrl: publicUrl,
       regenerationsLeft: updatedProfile?.avatar_regenerations_left || 0,
+      avatarHistory: avatarHistory || [],
     });
   } catch (error) {
     console.error("Error generating avatar:", error);

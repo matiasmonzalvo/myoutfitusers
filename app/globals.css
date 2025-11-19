@@ -61,7 +61,7 @@
   --chat: #ffffff;
   --blue: #0095f6;
   --selection: #0095f638;
-  --background: oklch(1 0 0);
+  --background: #f5f5f5;
   --selection-border: #0095f6;
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -72,7 +72,7 @@
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
+  --muted: #ffffff;
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
@@ -106,7 +106,7 @@
   --blue: #0095f6;
   --selection-border: #0095f6;
   --selection: #0095f638;
-  --background: #0a0a0a;
+  --background: #171717;
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
@@ -160,7 +160,7 @@
 /* Para Firefox - scrollbar visible en tablas */
 .table-scroll {
   scrollbar-width: 20px;
-  scrollbar-color: var(--border) #f5f5f5;
+  scrollbar-color: var(--border) var(--background);
 }
 
 .box-scroll {

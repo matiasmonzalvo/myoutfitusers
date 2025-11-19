@@ -1,7 +1,6 @@
 "use client";
 
-import type React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,7 +25,7 @@ import {
   Loader,
 } from "lucide-react";
 import { Dropzone } from "@/components/ui/dropzone";
-import type { Gender, BodyType, OnboardingFormData } from "@/lib/types/user";
+import type { Gender, BodyType, OnboardingFormData, AvatarHistory } from "@/lib/types/user";
 import Image from "next/image";
 
 type OnboardingStep = "username" | "profile" | "photos" | "preview";
@@ -59,9 +58,70 @@ export function OnboardingForm() {
   const [generatedAvatar, setGeneratedAvatar] = useState<string | null>(null);
   const [generatingAvatar, setGeneratingAvatar] = useState(false);
   const [regenerationsLeft, setRegenerationsLeft] = useState(3);
+  const [avatarHistory, setAvatarHistory] = useState<AvatarHistory[]>([]);
+  const [selectedAvatarId, setSelectedAvatarId] = useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const router = useRouter();
   const supabase = createServerClient();
+
+  const loadAvatarHistory = async () => {
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) return;
+
+      const { data: history, error } = await supabase
+        .from("avatar_history")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: true });
+
+      if (error) {
+        console.error("Error loading avatar history:", error);
+        return;
+      }
+
+      if (history && history.length > 0) {
+        setAvatarHistory(history);
+        
+        // Buscar el avatar seleccionado
+        const selected = history.find((a) => a.is_selected);
+        if (selected) {
+          setSelectedAvatarId(selected.id);
+          setGeneratedAvatar(selected.avatar_url);
+        } else {
+          // Si no hay ninguno seleccionado, usar el más reciente
+          const latest = history[history.length - 1];
+          setSelectedAvatarId(latest.id);
+          setGeneratedAvatar(latest.avatar_url);
+        }
+      }
+
+      // Cargar las regeneraciones restantes
+      const { data: profile } = await supabase
+        .from("user_profiles")
+        .select("avatar_regenerations_left")
+        .eq("id", user.id)
+        .single();
+
+      if (profile) {
+        setRegenerationsLeft(profile.avatar_regenerations_left);
+      }
+    } catch (err) {
+      console.error("Error loading avatar history:", err);
+    }
+  };
+
+  // Cargar historial de avatares al montar el componente si ya existen
+  React.useEffect(() => {
+    if (!isInitialized) {
+      loadAvatarHistory();
+      setIsInitialized(true);
+    }
+  }, [isInitialized]);
 
   const checkUsernameAvailability = async (username: string) => {
     if (!username || username.length < 3) {
@@ -355,6 +415,14 @@ export function OnboardingForm() {
 
       setGeneratedAvatar(data.avatarUrl);
       setRegenerationsLeft(data.regenerationsLeft);
+      setAvatarHistory(data.avatarHistory || []);
+      
+      // Seleccionar automáticamente el avatar recién generado
+      if (data.avatarHistory && data.avatarHistory.length > 0) {
+        const latestAvatar = data.avatarHistory[data.avatarHistory.length - 1];
+        setSelectedAvatarId(latestAvatar.id);
+      }
+      
       setStep("preview");
     } catch (err) {
       console.error("Error generating avatar:", err);
@@ -366,13 +434,47 @@ export function OnboardingForm() {
     }
   };
 
-  const handleRegenerateAvatar = async () => {
+  const handleRegenerateAvatar = () => {
     if (regenerationsLeft <= 0) {
       setError("Has alcanzado el límite de regeneraciones");
       return;
     }
 
-    await handleGenerateAvatar();
+    // Volver al paso de fotos para subir nuevas fotos
+    setStep("photos");
+    setError("");
+  };
+
+  const handleSelectAvatar = async (avatarId: string, avatarUrl: string) => {
+    try {
+      // Desmarcar todos los avatares
+      const { error: unselectError } = await supabase
+        .from("avatar_history")
+        .update({ is_selected: false })
+        .eq("user_id", (await supabase.auth.getUser()).data.user?.id || "");
+
+      if (unselectError) {
+        console.error("Error unselecting avatars:", unselectError);
+        return;
+      }
+
+      // Marcar el avatar seleccionado
+      const { error: selectError } = await supabase
+        .from("avatar_history")
+        .update({ is_selected: true })
+        .eq("id", avatarId);
+
+      if (selectError) {
+        console.error("Error selecting avatar:", selectError);
+        return;
+      }
+
+      setSelectedAvatarId(avatarId);
+      setGeneratedAvatar(avatarUrl);
+    } catch (err) {
+      console.error("Error selecting avatar:", err);
+      setError("Error al seleccionar el avatar");
+    }
   };
 
   const handleCompleteSetup = async () => {
@@ -647,6 +749,42 @@ export function OnboardingForm() {
           </div>
         )}
 
+        {/* Avatar History Thumbnails */}
+        {avatarHistory.length > 1 && (
+          <div className="mb-6">
+            <p className="text-sm text-muted-foreground mb-3 text-center">
+              Select from your generated avatars:
+            </p>
+            <div className="grid grid-cols-3 lg:grid-cols-4 gap-3">
+              {avatarHistory.map((avatar) => (
+                <button
+                  key={avatar.id}
+                  onClick={() => handleSelectAvatar(avatar.id, avatar.avatar_url)}
+                  className={`relative aspect-square rounded-2xl overflow-hidden border-2 transition-all cursor-pointer ${
+                    selectedAvatarId === avatar.id
+                      ? "border-primary ring-2 ring-primary ring-offset-2"
+                      : "border-border hover:border-primary/50"
+                  }`}
+                >
+                  <img
+                    src={avatar.avatar_url}
+                    alt={`Avatar ${avatar.generation_number}`}
+                    className="w-full h-full object-cover"
+                  />
+                  {selectedAvatarId === avatar.id && (
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center">
+                      <Check className="w-4 h-4" />
+                    </div>
+                  )}
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs py-1 text-center">
+                    #{avatar.generation_number}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="flex gap-4">
           <Button
             variant="outline"
@@ -657,7 +795,7 @@ export function OnboardingForm() {
             {generatingAvatar && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             )}
-            Re-generate ({regenerationsLeft} left)
+            Re-generate with new photos ({regenerationsLeft} left)
           </Button>
           <Button
             onClick={handleCompleteSetup}

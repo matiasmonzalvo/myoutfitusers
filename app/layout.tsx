@@ -77,7 +77,7 @@ export default async function RootLayout({
         />
         <link rel="manifest" href="/site.webmanifest" />
       </head>
-      <body className="table-scroll font-sans antialiased force-light-theme">
+      <body className="table-scroll font-sans antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

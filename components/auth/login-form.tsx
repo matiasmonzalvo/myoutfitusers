@@ -171,7 +171,7 @@ export function LoginForm() {
               onChange={(e) => setEmail(e.target.value)}
               required
               disabled={loading || googleLoading || validatingEmail}
-              className="text-base px-4 py-2 w-full rounded-full bg-white border border-border focus:outline-none "
+              className="text-base px-4 py-2 w-full rounded-full bg-muted border border-border focus:outline-none "
             />
           </div>
           <div className="space-y-2">
@@ -183,13 +183,13 @@ export function LoginForm() {
               onChange={(e) => setPassword(e.target.value)}
               required
               disabled={loading || googleLoading}
-              className="text-base px-4 py-2 w-full rounded-full bg-white border border-border focus:outline-none "
+              className="text-base px-4 py-2 w-full rounded-full bg-muted border border-border focus:outline-none "
             />
           </div>
 
           <button
             type="submit"
-            className="w-full cursor-pointer bg-primary text-background rounded-full h-10 flex items-center justify-center text-base font-semibold "
+            className="w-full cursor-pointer bg-primary text-white rounded-full h-10 flex items-center justify-center text-base font-semibold "
             disabled={loading || googleLoading}
           >
             {loading ? <Loader className="w-4 h-4 animate-spin" /> : "Sign in"}
@@ -207,9 +207,7 @@ export function LoginForm() {
             <span className="w-full border-t" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-neutral-100 px-2 text-muted-foreground">
-              Or
-            </span>
+            <span className="bg-background px-2 text-muted-foreground">Or</span>
           </div>
         </div>
         <Button

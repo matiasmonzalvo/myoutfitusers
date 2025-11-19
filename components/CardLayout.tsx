@@ -9,6 +9,7 @@ import {
   X,
   ShoppingBag,
   Menu,
+  CreditCard,
 } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -83,6 +84,7 @@ export function CardLayout({
 
   // Estados para el usuario
   const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
   const supabase = createServerClient();
 
   // Estados para datos pre-cargados del tooltip
@@ -424,6 +426,19 @@ export function CardLayout({
           data: { user },
         } = await supabase.auth.getUser();
         setUser(user);
+
+        // Obtener la foto de perfil del usuario
+        if (user) {
+          const { data: profile } = await supabase
+            .from("user_profiles")
+            .select("profile_photo_url")
+            .eq("id", user.id)
+            .single();
+
+          if (profile?.profile_photo_url) {
+            setProfilePhotoUrl(profile.profile_photo_url);
+          }
+        }
       };
 
       getUser();
@@ -432,11 +447,27 @@ export function CardLayout({
         data: { subscription },
       } = supabase.auth.onAuthStateChange((event: any, session: any) => {
         setUser(session?.user ?? null);
+        if (session?.user) {
+          // Recargar foto de perfil cuando cambie la sesión
+          supabase
+            .from("user_profiles")
+            .select("profile_photo_url")
+            .eq("id", session.user.id)
+            .single()
+            .then(({ data }: { data: any }) => {
+              if (data?.profile_photo_url) {
+                setProfilePhotoUrl(data.profile_photo_url);
+              }
+            });
+        } else {
+          setProfilePhotoUrl(null);
+        }
       });
 
       return () => subscription.unsubscribe();
     } else {
       setUser(null);
+      setProfilePhotoUrl(null);
     }
   }, [isAuthenticated, supabase.auth]);
 
@@ -577,14 +608,14 @@ export function CardLayout({
           {getTabIcon("settings")}
         </button>
       </div> */}
-        <div className=" w-full pt-4 px-4 lg:px-0 lg:pt-9.5  pb-2  2xl:pb-6 border-b border-border z-[1000000] flex items-center justify-between gap-6 lg:gap-10 bg-neutral-100">
+        <div className=" w-full pt-4 px-4 lg:px-0 lg:pt-9.5  pb-2  2xl:pb-6 border-b border-border z-[1000000] flex items-center justify-between gap-4 bg-background">
           <Link href="/">
             <Image
               src="/logo.png"
               alt="Outfiterz"
               width={120}
               height={120}
-              className="w-12 h-12"
+              className="w-12 h-12 dark:invert"
             />
           </Link>
 
@@ -597,7 +628,7 @@ export function CardLayout({
                 placeholder="Search for brand, product..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-full bg-white border border-border focus:outline-none text-sm 2xl:text-base"
+                className="w-full pl-10 pr-4 py-2 rounded-full bg-muted border border-border focus:outline-none text-sm 2xl:text-base"
               />
               {searchQuery && (
                 <button
@@ -611,14 +642,36 @@ export function CardLayout({
           </div>
 
           <div className="flex items-center gap-2">
+            <Link
+              href="/about"
+              className="py-1 px-2 font-medium text-foreground hover:text-foreground/80 transition-colors cursor-pointer hidden lg:flex text-sm 2xl:text-base rounded-full items-center justify-center"
+            >
+              About
+            </Link>
+            <Link
+              href="/docs"
+              className="py-1 px-2 font-medium text-foreground hover:text-foreground/80 transition-colors cursor-pointer hidden lg:flex text-sm 2xl:text-base rounded-full items-center justify-center"
+            >
+              Docs
+            </Link>
+
+            <Link
+              href="/pricing"
+              className="py-1 px-2 font-medium text-foreground hover:text-foreground/80 transition-colors cursor-pointer hidden lg:flex text-sm 2xl:text-base rounded-full items-center justify-center"
+            >
+              Pricing
+            </Link>
+            <Link
+              href="/contact"
+              className="py-1 px-2 font-medium text-foreground hover:text-foreground/80 transition-colors cursor-pointer hidden lg:flex text-sm 2xl:text-base rounded-full items-center justify-center"
+            >
+              Contact
+            </Link>
             {!isAuthenticated ? (
               <>
-                <button className="px-3 py-2 font-medium text-neutral-700 hover:text-neutral-900 transition-colors cursor-pointer hidden lg:flex text-sm 2xl:text-base border border-border rounded-full items-center justify-center">
-                  Add my brand
-                </button>
                 <button
                   onClick={() => router.push("/login")}
-                  className="px-4 py-2 font-medium bg-white text-foreground border border-border rounded-full hover:bg-gray-100 transition-colors cursor-pointer hidden lg:block text-sm 2xl:text-base"
+                  className="px-4 py-2 font-medium bg-background text-foreground border border-border rounded-full hover:bg-gray-100 transition-colors cursor-pointer hidden lg:block text-sm 2xl:text-base"
                 >
                   Login
                 </button>
@@ -636,10 +689,11 @@ export function CardLayout({
               <>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="rounded-full">
-                      <Avatar className="w-[42px] h-[42px] cursor-pointer hover:opacity-80 transition-opacity">
+                    <button className="rounded-full pl-1">
+                      <Avatar className="w-[42px] h-[42px] cursor-pointer hover:opacity-80 transition-opacity bg-muted">
                         <AvatarImage
                           src={
+                            profilePhotoUrl ||
                             user?.user_metadata?.avatar_url ||
                             user?.user_metadata?.picture
                           }
@@ -647,7 +701,7 @@ export function CardLayout({
                             user?.user_metadata?.name || user?.email || "User"
                           }
                         />
-                        <AvatarFallback className="bg-white text-foreground border border-border text-sm">
+                        <AvatarFallback className="bg-muted text-foreground border border-border text-sm">
                           {getUserInitials(user)}
                         </AvatarFallback>
                       </Avatar>
@@ -659,7 +713,21 @@ export function CardLayout({
                       className="cursor-pointer"
                     >
                       <Bookmark className="h-4 w-4" />
-                      Mis Outfits
+                      My outfits
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => router.push("/billing")}
+                      className="cursor-pointer"
+                    >
+                      <CreditCard className="h-4 w-4" />
+                      Billing
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => router.push("/settings")}
+                      className="cursor-pointer"
+                    >
+                      <Settings className="h-4 w-4" />
+                      Settings
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={handleSignOut}
@@ -674,8 +742,8 @@ export function CardLayout({
             )}
           </div>
         </div>
-        <div className="z-50 bg-neutral-100 border-b border-border relative lg:px-0">
-          <div className="flex gap-2 overflow-x-auto no-scrollbar">
+        <div className="z-50 bg-background border-b border-border relative lg:px-20">
+          <div className="flex justify-between gap-2 overflow-x-auto no-scrollbar">
             <Link
               href="/"
               className={`cursor-pointer relative whitespace-nowrap ml-2 px-2 py-2 font-semibold text-base transition-colors ${"text-foreground"}`}
@@ -809,12 +877,12 @@ export function CardLayout({
             onMouseLeave={() => {
               setShowWomenTooltip(false);
             }}
-            className="absolute bg-white border-x border-b border-border rounded-b-2xl z-50 p-6 w-full"
+            className="absolute bg-background border-x border-b border-border rounded-b-2xl z-50 p-6 w-full"
           >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Trending Products */}
               <div>
-                <h3 className="text-base font-semibold text-black mb-3">
+                <h3 className="text-base font-semibold text-foreground mb-3">
                   Trending products
                 </h3>
                 <div className="space-y-4">
@@ -840,7 +908,7 @@ export function CardLayout({
                             <div className="w-8 h-8 rounded bg-gray-200" />
                           )}
                           <div className="flex-1 min-w-0">
-                            <p className="text-left text-sm text-neutral-800 hover:text-black py-1 transition-colors truncate font-medium tracking-tight">
+                            <p className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors truncate font-medium tracking-tight">
                               {product.name}
                             </p>
                             {/* {product.brands && (
@@ -865,7 +933,7 @@ export function CardLayout({
               </div>
               {/* Trending Brands */}
               <div>
-                <h3 className="text-base font-semibold text-black mb-3">
+                <h3 className="text-base font-semibold text-foreground mb-3">
                   Trending brands
                 </h3>
                 <div className="space-y-4">
@@ -893,7 +961,7 @@ export function CardLayout({
                               {brand.brand_name.charAt(0)}
                             </div>
                           )}
-                          <span className="text-left text-sm text-neutral-800 hover:text-black py-1 transition-colors font-medium tracking-tight truncate">
+                          <span className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate">
                             {brand.brand_name}
                           </span>
                         </Link>
@@ -911,7 +979,7 @@ export function CardLayout({
 
               {/* Shop by Category */}
               <div>
-                <h3 className="text-base font-semibold text-black mb-3">
+                <h3 className="text-base font-semibold text-foreground mb-3">
                   Shop by category
                 </h3>
                 <div className="space-y-2">
@@ -924,7 +992,7 @@ export function CardLayout({
                         onClick={() => {
                           setShowWomenTooltip(false);
                         }}
-                        className="block w-full text-left text-base text-neutral-600 hover:text-black py-1 transition-colors font-medium tracking-tight truncate"
+                        className="block w-full text-left text-base text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate"
                       >
                         {label}
                       </Link>
@@ -945,12 +1013,12 @@ export function CardLayout({
             onMouseLeave={() => {
               setShowMenTooltip(false);
             }}
-            className="absolute bg-white border-x border-b border-border rounded-b-2xl z-50 p-6 w-full"
+            className="absolute bg-background border-x border-b border-border rounded-b-2xl z-50 p-6 w-full"
           >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Trending Products */}
               <div>
-                <h3 className="text-base font-semibold text-black mb-3">
+                <h3 className="text-base font-semibold text-foreground mb-3">
                   Trending products
                 </h3>
                 <div className="space-y-4">
@@ -976,7 +1044,7 @@ export function CardLayout({
                             <div className="w-8 h-8 rounded bg-gray-200" />
                           )}
                           <div className="flex-1 min-w-0">
-                            <p className="text-left text-sm text-neutral-800 hover:text-black py-1 transition-colors truncate font-medium tracking-tight">
+                            <p className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors truncate font-medium tracking-tight">
                               {product.name}
                             </p>
                           </div>
@@ -996,7 +1064,7 @@ export function CardLayout({
               </div>
               {/* Trending Brands */}
               <div>
-                <h3 className="text-base font-semibold text-black mb-3">
+                <h3 className="text-base font-semibold text-foreground mb-3">
                   Trending brands
                 </h3>
                 <div className="space-y-4">
@@ -1024,7 +1092,7 @@ export function CardLayout({
                               {brand.brand_name.charAt(0)}
                             </div>
                           )}
-                          <span className="text-left text-sm text-neutral-800 hover:text-black py-1 transition-colors font-medium tracking-tight truncate">
+                          <span className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate">
                             {brand.brand_name}
                           </span>
                         </Link>
@@ -1042,7 +1110,7 @@ export function CardLayout({
 
               {/* Shop by Category */}
               <div>
-                <h3 className="text-base font-semibold text-black mb-3">
+                <h3 className="text-base font-semibold text-foreground mb-3">
                   Shop by category
                 </h3>
                 <div className="space-y-2">
@@ -1055,7 +1123,7 @@ export function CardLayout({
                         onClick={() => {
                           setShowMenTooltip(false);
                         }}
-                        className="block w-full text-left text-base text-neutral-600 hover:text-black py-1 transition-colors font-medium tracking-tight truncate"
+                        className="block w-full text-left text-base text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate"
                       >
                         {label}
                       </Link>
@@ -1076,12 +1144,12 @@ export function CardLayout({
             onMouseLeave={() => {
               setShowSneakersTooltip(false);
             }}
-            className="absolute bg-white border-x border-b border-border rounded-b-2xl z-50 p-6 w-full"
+            className="absolute bg-background border-x border-b border-border rounded-b-2xl z-50 p-6 w-full"
           >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Trending Sneakers */}
               <div>
-                <h3 className="text-base font-semibold text-black mb-3">
+                <h3 className="text-base font-semibold text-foreground mb-3">
                   Trending sneakers
                 </h3>
                 <div className="space-y-4">
@@ -1107,7 +1175,7 @@ export function CardLayout({
                             <div className="w-8 h-8 rounded bg-gray-200" />
                           )}
                           <div className="flex-1 min-w-0">
-                            <p className="text-left text-sm text-neutral-800 hover:text-black py-1 transition-colors truncate font-medium tracking-tight">
+                            <p className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors truncate font-medium tracking-tight">
                               {product.name}
                             </p>
                           </div>
@@ -1128,7 +1196,7 @@ export function CardLayout({
 
               {/* Popular Brands */}
               <div>
-                <h3 className="text-base font-semibold text-black mb-3">
+                <h3 className="text-base font-semibold text-foreground mb-3">
                   Popular brands
                 </h3>
                 <div className="space-y-4">
@@ -1156,7 +1224,7 @@ export function CardLayout({
                               {brand.brand_name.charAt(0)}
                             </div>
                           )}
-                          <span className="text-left text-sm text-neutral-800 hover:text-black py-1 transition-colors font-medium tracking-tight truncate">
+                          <span className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate">
                             {brand.brand_name}
                           </span>
                         </Link>
@@ -1174,7 +1242,7 @@ export function CardLayout({
 
               {/* Sneakers For */}
               <div>
-                <h3 className="text-base font-semibold text-black mb-3">
+                <h3 className="text-base font-semibold text-foreground mb-3">
                   Sneakers for:
                 </h3>
                 <div className="space-y-2">
@@ -1183,7 +1251,7 @@ export function CardLayout({
                     onClick={() => {
                       setShowSneakersTooltip(false);
                     }}
-                    className="block w-full text-left text-base text-neutral-600 hover:text-black py-1 transition-colors font-medium tracking-tight truncate"
+                    className="block w-full text-left text-base text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate"
                   >
                     Men
                   </Link>
@@ -1192,7 +1260,7 @@ export function CardLayout({
                     onClick={() => {
                       setShowSneakersTooltip(false);
                     }}
-                    className="block w-full text-left text-base text-neutral-600 hover:text-black py-1 transition-colors font-medium tracking-tight truncate"
+                    className="block w-full text-left text-base text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate"
                   >
                     Women
                   </Link>
@@ -1212,7 +1280,7 @@ export function CardLayout({
             onMouseLeave={() => {
               setShowBrandsTooltip(false);
             }}
-            className="absolute bg-white border-x border-b border-border rounded-b-2xl z-50 p-6 w-full"
+            className="absolute bg-background border-x border-b border-border rounded-b-2xl z-50 p-6 w-full"
           >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Primera columna - 6 marcas */}
@@ -1242,7 +1310,7 @@ export function CardLayout({
                               {brand.brand_name.charAt(0)}
                             </div>
                           )}
-                          <span className="text-left text-sm text-neutral-800 hover:text-black py-1 transition-colors font-medium tracking-tight truncate">
+                          <span className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate">
                             {brand.brand_name}
                           </span>
                         </Link>
@@ -1285,7 +1353,7 @@ export function CardLayout({
                               {brand.brand_name.charAt(0)}
                             </div>
                           )}
-                          <span className="text-left text-sm text-neutral-800 hover:text-black py-1 transition-colors font-medium tracking-tight truncate">
+                          <span className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate">
                             {brand.brand_name}
                           </span>
                         </Link>
@@ -1329,7 +1397,7 @@ export function CardLayout({
                                 {brand.brand_name.charAt(0)}
                               </div>
                             )}
-                            <span className="text-left text-sm text-neutral-800 hover:text-black py-1 transition-colors font-medium tracking-tight truncate">
+                            <span className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate">
                               {brand.brand_name}
                             </span>
                           </Link>
@@ -1369,12 +1437,12 @@ export function CardLayout({
             onMouseLeave={() => {
               setShowAccessoriesTooltip(false);
             }}
-            className="absolute bg-white border-x border-b border-border rounded-b-2xl z-50 p-6 w-full"
+            className="absolute bg-background border-x border-b border-border rounded-b-2xl z-50 p-6 w-full"
           >
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Trending Accessories */}
               <div>
-                <h3 className="text-base font-semibold text-black mb-3">
+                <h3 className="text-base font-semibold text-foreground mb-3">
                   Trending accessories
                 </h3>
                 <div className="space-y-4">
@@ -1400,7 +1468,7 @@ export function CardLayout({
                             <div className="w-8 h-8 rounded bg-gray-200" />
                           )}
                           <div className="flex-1 min-w-0">
-                            <p className="text-left text-sm text-neutral-800 hover:text-black py-1 transition-colors truncate font-medium tracking-tight">
+                            <p className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors truncate font-medium tracking-tight">
                               {product.name}
                             </p>
                           </div>
@@ -1419,7 +1487,7 @@ export function CardLayout({
 
               {/* Popular Brands */}
               <div>
-                <h3 className="text-base font-semibold text-black mb-3">
+                <h3 className="text-base font-semibold text-foreground mb-3">
                   Popular brands
                 </h3>
                 <div className="space-y-4">
@@ -1447,7 +1515,7 @@ export function CardLayout({
                               {brand.brand_name.charAt(0)}
                             </div>
                           )}
-                          <span className="text-left text-sm text-neutral-800 hover:text-black py-1 transition-colors font-medium tracking-tight truncate">
+                          <span className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate">
                             {brand.brand_name}
                           </span>
                         </Link>
@@ -1465,7 +1533,7 @@ export function CardLayout({
 
               {/* Accessories For */}
               <div>
-                <h3 className="text-base font-semibold text-black mb-3">
+                <h3 className="text-base font-semibold text-foreground mb-3">
                   Accessories for:
                 </h3>
                 <div className="space-y-2">
@@ -1474,7 +1542,7 @@ export function CardLayout({
                     onClick={() => {
                       setShowAccessoriesTooltip(false);
                     }}
-                    className="block w-full text-left text-base text-neutral-600 hover:text-black py-1 transition-colors font-medium tracking-tight truncate"
+                    className="block w-full text-left text-base text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate"
                   >
                     Men
                   </Link>
@@ -1483,7 +1551,7 @@ export function CardLayout({
                     onClick={() => {
                       setShowAccessoriesTooltip(false);
                     }}
-                    className="block w-full text-left text-base text-neutral-600 hover:text-black py-1 transition-colors font-medium tracking-tight truncate"
+                    className="block w-full text-left text-base text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate"
                   >
                     Women
                   </Link>
