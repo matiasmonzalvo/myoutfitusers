@@ -63,7 +63,7 @@ export function AuthRequiredDialog({
           </Button>
           <Button
             onClick={handleRegister}
-            className="w-full rounded-full text-base cursor-pointer"
+            className="w-full rounded-full text-base cursor-pointer text-white"
           >
             Sign up
           </Button>

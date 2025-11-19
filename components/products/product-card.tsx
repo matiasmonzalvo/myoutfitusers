@@ -135,7 +135,7 @@ export function ProductCard({ product, isAuthenticated }: ProductCardProps) {
         title="Wear your outfits"
         description="Create your account to start wearing your outfits"
       />
-      <Card className="overflow-hidden border-none shadow-none rounded-xl bg-background">
+      <Card className="overflow-hidden border-none shadow-none bg-background">
         <div>
           <div className="aspect-[4/3] group relative">
             <Link
@@ -146,7 +146,7 @@ export function ProductCard({ product, isAuthenticated }: ProductCardProps) {
               }}
               className="absolute top-2 right-2 p-1 rounded-full cursor-pointer z-10"
             >
-              <ArrowUpRight className="w-4 h-4" />
+              <ArrowUpRight className="w-4 h-4 text-neutral-900" />
             </Link>
             <Link
               href={`/product/${product.id}`}
@@ -204,7 +204,7 @@ export function ProductCard({ product, isAuthenticated }: ProductCardProps) {
                         ? "bg-green-500 hover:bg-green-600"
                         : !isAuthenticated || canAdd
                           ? "bg-primary hover:bg-primary/90"
-                          : "bg-gray-400 cursor-not-allowed"
+                          : "bg-neutral-300 dark:bg-neutral-800 cursor-not-allowed"
                     }`}
                   >
                     {isInCart ? (

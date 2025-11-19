@@ -292,7 +292,7 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
   if (!isAuthenticated) {
     return (
       <div className="w-full lg:w-auto p-10 lg:h-screen relative flex items-center justify-start">
-        <div className="w-full lg:w-auto lg:h-full border border-border rounded-[20px] overflow-hidden relative flex flex-col items-center justify-center bg-white">
+        <div className="w-full lg:w-auto lg:h-full border border-border rounded-[30px] overflow-hidden relative flex flex-col items-center justify-center bg-white dark:bg-black/50">
           <img
             src="/myoutfitgif2.gif"
             alt="Home"
@@ -466,14 +466,14 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
             <button
               onClick={() => setShowSaveDialog(true)}
               disabled={!outfitImageUrl || currentOutfitProducts.length === 0}
-              className="rounded-full bg-primary text-white transition-all cursor-pointer flex items-center justify-center gap-2 px-3 lg:px-3 py-2.5 hover:opacity-80"
+              className="rounded-full bg-primary text-white transition-all cursor-pointer flex items-center justify-center gap-2 px-3 lg:px-5 py-2.5 hover:opacity-80"
             >
               <HugeiconsIcon
                 icon={Share03Icon}
-                className="w-4.5 h-4.5"
+                className="w-4 h-4"
                 strokeWidth={2.5}
               />
-              <span className="text-sm font-medium">Compartir</span>
+              <span className="text-sm font-medium">Share</span>
             </button>
           </div>
         </div>
