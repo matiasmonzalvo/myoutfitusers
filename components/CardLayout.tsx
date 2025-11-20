@@ -649,10 +649,10 @@ export function CardLayout({
               About
             </Link>
             <Link
-              href="/docs"
+              href="/guide"
               className="py-1 px-2 font-medium text-foreground hover:text-foreground/80 transition-colors cursor-pointer hidden lg:flex text-sm 2xl:text-base rounded-full items-center justify-center"
             >
-              Docs
+              Guide
             </Link>
 
             <Link
