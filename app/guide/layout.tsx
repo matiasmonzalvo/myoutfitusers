@@ -5,6 +5,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronRight, PanelLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 const sections = [
   {
@@ -55,6 +63,22 @@ export default function GuideLayout({
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const pathname = usePathname();
+
+  // Get current page breadcrumb info
+  const getCurrentPageInfo = () => {
+    for (const section of sections) {
+      const item = section.items.find((item) => item.href === pathname);
+      if (item) {
+        return {
+          sectionTitle: section.title,
+          pageTitle: item.title,
+        };
+      }
+    }
+    return null;
+  };
+
+  const pageInfo = getCurrentPageInfo();
 
   return (
     <div className="min-h-screen bg-background">
@@ -161,6 +185,26 @@ export default function GuideLayout({
 
         {/* Main Content */}
         <main className="flex-1 px-0 xl:px-10 py-10 max-w-4xl xl:ml-[248px]">
+          {/* Breadcrumb */}
+          {pageInfo && (
+            <Breadcrumb className="mb-6">
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link href="/guide" className="text-muted-foreground">
+                      {pageInfo.sectionTitle}
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage className="text-foreground font-medium">
+                    {pageInfo.pageTitle}
+                  </BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          )}
           {children}
         </main>
       </div>
