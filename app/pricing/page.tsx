@@ -137,7 +137,7 @@ export default function PricingPage() {
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="text-center mb-10">
-            <h1 className="text-5xl 2xl:text-6xl font-bold tracking-tighter mb-4">
+            <h1 className="text-4xl md:text-5xl 2xl:text-6xl font-bold tracking-tighter mb-4">
               We're just starting
             </h1>
             <p className="text-lg 2xl:text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -149,8 +149,8 @@ export default function PricingPage() {
           {/* Pricing Cards */}
           <div className="grid gap-4 max-w-6xl mx-auto">
             {/* User Plan Card */}
-            <Card className="relative overflow-hidden border border-border shadow-none rounded-3xl bg-white dark:bg-black/50 flex divide-x divide-border">
-              <div className="w-1/2 flex flex-col p-2 relative">
+            <Card className="relative overflow-hidden border border-border shadow-none rounded-3xl bg-white dark:bg-black/50 flex flex-col min-[860px]:flex-row ">
+              <div className="w-full min-[860px]:w-1/2 border-b min-[860px]:border-b-0 border-r-0 min-[860px]:border-r border-border flex flex-col p-2 relative">
                 <CardHeader className="pb-2 relative">
                   <div className="flex flex-col items-start">
                     <CardTitle className="text-2xl font-bold tracking-tight mb-2">
@@ -256,7 +256,7 @@ export default function PricingPage() {
               </div>
 
               {/* Try-On Packs */}
-              <div className="w-1/2 flex flex-col divide-y divide-border">
+              <div className="w-full min-[860px]:w-1/2 flex flex-col divide-y divide-border">
                 {tryOnPacks.map((pack, index) => (
                   <div
                     key={index}
@@ -310,8 +310,8 @@ export default function PricingPage() {
             </Card>
 
             {/* Brand Plan Card */}
-            <Card className="relative overflow-hidden border border-border shadow-none rounded-3xl bg-white dark:bg-black/50 divide-x divide-border">
-              <div className="w-1/2 flex flex-col p-2">
+            <Card className="relative overflow-hidden border border-border shadow-none rounded-3xl bg-white dark:bg-black/50 ">
+              <div className="w-full min-[860px]:w-1/2 flex flex-col p-2 border-b min-[860px]:border-b-0 border-r-0 min-[860px]:border-r border-border">
                 <CardHeader className="pb-[13px] relative">
                   <div className="flex flex-col items-start">
                     <CardTitle className="text-2xl font-bold tracking-tight mb-2">

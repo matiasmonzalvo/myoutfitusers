@@ -156,9 +156,6 @@ export function DashboardWrapper({
                   isAuthenticated={isAuthenticated}
                   onOpenSidebar={() => setIsMobileSidebarOpen(true)}
                 >
-                  <div className="w-auto pt-4 lg:p-10 mb-8 lg:h-screen flex flex-col items-center justify-start ">
-                    <AvatarHub isAuthenticated={isAuthenticated} />
-                  </div>
                   {children}
                 </CardLayout>
               </div>

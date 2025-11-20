@@ -8,6 +8,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useCategoryFilter } from "@/lib/contexts/category-filter-context";
 import { useSearch } from "@/lib/contexts/search-context";
 import { createServerClient } from "@/lib/supabase/client";
+import { AvatarHub } from "../AvatarHub";
 
 interface HomeContentProps {
   isAuthenticated: boolean;
@@ -279,6 +280,9 @@ export function HomeContent({ isAuthenticated }: HomeContentProps) {
   if (loading) {
     return (
       <div className="pb-6 h-auto w-full">
+        <div className=" lg:hidden w-auto pt-4 lg:p-10 mb-10 lg:h-screen flex flex-col items-center justify-start ">
+          <AvatarHub isAuthenticated={isAuthenticated} />
+        </div>
         <div className="w-full mx-auto">
           <div className="grid grid-cols-2 lg:grid-cols-4 2xl:grid-cols-4 gap-4">
             {Array.from({ length: 12 }).map((_, index) => (
@@ -292,6 +296,9 @@ export function HomeContent({ isAuthenticated }: HomeContentProps) {
 
   return (
     <div className="pb-6 h-auto w-full overflow-hidden">
+      <div className=" lg:hidden w-auto pt-4 lg:p-10 mb-10 lg:h-screen flex flex-col items-center justify-start ">
+        <AvatarHub isAuthenticated={isAuthenticated} />
+      </div>
       <div className="w-full mx-auto">
         {/* Mostrar skeletons mientras se busca */}
         {isSearching ? (
