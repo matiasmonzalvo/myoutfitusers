@@ -632,7 +632,7 @@ export function OnboardingForm() {
             Upload Your Photos
           </h1>
           <p className="text-muted-foreground lg:text-lg text-base">
-            We need two photos to create your personalized avatar
+            The AI will create your avatar based 100% on the photos you upload.
           </p>
         </div>
 
@@ -650,7 +650,8 @@ export function OnboardingForm() {
                 Full Body Photo <span className="text-destructive">*</span>
               </Label>
               <p className="text-sm text-muted-foreground">
-                Upload a clear photo showing your full body
+                Upload a photo of your full body standing straight, arms at your
+                sides, looking at the camera.
               </p>
               <Dropzone
                 type="body"
@@ -669,7 +670,8 @@ export function OnboardingForm() {
                 Face Photo <span className="text-destructive">*</span>
               </Label>
               <p className="text-sm text-muted-foreground">
-                Upload a clear photo of your face
+                Ideally taken at the same time as your full-body photo to avoid
+                confusing the AI with different appearances.
               </p>
               <Dropzone
                 type="face"
@@ -708,10 +710,10 @@ export function OnboardingForm() {
             <Button
               onClick={handleGenerateAvatar}
               disabled={!fullBodyPhoto || !facePhoto || generatingAvatar}
-              className="flex-1 rounded-full cursor-pointer"
+              className="flex-1 rounded-full cursor-pointer font-medium text-white"
             >
               {generatingAvatar ? (
-                <Loader className="h-4 w-4 animate-spin" />
+                <Loader className="h-4 w-4 animate-spin text-white" />
               ) : (
                 "Create"
               )}
@@ -851,7 +853,7 @@ export function OnboardingForm() {
                 onChange={(e) => handleUsernameChange(e.target.value)}
                 required
                 disabled={loading}
-                className="text-lg px-4 py-2 w-full rounded-full bg-white border border-border focus:outline-none "
+                className="text-lg px-4 py-2 w-full rounded-full bg-muted border border-border focus:outline-none "
                 minLength={3}
                 maxLength={50}
               />
@@ -876,13 +878,13 @@ export function OnboardingForm() {
           <div className="w-full px-4">
             <Button
               type="submit"
-              className="w-full rounded-full cursor-pointer"
+              className="w-full rounded-full cursor-pointer bg-primary text-white"
               disabled={
                 loading || usernameChecking || usernameAvailable === false
               }
             >
               {loading ? (
-                <Loader className="h-4 w-4 animate-spin" />
+                <Loader className="h-4 w-4 animate-spin text-white" />
               ) : (
                 "Continue"
               )}
@@ -941,7 +943,7 @@ export function OnboardingForm() {
               }}
               required
               disabled={loading}
-              className="text-lg px-4 py-2 w-full rounded-full bg-white border border-border focus:outline-none"
+              className="text-lg px-4 py-2 w-full rounded-full bg-muted border border-border focus:outline-none"
               min={13}
               max={120}
             />
@@ -961,11 +963,11 @@ export function OnboardingForm() {
             >
               <SelectTrigger
                 id="gender"
-                className="text-lg px-4 h-[46px] w-full rounded-full bg-white border border-border focus:outline-none focus:ring-0 ring-0 outline-0"
+                className="text-lg px-4 h-[46px] w-full rounded-full bg-muted border border-border focus:outline-none focus:ring-0 ring-0 outline-0"
               >
                 <SelectValue placeholder="Select gender" />
               </SelectTrigger>
-              <SelectContent className="p-0.5 rounded-3xl w-full focus:outline-none focus:ring-0">
+              <SelectContent className="p-0.5 rounded-3xl w-full focus:outline-none focus:ring-0 bg-background">
                 <SelectItem
                   value="male"
                   className="text-base px-4 py-2 rounded-2xl"
@@ -1017,7 +1019,7 @@ export function OnboardingForm() {
               }}
               required
               disabled={loading}
-              className="text-lg px-4 py-2 w-full rounded-full bg-white border border-border focus:outline-none"
+              className="text-lg px-4 py-2 w-full rounded-full bg-muted border border-border focus:outline-none"
               min={50}
               max={300}
               step={0.1}
@@ -1051,7 +1053,7 @@ export function OnboardingForm() {
               }}
               required
               disabled={loading}
-              className="text-lg px-4 py-2 w-full rounded-full bg-white border border-border focus:outline-none"
+              className="text-lg px-4 py-2 w-full rounded-full bg-muted border border-border focus:outline-none"
               min={20}
               max={500}
               step={0.1}
@@ -1119,7 +1121,7 @@ export function OnboardingForm() {
           </Button>
           <Button
             type="submit"
-            className="flex-1 rounded-full cursor-pointer"
+            className="flex-1 rounded-full cursor-pointer font-medium text-white"
             disabled={loading}
           >
             {loading ? <Loader className="h-4 w-4 animate-spin" /> : "Continue"}

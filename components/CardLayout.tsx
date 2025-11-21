@@ -671,7 +671,7 @@ export function CardLayout({
               <>
                 <button
                   onClick={() => router.push("/login")}
-                  className="px-4 py-2 font-medium text-foreground border border-border rounded-full bg-muted hover:opacity-80 transition-all cursor-pointer hidden lg:block text-sm 2xl:text-base"
+                  className="px-4 py-2 font-medium text-foreground border border-border rounded-full bg-muted hover:opacity-80 transition-all cursor-pointer hidden lg:block text-sm 2xl:text-base ml-2"
                 >
                   Login
                 </button>

@@ -15,7 +15,7 @@ export function LogoutButton() {
 
   return (
     <button
-      className="px-3 leading-[1] bg-neutral-200 rounded-full relative cursor-pointer flex items-center justify-center gap-2 h-8"
+      className="px-3 leading-[1] bg-muted rounded-full relative cursor-pointer flex items-center justify-center gap-2 h-8"
       onClick={handleLogout}
     >
       <LogOut className="w-4 h-4" />

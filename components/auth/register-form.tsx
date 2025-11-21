@@ -153,7 +153,7 @@ export function RegisterForm() {
               onChange={(e) => setEmail(e.target.value)}
               required
               disabled={loading || googleLoading}
-              className="text-base px-4 py-2 w-full rounded-full bg-white border border-border focus:outline-none "
+              className="text-base px-4 py-2 w-full rounded-full bg-muted border border-border focus:outline-none "
             />
           </div>
 
@@ -168,7 +168,7 @@ export function RegisterForm() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={loading || googleLoading}
-                  className="text-base px-4 py-2 w-full rounded-full bg-white border border-border focus:outline-none "
+                  className="text-base px-4 py-2 w-full rounded-full bg-muted border border-border focus:outline-none "
                 />
               </div>
 
@@ -181,7 +181,7 @@ export function RegisterForm() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   disabled={loading || googleLoading}
-                  className="text-base px-4 py-2 w-full rounded-full bg-white border border-border focus:outline-none "
+                  className="text-base px-4 py-2 w-full rounded-full bg-muted border border-border focus:outline-none "
                 />
               </div>
             </>
@@ -189,7 +189,7 @@ export function RegisterForm() {
 
           <button
             type="submit"
-            className="w-full cursor-pointer bg-primary text-background rounded-full h-10 flex items-center justify-center text-base font-semibold "
+            className="w-full cursor-pointer bg-primary text-white rounded-full h-10 flex items-center justify-center text-base font-semibold "
             disabled={loading || googleLoading}
           >
             {loading ? (
@@ -213,9 +213,7 @@ export function RegisterForm() {
             <span className="w-full border-t" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-neutral-100 px-2 text-muted-foreground">
-              Or
-            </span>
+            <span className="bg-background px-2 text-muted-foreground">Or</span>
           </div>
         </div>
         <Button
