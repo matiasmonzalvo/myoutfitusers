@@ -38,9 +38,7 @@ export default function BillingPage() {
         const data = await response.json();
         setBillingData(data);
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Unknown error"
-        );
+        setError(err instanceof Error ? err.message : "Unknown error");
       } finally {
         setLoading(false);
       }
@@ -50,11 +48,7 @@ export default function BillingPage() {
   }, [router]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
+    return <></>;
   }
 
   if (error) {
@@ -63,10 +57,7 @@ export default function BillingPage() {
         <Card className="max-w-md w-full">
           <CardContent className="pt-6">
             <p className="text-red-500 text-center">{error}</p>
-            <Button
-              onClick={() => router.push("/")}
-              className="w-full mt-4"
-            >
+            <Button onClick={() => router.push("/")} className="w-full mt-4">
               Back to Home
             </Button>
           </CardContent>
@@ -75,32 +66,22 @@ export default function BillingPage() {
     );
   }
 
-  const { try_ons_left, stats, recent_purchases, recent_usage, available_packages } = billingData!;
+  const {
+    try_ons_left,
+    stats,
+    recent_purchases,
+    recent_usage,
+    available_packages,
+  } = billingData!;
 
   return (
-    <div className="min-h-screen bg-background p-4 lg:p-10">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold tracking-tight">
-              Try-ons & Billing
-            </h1>
-            <p className="text-muted-foreground mt-2">
-              Manage your try-ons packages and view usage history
-            </p>
-          </div>
-          <Button onClick={() => router.push("/")} variant="outline">
-            Back to Home
-          </Button>
-        </div>
-
         {/* Try-ons Left - Big Card */}
-        <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+        <Card className="border-border bg-white dark:bg-black/50 rounded-3xl max-w-2xl">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Package className="w-5 h-5" />
-              Your Try-ons Balance
+            <CardTitle className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
+              Try-ons Balance
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -112,27 +93,26 @@ export default function BillingPage() {
                 </span>
               </div>
               {try_ons_left === 0 && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                  <p className="text-sm text-yellow-800">
-                    <strong>You're out of try-ons!</strong> Purchase a package to continue trying on products.
+                <div className="bg-orange-500/5 rounded-lg p-4">
+                  <p className="text-sm text-orange-500">
+                    <strong>You're out of try-ons!</strong> Purchase a package
+                    to continue trying on products.
                   </p>
                 </div>
               )}
               <Button
                 onClick={() => router.push("/pricing")}
-                className="mt-4"
-                size="lg"
+                className="mt-2 text-white font-medium rounded-lg"
+                size="sm"
               >
-                <ShoppingCart className="w-4 h-4 mr-2" />
-                Buy More Try-ons
+                Get Try-ons
               </Button>
             </div>
           </CardContent>
         </Card>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Total Purchased */}
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
@@ -141,16 +121,13 @@ export default function BillingPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">
-                {stats.total_purchased}
-              </div>
+              <div className="text-3xl font-bold">{stats.total_purchased}</div>
               <p className="text-xs text-muted-foreground mt-1">
                 try-ons bought
               </p>
             </CardContent>
           </Card>
 
-          {/* Total Used */}
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
@@ -159,16 +136,12 @@ export default function BillingPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">
-                {stats.total_used}
-              </div>
+              <div className="text-3xl font-bold">{stats.total_used}</div>
               <p className="text-xs text-muted-foreground mt-1">
                 try-ons consumed
               </p>
             </CardContent>
           </Card>
-
-          {/* Total Spent */}
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
@@ -186,7 +159,6 @@ export default function BillingPage() {
             </CardContent>
           </Card>
 
-          {/* Last Purchase */}
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
@@ -196,53 +168,17 @@ export default function BillingPage() {
             </CardHeader>
             <CardContent>
               <div className="text-xl font-bold">
-                {stats.last_purchase_date 
+                {stats.last_purchase_date
                   ? format(new Date(stats.last_purchase_date), "MMM dd, yyyy")
                   : "Never"}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                most recent
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">most recent</p>
             </CardContent>
           </Card>
-        </div>
-
-        {/* Available Packages */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Available Packages</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {available_packages.map((pkg) => (
-                <div
-                  key={pkg.id}
-                  className="border rounded-xl p-6 hover:border-primary transition-colors cursor-pointer"
-                  onClick={() => router.push("/pricing")}
-                >
-                  <div className="space-y-3">
-                    <div>
-                      <h3 className="text-2xl font-bold capitalize">{pkg.name}</h3>
-                      <p className="text-3xl font-bold text-primary mt-2">
-                        ${pkg.price_usd}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Check className="w-4 h-4 text-primary" />
-                      <span>{pkg.try_ons_count} try-ons</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      ${pkg.price_per_tryon.toFixed(3)} per try-on
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        </div> */}
 
         {/* Purchase History */}
-        <Card>
+        <Card className="border-border bg-white dark:bg-black/50 rounded-3xl">
           <CardHeader>
             <CardTitle>Purchase History</CardTitle>
           </CardHeader>
@@ -308,7 +244,7 @@ export default function BillingPage() {
         </Card>
 
         {/* Usage History */}
-        <Card>
+        <Card className="border-border bg-white dark:bg-black/50 rounded-3xl">
           <CardHeader>
             <CardTitle>Usage History (Last 30 days)</CardTitle>
           </CardHeader>
@@ -360,26 +296,26 @@ export default function BillingPage() {
         </Card>
 
         {/* Information Card */}
-        <Card className="bg-muted/50">
+        <Card className="bg-muted/50 rounded-3xl">
           <CardHeader>
             <CardTitle className="text-lg">How does it work?</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-muted-foreground">
             <p>
-              • Buy a <strong className="text-foreground">package of try-ons</strong> (Small, Medium, or Large)
+              • Buy a{" "}
+              <strong className="text-foreground">package of try-ons</strong>{" "}
+              (Small, Medium, or Large)
             </p>
+            <p>• Each time you click "Wear it", one try-on is consumed</p>
             <p>
-              • Each time you click "Wear it", one try-on is consumed
+              • Products from{" "}
+              <strong className="text-green-600">
+                verified brands (green badge)
+              </strong>{" "}
+              are FREE and don't consume try-ons
             </p>
-            <p>
-              • Products from <strong className="text-green-600">verified brands (green badge)</strong> are FREE and don't consume try-ons
-            </p>
-            <p>
-              • You can buy multiple packages - they accumulate!
-            </p>
-            <p>
-              • No expiration date - use them whenever you want
-            </p>
+            <p>• You can buy multiple packages - they accumulate!</p>
+            <p>• No expiration date - use them whenever you want</p>
           </CardContent>
         </Card>
       </div>

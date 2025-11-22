@@ -5,7 +5,8 @@ import { getProducts, type Product } from "@/lib/actions/products";
 import Image from "next/image";
 import { Globe } from "lucide-react";
 import { ProductCard } from "@/components/products/product-card";
-import { useState, useEffect } from "react";
+import { ProductCardSkeleton } from "@/components/products/product-card-skeleton";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { createServerClient } from "@/lib/supabase/client";
 import {
   Select,
@@ -42,21 +43,29 @@ const CATEGORIES = [
   { key: "accesories", label: "Accessories" },
 ];
 
+const PRODUCTS_PER_PAGE = 16;
+
 export default function BrandProfilePage({ params }: BrandProfilePageProps) {
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category");
 
   const [brand, setBrand] = useState<Brand | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>(
     categoryParam || "all"
   );
 
+  const observerTarget = useRef<HTMLDivElement>(null);
+  const offsetRef = useRef(0);
+  const isLoadingRef = useRef(false);
+
+  // Cargar información de la marca (solo una vez)
   useEffect(() => {
-    async function loadData() {
+    async function loadBrandData() {
       try {
         const supabase = createServerClient();
 
@@ -87,36 +96,98 @@ export default function BrandProfilePage({ params }: BrandProfilePageProps) {
         }
 
         setBrand(brandData);
-
-        // Obtener TODOS los productos de la marca
-        const productsData = await getProducts({ brandId: brandData.id });
-        setAllProducts(productsData);
-
-        // Aplicar filtro inicial si viene de URL params
-        if (categoryParam && categoryParam !== "all") {
-          setProducts(productsData.filter((p) => p.category === categoryParam));
-        } else {
-          setProducts(productsData);
-        }
       } catch (error) {
         console.error("Error loading brand data:", error);
         setBrand(null);
-      } finally {
         setLoading(false);
       }
     }
 
-    loadData();
-  }, [params, categoryParam]);
+    loadBrandData();
+  }, [params]);
 
-  // Efecto para filtrar productos cuando cambia la categoría seleccionada
+  // Función para cargar productos con paginación
+  const loadProducts = useCallback(
+    async (reset: boolean = false) => {
+      if (isLoadingRef.current || !brand) return;
+      if (!reset && !hasMore) return;
+
+      isLoadingRef.current = true;
+      if (reset) {
+        setLoading(true);
+        offsetRef.current = 0;
+        setHasMore(true);
+      } else {
+        setLoadingMore(true);
+      }
+
+      try {
+        const offset = reset ? 0 : offsetRef.current;
+
+        // Construir parámetros para getProducts
+        const params: any = {
+          brandId: brand.id,
+          limit: PRODUCTS_PER_PAGE,
+          offset: offset,
+        };
+
+        // Agregar filtro de categoría si no es "all"
+        if (selectedCategory !== "all") {
+          params.category = selectedCategory;
+        }
+
+        const newProducts = await getProducts(params);
+
+        if (reset) {
+          setProducts(newProducts);
+        } else {
+          setProducts((prev) => [...prev, ...newProducts]);
+        }
+
+        // Actualizar offset y hasMore
+        offsetRef.current = offset + newProducts.length;
+        setHasMore(newProducts.length === PRODUCTS_PER_PAGE);
+      } catch (error) {
+        console.error("Error loading products:", error);
+      } finally {
+        setLoading(false);
+        setLoadingMore(false);
+        isLoadingRef.current = false;
+      }
+    },
+    [brand, selectedCategory, hasMore]
+  );
+
+  // Cargar productos cuando la marca está lista o cuando cambia la categoría
   useEffect(() => {
-    if (selectedCategory === "all") {
-      setProducts(allProducts);
-    } else {
-      setProducts(allProducts.filter((p) => p.category === selectedCategory));
+    if (brand) {
+      loadProducts(true);
     }
-  }, [selectedCategory, allProducts]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [brand, selectedCategory]);
+
+  // Configurar IntersectionObserver para infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore && !loading) {
+          loadProducts(false);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [hasMore, loadingMore, loading, loadProducts]);
 
   // Actualizar la URL cuando cambia el filtro
   const handleCategoryChange = (category: string) => {
@@ -132,7 +203,7 @@ export default function BrandProfilePage({ params }: BrandProfilePageProps) {
     window.history.pushState({}, "", url.toString());
   };
 
-  if (loading) {
+  if (loading && !brand) {
     return <></>;
   }
 
@@ -143,7 +214,7 @@ export default function BrandProfilePage({ params }: BrandProfilePageProps) {
   return (
     <div className="min-h-screen bg-background -mt-2">
       {/* Header */}
-      <div className="border-b border-border pb-4 sticky top-0 z-10">
+      <div className="border-b border-border pb-4 sticky top-0 z-10 bg-background">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center space-x-2 mb-4">
             <div className="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden bg-white flex items-center justify-center">
@@ -232,9 +303,17 @@ export default function BrandProfilePage({ params }: BrandProfilePageProps) {
 
       {/* Content */}
       <div className="max-w-7xl mx-auto">
-        {products.length > 0 ? (
+        {loading ? (
           <div className="py-6">
-            <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-5">
+            <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
+              {Array.from({ length: 12 }).map((_, index) => (
+                <ProductCardSkeleton key={index} />
+              ))}
+            </div>
+          </div>
+        ) : products.length > 0 ? (
+          <div className="py-6">
+            <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
               {products.map((product) => (
                 <ProductCard
                   key={product.id}
@@ -243,17 +322,31 @@ export default function BrandProfilePage({ params }: BrandProfilePageProps) {
                 />
               ))}
             </div>
+
+            {/* Elemento observador para infinite scroll */}
+            {hasMore && (
+              <div ref={observerTarget} className="w-full py-8">
+                {loadingMore && (
+                  <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
+                    {Array.from({ length: 8 }).map((_, index) => (
+                      <ProductCardSkeleton key={`loading-${index}`} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         ) : (
           <div className="text-center py-12">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 mx-auto mb-4 bg-muted rounded-full flex items-center justify-center">
               <span className="text-2xl">📦</span>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            <h3 className="text-lg font-semibold text-foreground mb-2">
               No hay productos disponibles
             </h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              Esta marca aún no ha agregado productos.
+            <p className="text-muted-foreground">
+              Esta marca aún no ha agregado productos
+              {selectedCategory !== "all" && " en esta categoría"}.
             </p>
           </div>
         )}

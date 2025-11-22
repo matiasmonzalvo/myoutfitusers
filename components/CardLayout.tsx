@@ -68,6 +68,15 @@ export function CardLayout({
   const { selectedFilter, setSelectedFilter } = useCategoryFilter();
   const { searchQuery, setSearchQuery } = useSearch();
 
+  // Manejar el cambio del input de búsqueda
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    // Si no estamos en la home y el usuario escribe algo, redirigir a home
+    if (pathname !== "/" && value.trim()) {
+      router.push("/");
+    }
+  };
+
   // Estados para tooltips
   const [showMenTooltip, setShowMenTooltip] = useState(false);
   const [showWomenTooltip, setShowWomenTooltip] = useState(false);
@@ -627,7 +636,7 @@ export function CardLayout({
                 type="text"
                 placeholder="Search for brand, product..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 rounded-full bg-muted border border-border focus:outline-none text-sm 2xl:text-base"
               />
               {searchQuery && (

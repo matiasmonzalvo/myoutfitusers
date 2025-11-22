@@ -35,27 +35,27 @@ export default function PricingPage() {
   const tryOnPacks = [
     {
       name: "Small",
-      price: "$2",
-      tryOns: 20,
-      pricePerTryOn: "$0.1",
-      popular: false,
-      polarProductId: "211d365b-b5de-4072-8690-1b25fd97ad3d", // Your $2 product
-    },
-    {
-      name: "Medium",
       price: "$5",
       tryOns: 60,
       pricePerTryOn: "$0.083",
-      popular: true,
+      popular: false,
       polarProductId: "ccd87a31-f6ba-44b7-989d-1effa9de9437", // TODO: Add when created in Polar
     },
     {
-      name: "Large",
+      name: "Medium",
       price: "$10",
       tryOns: 150,
       pricePerTryOn: "$0.066",
       popular: false,
       polarProductId: "9b883ae1-b120-4226-ad88-2ca5f19d3078", // TODO: Add when created in Polar
+    },
+    {
+      name: "Large",
+      price: "$20",
+      tryOns: 360,
+      pricePerTryOn: "$0.055",
+      popular: true,
+      polarProductId: "211d365b-b5de-4072-8690-1b25fd97ad3d", // Your $2 product
     },
   ];
 
@@ -180,8 +180,11 @@ export default function PricingPage() {
                       </div>
                     ))}
                   </div>
-                  <div className="relative w-full flex-1 min-h-0 flex flex-col justify-center gap-6">
-                    <div className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
+                  <div className="relative w-full flex-1 min-h-0 flex flex-col justify-center ">
+                    <span className="text-sm text-foreground font-medium mb-4">
+                      Example:
+                    </span>
+                    <div className="flex items-center gap-2 text-2xl font-semibold tracking-tight mb-4">
                       <Image
                         src="https://mohyrbuvfktjlxzpxbwb.supabase.co/storage/v1/object/public/brand-logos/551608484_18567162979020081_1135468084872726555_n.jpg"
                         alt="Brand A"
@@ -264,7 +267,7 @@ export default function PricingPage() {
                       !pack.polarProductId
                         ? "opacity-50 cursor-not-allowed"
                         : ""
-                    } ${pack.popular ? "bg-primary/5" : ""}`}
+                    } ${pack.popular ? "bg-background/30" : ""}`}
                   >
                     {isLoading === pack.name && (
                       <div className="absolute inset-0 bg-background/80 flex items-center justify-center rounded-lg z-10">
