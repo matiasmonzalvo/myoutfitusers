@@ -1205,7 +1205,7 @@ export function CardLayout({
                       trendingSneakerBrands.map((brand) => (
                         <Link
                           key={brand.id}
-                          href={`/${brand.brand_username}`}
+                          href={`/${brand.brand_username}?category=footwear`}
                           onClick={() => setShowSneakersTooltip(false)}
                           className="flex items-center gap-2 transition-colors group"
                         >
@@ -1496,7 +1496,7 @@ export function CardLayout({
                       trendingAccessoryBrands.map((brand) => (
                         <Link
                           key={brand.id}
-                          href={`/${brand.brand_username}`}
+                          href={`/${brand.brand_username}?category=accesories`}
                           onClick={() => setShowAccessoriesTooltip(false)}
                           className="flex items-center gap-2 transition-colors group"
                         >

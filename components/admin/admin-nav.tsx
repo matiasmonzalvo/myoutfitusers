@@ -112,16 +112,16 @@ export function AdminNav({ brand }: AdminNavProps) {
   };
 
   return (
-    <div className="bg-neutral-100 p-10 fixed top-0 left-0 bottom-0">
+    <div className="bg-background p-4 fixed top-0 left-0 bottom-0">
       {/* Mobile Header */}
-      <div className="lg:hidden  z-50 bg-white border-b border-border">
+      <div className="lg:hidden  z-50 bg-background border-b border-border">
         <div className="flex items-center justify-between px-4 py-4">
           <div className="flex items-center gap-3">
             {brand.logo_url && (
               <img
                 src={brand.logo_url}
                 alt={brand.brand_name}
-                className="w-10 h-10 object-cover rounded-full border border-border"
+                className="w-10 h-10 object-cover rounded-full border border-border dark:invert"
               />
             )}
             <h1 className="text-lg font-bold tracking-tight">
@@ -138,7 +138,7 @@ export function AdminNav({ brand }: AdminNavProps) {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="absolute top-full left-0 right-0 bg-white border-b border-border shadow-lg">
+          <div className="absolute top-full left-0 right-0 bg-background border-b border-border shadow-lg">
             <nav className="px-3 py-3">
               {navItems.map((item) => {
                 const isActive = pathname === item.href;
@@ -171,7 +171,7 @@ export function AdminNav({ brand }: AdminNavProps) {
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:block h-full  w-64 bg-white border border-border rounded-xl">
+      <aside className="hidden lg:block h-full  w-64 bg-background ">
         <div className="flex flex-col h-full">
           {/* Brand Header */}
           <div className="p-4">
@@ -182,7 +182,7 @@ export function AdminNav({ brand }: AdminNavProps) {
                   alt="My Outfit Brands"
                   width={100}
                   height={100}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover dark:invert"
                 />
               </div>
               <h1 className="text-2xl font-bold tracking-tighter truncate leading-[1]">
@@ -219,8 +219,8 @@ export function AdminNav({ brand }: AdminNavProps) {
                   href={item.href}
                   className={`flex items-center gap-2 px-2.5 py-2 rounded-full transition-colors font-medium tracking-tight ${
                     isActive
-                      ? "bg-neutral-100 text-foreground"
-                      : "hover:bg-neutral-100 text-foreground"
+                      ? "bg-muted text-foreground"
+                      : "hover:bg-muted text-foreground"
                   }`}
                 >
                   {item.icon}
@@ -232,8 +232,8 @@ export function AdminNav({ brand }: AdminNavProps) {
               href={"/admin/profile"}
               className={`flex items-center gap-2 px-2.5 py-2 rounded-full transition-colors font-medium tracking-tight ${
                 pathname === "/admin/profile"
-                  ? "bg-neutral-100 text-foreground"
-                  : "hover:bg-neutral-100 text-foreground"
+                  ? "bg-muted text-foreground"
+                  : "hover:bg-muted text-foreground"
               }`}
             >
               {brand.logo_url ? (

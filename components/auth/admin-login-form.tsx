@@ -3,11 +3,8 @@
 import type React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { createServerClient } from "@/lib/supabase/client";
-import { LineSpinner } from "ldrs/react";
+import { Loader } from "lucide-react";
 
 export function AdminLoginForm() {
   const [email, setEmail] = useState("");
@@ -31,7 +28,7 @@ export function AdminLoginForm() {
         });
 
       if (signInError) {
-        setError("Credenciales inválidas. Verifica tu email y contraseña.");
+        setError("Invalid credentials. Please check your email and password.");
         setLoading(false);
         return;
       }
@@ -46,16 +43,14 @@ export function AdminLoginForm() {
       if (brandError || !brandData) {
         // User is not a brand, sign them out
         await supabase.auth.signOut();
-        setError("No tienes permisos para acceder al panel de administración.");
+        setError("You don't have permissions to access the admin panel.");
         setLoading(false);
         return;
       }
 
       if (!brandData.is_active) {
         await supabase.auth.signOut();
-        setError(
-          "Tu cuenta de marca está desactivada. Contacta al administrador."
-        );
+        setError("Your brand account is deactivated. Please contact support.");
         setLoading(false);
         return;
       }
@@ -64,73 +59,66 @@ export function AdminLoginForm() {
       router.push("/admin/home");
       router.refresh();
     } catch (err) {
-      setError("Ocurrió un error inesperado");
+      setError("An unexpected error occurred");
       setLoading(false);
     }
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-6">
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-foreground mb-2">
-          Panel de Administración
+    <div className="w-sm p-0">
+      <div className="mb-4 text-center">
+        <h1 className="text-5xl tracking-tighter font-bold text-foreground mb-2">
+          Brands
         </h1>
-        <p className="text-muted-foreground">Acceso exclusivo para marcas</p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <div className="w-full px-4 py-3 rounded-md bg-destructive/10 border border-destructive/20">
-            <span className="text-sm text-destructive">{error}</span>
-          </div>
-        )}
-
-        <div className="space-y-2">
-          <Label htmlFor="email">Email de la Marca</Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="admin@marca.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            disabled={loading}
-            className="text-base"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="password">Contraseña</Label>
-          <Input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            disabled={loading}
-            className="text-base"
-          />
-        </div>
-
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? (
-            <LineSpinner
-              size="20"
-              stroke="3"
-              speed="1.1"
-              color="var(--background)"
-            />
-          ) : (
-            "Iniciar Sesión"
-          )}
-        </Button>
-      </form>
-
-      <div className="mt-6 text-center text-sm text-muted-foreground">
-        <p>¿No tienes acceso?</p>
-        <p className="mt-1">
-          Contacta al administrador para registrar tu marca.
+        <p className="text-muted-foreground text-lg">
+          Access for brand partners only
         </p>
+      </div>
+      <div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <div className="w-full px-3 py-2 rounded-md bg-destructive/10">
+              <span className="text-sm text-destructive">{error}</span>
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <input
+              id="email"
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={loading}
+              className="text-base px-4 py-2 w-full rounded-full bg-muted border border-border focus:outline-none "
+            />
+          </div>
+          <div className="space-y-2">
+            <input
+              id="password"
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              disabled={loading}
+              className="text-base px-4 py-2 w-full rounded-full bg-muted border border-border focus:outline-none "
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full cursor-pointer bg-primary text-white rounded-full h-10 flex items-center justify-center text-base font-semibold "
+            disabled={loading}
+          >
+            {loading ? <Loader className="w-4 h-4 animate-spin" /> : "Sign in"}
+          </button>
+        </form>
+
+        <div className="mt-4 text-center text-sm text-muted-foreground font-medium">
+          Contact sales to register your brand.
+        </div>
       </div>
     </div>
   );

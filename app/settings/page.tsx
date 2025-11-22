@@ -17,6 +17,9 @@ import {
   Monitor,
   Moon,
   Sun,
+  UserRound,
+  PersonStanding,
+  LogOut,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import type { UserProfile } from "@/lib/types/user";
@@ -165,11 +168,14 @@ export default function SettingsPage() {
     reader.readAsDataURL(file);
   };
 
-  const uploadProfilePhoto = async (userId: string, file: File): Promise<string | null> => {
+  const uploadProfilePhoto = async (
+    userId: string,
+    file: File
+  ): Promise<string | null> => {
     try {
       // Delete old photo if exists
       if (profile?.profile_photo_url) {
-        const oldPath = profile.profile_photo_url.split('/').pop();
+        const oldPath = profile.profile_photo_url.split("/").pop();
         if (oldPath) {
           await supabase.storage
             .from("profile-photos")
@@ -180,7 +186,7 @@ export default function SettingsPage() {
       // Upload new photo
       const fileExt = file.name.split(".").pop();
       const fileName = `${userId}/profile.${fileExt}`;
-      
+
       const { error: uploadError, data } = await supabase.storage
         .from("profile-photos")
         .upload(fileName, file, {
@@ -202,6 +208,12 @@ export default function SettingsPage() {
       console.error("Error uploading profile photo:", err);
       throw err;
     }
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push("/");
+    router.refresh();
   };
 
   const handleSaveProfile = async () => {
@@ -237,7 +249,10 @@ export default function SettingsPage() {
       if (profilePhotoFile) {
         setUploadingPhoto(true);
         try {
-          const uploadedUrl = await uploadProfilePhoto(user.id, profilePhotoFile);
+          const uploadedUrl = await uploadProfilePhoto(
+            user.id,
+            profilePhotoFile
+          );
           if (uploadedUrl) {
             photoUrl = uploadedUrl;
           }
@@ -251,11 +266,11 @@ export default function SettingsPage() {
 
       // Prepare update data
       const updateData: any = {};
-      
+
       if (username !== profile.username) {
         updateData.username = username;
       }
-      
+
       if (photoUrl !== profile.profile_photo_url) {
         updateData.profile_photo_url = photoUrl;
       }
@@ -280,7 +295,7 @@ export default function SettingsPage() {
       setSuccess("Profile updated successfully");
       setProfilePhotoFile(null);
       await loadProfile();
-      
+
       // Refresh the page to update the avatar in the header
       router.refresh();
     } catch (err) {
@@ -297,43 +312,32 @@ export default function SettingsPage() {
     label: string;
     icon: React.ReactNode;
   }> = [
-    { id: "profile", label: "Profile", icon: <User className="h-4 w-4" /> },
+    {
+      id: "profile",
+      label: "Profile",
+      icon: <UserRound className="h-4 w-4" />,
+    },
     { id: "theme", label: "Theme", icon: <Palette className="h-4 w-4" /> },
     {
       id: "base-avatar",
       label: "Base Avatar",
-      icon: <ImageIcon className="h-4 w-4" />,
+      icon: <PersonStanding className="h-4 w-4" />,
     },
   ];
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
   return (
-    <div className="container max-w-6xl mx-auto p-4 lg:p-8">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold tracking-tighter mb-2">Settings</h1>
-        <p className="text-muted-foreground">
-          Manage your account settings and preferences
-        </p>
-      </div>
-
+    <div className="w-full">
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Sidebar */}
-        <aside className="lg:w-64 flex-shrink-0">
-          <nav className="space-y-1 bg-card border border-border rounded-2xl p-2">
+        <aside className="lg:w-52 flex-shrink-0">
+          <nav className="space-y-1 bg-background rounded-2xl py-4">
             {menuItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                className={`w-full cursor-pointer flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
                   activeTab === item.id
-                    ? "bg-primary text-primary-foreground"
+                    ? "bg-muted text-foreground"
                     : "text-foreground hover:bg-muted"
                 }`}
               >
@@ -341,12 +345,19 @@ export default function SettingsPage() {
                 {item.label}
               </button>
             ))}
+            <button
+              onClick={handleSignOut}
+              className="w-full cursor-pointer flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-muted "
+            >
+              <LogOut className="h-4 w-4" />
+              Log Out
+            </button>
           </nav>
         </aside>
 
         {/* Content */}
         <main className="flex-1">
-          <div className="bg-card border border-border rounded-2xl p-6 lg:p-8">
+          <div className="bg-white dark:bg-black/50 border border-border rounded-2xl p-6 lg:p-8">
             {/* Profile Tab */}
             {activeTab === "profile" && (
               <div className="space-y-6">
@@ -406,7 +417,9 @@ export default function SettingsPage() {
                         type="button"
                         variant="outline"
                         onClick={() =>
-                          document.getElementById("profile-photo-upload")?.click()
+                          document
+                            .getElementById("profile-photo-upload")
+                            ?.click()
                         }
                         className="rounded-full"
                         disabled={uploadingPhoto}
@@ -507,7 +520,7 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="space-y-4">
-                  <Label>Appearance</Label>
+                  <Label className="mb-4">Appearance</Label>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <button
                       onClick={() => setTheme("light")}
@@ -517,7 +530,7 @@ export default function SettingsPage() {
                           : "border-border hover:border-primary/50"
                       }`}
                     >
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                      <div className="w-16 h-16 rounded-full flex items-center justify-center">
                         <Sun className="h-8 w-8 text-amber-500" />
                       </div>
                       <div className="text-center">
@@ -536,7 +549,7 @@ export default function SettingsPage() {
                           : "border-border hover:border-primary/50"
                       }`}
                     >
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                      <div className="w-16 h-16 rounded-full flex items-center justify-center">
                         <Moon className="h-8 w-8 text-blue-400" />
                       </div>
                       <div className="text-center">
@@ -555,8 +568,8 @@ export default function SettingsPage() {
                           : "border-border hover:border-primary/50"
                       }`}
                     >
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-300 via-gray-600 to-gray-900 flex items-center justify-center">
-                        <Monitor className="h-8 w-8 text-white" />
+                      <div className="w-16 h-16 rounded-full  flex items-center justify-center">
+                        <Monitor className="h-8 w-8 text-foreground" />
                       </div>
                       <div className="text-center">
                         <div className="font-medium">System</div>

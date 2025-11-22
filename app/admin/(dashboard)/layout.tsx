@@ -30,10 +30,12 @@ export default async function AdminDashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-neutral-100">
+    <div className="min-h-screen bg-neutral-100 dark:bg-black/50 h-screen overflow-hidden">
       <AdminNav brand={brandData} />
-      <main className="lg:pl-[296px]">
-        <div className="mx-auto p-10 w-full">{children}</div>
+      <main className="lg:pl-[296px] p-4 h-screen">
+        <div className="w-full h-[calc(100vh-32px)] overflow-y-auto bg-background border border-border rounded-2xl p-20">
+          {children}
+        </div>
       </main>
     </div>
   );

@@ -1,12 +1,19 @@
 "use client";
 
-import { notFound } from "next/navigation";
+import { notFound, useSearchParams } from "next/navigation";
 import { getProducts, type Product } from "@/lib/actions/products";
 import Image from "next/image";
 import { Globe } from "lucide-react";
 import { ProductCard } from "@/components/products/product-card";
 import { useState, useEffect } from "react";
 import { createServerClient } from "@/lib/supabase/client";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Brand {
   id: string;
@@ -16,6 +23,7 @@ interface Brand {
   description?: string;
   website_url?: string;
   created_at: string;
+  is_verified_brand: boolean;
 }
 
 interface BrandProfilePageProps {
@@ -24,11 +32,28 @@ interface BrandProfilePageProps {
   }>;
 }
 
+const CATEGORIES = [
+  { key: "all", label: "All Products" },
+  { key: "tees", label: "T-Shirts" },
+  { key: "jacket", label: "Jackets & Coats" },
+  { key: "sweatshirts", label: "Hoodies & Sweaters" },
+  { key: "bottoms", label: "Bottoms" },
+  { key: "footwear", label: "Sneakers & Shoes" },
+  { key: "accesories", label: "Accessories" },
+];
+
 export default function BrandProfilePage({ params }: BrandProfilePageProps) {
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("category");
+
   const [brand, setBrand] = useState<Brand | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    categoryParam || "all"
+  );
 
   useEffect(() => {
     async function loadData() {
@@ -49,7 +74,7 @@ export default function BrandProfilePage({ params }: BrandProfilePageProps) {
         const { data: brandData, error: brandError } = await supabase
           .from("brands")
           .select(
-            "id, brand_name, brand_username, logo_url, description, website_url, created_at"
+            "id, brand_name, brand_username, logo_url, description, website_url, created_at, is_verified_brand"
           )
           .eq("brand_username", username)
           .eq("is_active", true)
@@ -63,9 +88,16 @@ export default function BrandProfilePage({ params }: BrandProfilePageProps) {
 
         setBrand(brandData);
 
-        // Obtener productos de la marca
+        // Obtener TODOS los productos de la marca
         const productsData = await getProducts({ brandId: brandData.id });
-        setProducts(productsData);
+        setAllProducts(productsData);
+
+        // Aplicar filtro inicial si viene de URL params
+        if (categoryParam && categoryParam !== "all") {
+          setProducts(productsData.filter((p) => p.category === categoryParam));
+        } else {
+          setProducts(productsData);
+        }
       } catch (error) {
         console.error("Error loading brand data:", error);
         setBrand(null);
@@ -75,17 +107,33 @@ export default function BrandProfilePage({ params }: BrandProfilePageProps) {
     }
 
     loadData();
-  }, [params]);
+  }, [params, categoryParam]);
+
+  // Efecto para filtrar productos cuando cambia la categoría seleccionada
+  useEffect(() => {
+    if (selectedCategory === "all") {
+      setProducts(allProducts);
+    } else {
+      setProducts(allProducts.filter((p) => p.category === selectedCategory));
+    }
+  }, [selectedCategory, allProducts]);
+
+  // Actualizar la URL cuando cambia el filtro
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+
+    // Actualizar URL sin recargar la página
+    const url = new URL(window.location.href);
+    if (category === "all") {
+      url.searchParams.delete("category");
+    } else {
+      url.searchParams.set("category", category);
+    }
+    window.history.pushState({}, "", url.toString());
+  };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-gray-100 mx-auto"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">Cargando...</p>
-        </div>
-      </div>
-    );
+    return <></>;
   }
 
   if (!brand) {
@@ -93,11 +141,11 @@ export default function BrandProfilePage({ params }: BrandProfilePageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-100 -mt-2">
+    <div className="min-h-screen bg-background -mt-2">
       {/* Header */}
-      <div className="border-b border-border pb-4 sticky top-0 bg-neutral-100 z-50">
+      <div className="border-b border-border pb-4 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 mb-4">
             <div className="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden bg-white flex items-center justify-center">
               {brand.logo_url ? (
                 <Image
@@ -108,16 +156,38 @@ export default function BrandProfilePage({ params }: BrandProfilePageProps) {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <span className="text-2xl font-bold text-gray-600 dark:text-gray-300">
+                <span className="text-2xl font-bold text-foreground">
                   {brand.brand_name.charAt(0).toUpperCase()}
                 </span>
               )}
             </div>
 
-            <div className="flex-1 min-w-0">
-              <h1 className="text-2xl font-bold text-black tracking-tighter">
+            <div className="flex-1 min-w-0 flex items-center gap-1.5">
+              <h1 className="text-2xl font-semibold text-foreground tracking-tighter">
                 {brand.brand_name}
               </h1>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                color="#000000"
+                fill="none"
+                className="mt-[0.5px]"
+              >
+                <path
+                  d="M18.9905 19H19M18.9905 19C18.3678 19.6175 17.2393 19.4637 16.4479 19.4637C15.4765 19.4637 15.0087 19.6537 14.3154 20.347C13.7251 20.9374 12.9337 22 12 22C11.0663 22 10.2749 20.9374 9.68457 20.347C8.99128 19.6537 8.52349 19.4637 7.55206 19.4637C6.76068 19.4637 5.63218 19.6175 5.00949 19C4.38181 18.3776 4.53628 17.2444 4.53628 16.4479C4.53628 15.4414 4.31616 14.9786 3.59938 14.2618C2.53314 13.1956 2.00002 12.6624 2 12C2.00001 11.3375 2.53312 10.8044 3.59935 9.73817C4.2392 9.09832 4.53628 8.46428 4.53628 7.55206C4.53628 6.76065 4.38249 5.63214 5 5.00944C5.62243 4.38178 6.7556 4.53626 7.55208 4.53626C8.46427 4.53626 9.09832 4.2392 9.73815 3.59937C10.8044 2.53312 11.3375 2 12 2C12.6625 2 13.1956 2.53312 14.2618 3.59937C14.9015 4.23907 15.5355 4.53626 16.4479 4.53626C17.2393 4.53626 18.3679 4.38247 18.9906 5C19.6182 5.62243 19.4637 6.75559 19.4637 7.55206C19.4637 8.55858 19.6839 9.02137 20.4006 9.73817C21.4669 10.8044 22 11.3375 22 12C22 12.6624 21.4669 13.1956 20.4006 14.2618C19.6838 14.9786 19.4637 15.4414 19.4637 16.4479C19.4637 17.2444 19.6182 18.3776 18.9905 19Z"
+                  fill={brand.is_verified_brand ? "#00c950" : "#737373"}
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="M9 12.8929L10.8 14.5L15 9.5"
+                  stroke="var(--muted)"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </div>
 
             <div className="flex space-x-3">
@@ -126,13 +196,36 @@ export default function BrandProfilePage({ params }: BrandProfilePageProps) {
                   href={brand.website_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/80 transition-colors"
                 >
                   <Globe className="w-4 h-4 mr-2" />
                   Sitio Web
                 </a>
               )}
             </div>
+          </div>
+
+          {/* Filtro de categoría */}
+          <div className="flex items-center">
+            <Select
+              value={selectedCategory}
+              onValueChange={handleCategoryChange}
+            >
+              <SelectTrigger className="w-[200px] rounded-full border-0 bg-muted text-sm font-medium tracking-tight hover:opacity-80  transition-all h-8">
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent className="bg-muted rounded-xl border-0">
+                {CATEGORIES.map((category) => (
+                  <SelectItem
+                    key={category.key}
+                    value={category.key}
+                    className="cursor-pointer rounded-lg"
+                  >
+                    {category.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>
