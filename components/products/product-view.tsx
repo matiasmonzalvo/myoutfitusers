@@ -149,6 +149,7 @@ export function ProductView({
                         src={image}
                         alt={`${product.name} - ${index + 1}`}
                         className="w-full h-full object-cover"
+                        onContextMenu={(e) => e.preventDefault()}
                       />
                     </button>
                   ))}
@@ -166,6 +167,7 @@ export function ProductView({
                   onError={(e) => {
                     (e.target as HTMLImageElement).src = "/placeholder.png";
                   }}
+                  onContextMenu={(e) => e.preventDefault()}
                 />
               </div>
             </div>
@@ -183,6 +185,7 @@ export function ProductView({
                       src={product.brands.logo_url}
                       alt={product.brands.brand_name}
                       className="w-6 h-6 rounded-full border border-border"
+                      onContextMenu={(e) => e.preventDefault()}
                     />
                   )}
                   <span className="font-semibold text-lg">

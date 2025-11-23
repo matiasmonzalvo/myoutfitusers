@@ -427,6 +427,7 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
                           (e.target as HTMLImageElement).src =
                             "/placeholder.png";
                         }}
+                        onContextMenu={(e) => e.preventDefault()}
                       />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -485,6 +486,7 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
               className="object-cover w-full h-full"
               onLoad={() => setIsAvatarLoading(false)}
               onError={() => setIsAvatarLoading(false)}
+              onContextMenu={(e) => e.preventDefault()}
             />
           )}
 
@@ -515,17 +517,22 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
                           (e.target as HTMLImageElement).src =
                             "/placeholder.png";
                         }}
+                        onContextMenu={(e) => e.preventDefault()}
                       />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-base font-semibold tracking-tight text-foreground truncate">
                         {product.name}
                       </p>
-                      <div className="flex items-center gap-1 mt-1">
+                      <Link
+                        href={`/${product.brands?.brand_username}`}
+                        className="flex items-center gap-1 mt-1"
+                      >
                         <img
                           src={product.brands?.logo_url}
                           alt={product.brands?.brand_name}
                           className="w-4 h-4 rounded-full border border-border"
+                          onContextMenu={(e) => e.preventDefault()}
                         />
                         <p className="text-sm text-muted-foreground leading-[1]">
                           {product.brands?.brand_name}
@@ -556,7 +563,7 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
                             strokeLinejoin="round"
                           />
                         </svg>
-                      </div>
+                      </Link>
                     </div>
                     <div className="flex items-center gap-1.5 flex-shrink-0">
                       {selectedProducts.length >= 3 && (
@@ -641,135 +648,6 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
                   </Tooltip>
                 )}
               </div>
-            </div>
-          </div>
-        </div>
-        <div
-          className={`fixed block lg:hidden lg:absolute bottom-0 left-1/2 -translate-x-1/2 z-[40] w-full bg-gradient-to-b from-transparent via-background/80 to-background rounded-[20px] pb-6 pt-40 transition-opacity duration-300 ease-in-out pointer-events-auto ${
-            selectedProducts.length > 0 ? "opacity-100" : "opacity-0 "
-          }`}
-        >
-          <div className="max-w-sm mx-auto space-y-3">
-            {/* Productos seleccionados */}
-            <div className="space-y-2">
-              {selectedProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className="flex items-center gap-3 animate-in fade-in-0 slide-in-from-bottom-2 duration-300"
-                >
-                  <div className="w-16 h-16 rounded-lg overflow-hidden border border-border flex-shrink-0 flex justify-center items-center p-2 bg-white">
-                    <img
-                      ref={(el) => {
-                        if (el) imgRefs.current[product.id] = el;
-                      }}
-                      src={product.images?.[0] || "/placeholder.png"}
-                      alt={product.name}
-                      className={getImageClasses(product.id)}
-                      onLoad={() => handleImageLoad(product.id)}
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = "/placeholder.png";
-                      }}
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-base font-semibold tracking-tight text-foreground truncate">
-                      {product.name}
-                    </p>
-                    <div className="flex items-center gap-1 mt-1">
-                      <img
-                        src={product.brands?.logo_url}
-                        alt={product.brands?.brand_name}
-                        className="w-4 h-4 rounded-full border border-border"
-                      />
-                      <p className="text-sm text-muted-foreground leading-[1]">
-                        {product.brands?.brand_name}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1.5 flex-shrink-0">
-                    {selectedProducts.length >= 3 && (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <div className="w-6 h-6 flex items-center justify-center text-black bg-yellow-500 rounded-full font-semibold text-sm">
-                            !
-                          </div>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                          align="end"
-                          sideOffset={6}
-                          className="w-[260px] shadow-[0_0_40px_0_rgba(0,0,0,0.1)] p-2.5 rounded-2xl border border-yellow-200 bg-yellow-50 flex flex-col gap-1"
-                        >
-                          <div className="flex items-center gap-2">
-                            <AlertCircle className="w-4 h-4 text-black" />
-                            <h3 className="text-base font-semibold tracking-tight text-black">
-                              Warning
-                            </h3>
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            The model performs best when you try on 1–2 items at
-                            once.
-                          </p>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    )}
-                    <button
-                      onClick={() => removeProduct(product.id)}
-                      className="w-6 h-6 border border-border bg-muted text-foreground rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors cursor-pointer flex-shrink-0"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="flex items-center gap-2 w-full relative flex-col">
-              {/* Botón Wear it */}
-              <Button
-                onClick={handleWearIt}
-                disabled={isGeneratingOutfit}
-                className="w-full bg-primary hover:bg-primary/90 text-white font-semibold h-9 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer"
-              >
-                {isGeneratingOutfit ? (
-                  <Loader className="w-5 h-5 animate-spin text-white" />
-                ) : (
-                  <span className="text-white w-[68px]">Wear it</span>
-                )}
-              </Button>
-              <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
-                The model can make mistakes.{" "}
-                <Link href="/guide" className="text-primary">
-                  Learn how to use it here.
-                </Link>
-              </div>
-              {/* Tooltip de ayuda */}
-              {!isGeneratingOutfit && (
-                <Tooltip delayDuration={0}>
-                  <TooltipTrigger
-                    asChild
-                    className="absolute ml-[38px]  left-1/2 top-4.5 -translate-x-1/2 -translate-y-1/2 z-50"
-                  >
-                    <button className="text-white hover:text-white/80 transition-colors">
-                      <HelpCircle className="w-3.5 h-3.5" />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent className="w-[260px] shadow-[0_0_40px_0_rgba(0,0,0,0.1)] p-3 rounded-2xl border border-border bg-white flex flex-col gap-2">
-                    <h3 className="text-base font-semibold tracking-tight">
-                      IMPORTANTE
-                    </h3>
-                    <p className="text-xs text-muted-foreground">
-                      - El modelo funciona mejor con dos prendas a la vez.
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      - Si la prenda tiene muchos detalles es mejor es
-                      seleccionar esa sola y vestirla.
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      - Para aprender a usar el modelo, puedes ver la guía de
-                      uso aquí.
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              )}
             </div>
           </div>
         </div>

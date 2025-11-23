@@ -68,15 +68,6 @@ export function CardLayout({
   const { selectedFilter, setSelectedFilter } = useCategoryFilter();
   const { searchQuery, setSearchQuery } = useSearch();
 
-  // Manejar el cambio del input de búsqueda
-  const handleSearchChange = (value: string) => {
-    setSearchQuery(value);
-    // Si no estamos en la home y el usuario escribe algo, redirigir a home
-    if (pathname !== "/" && value.trim()) {
-      router.push("/");
-    }
-  };
-
   // Estados para tooltips
   const [showMenTooltip, setShowMenTooltip] = useState(false);
   const [showWomenTooltip, setShowWomenTooltip] = useState(false);
@@ -617,14 +608,14 @@ export function CardLayout({
           {getTabIcon("settings")}
         </button>
       </div> */}
-        <div className=" w-full pt-4 px-4 lg:px-0 lg:pt-9.5  pb-2  2xl:pb-6 border-b border-border z-[1000000] flex items-center justify-between gap-4 bg-background">
+        <div className=" w-full pt-1 px-4 lg:px-0 lg:pt-9.5  pb-2  2xl:pb-6 border-b border-border z-[1000000] flex items-center justify-between gap-4 bg-background">
           <Link href="/">
             <Image
               src="/logo.png"
               alt="Outfiterz"
               width={120}
               height={120}
-              className="w-12 h-12 dark:invert"
+              className="w-10 h-10 lg:w-12 lg:h-12 dark:invert"
             />
           </Link>
 
@@ -636,7 +627,7 @@ export function CardLayout({
                 type="text"
                 placeholder="Search for brand, product..."
                 value={searchQuery}
-                onChange={(e) => handleSearchChange(e.target.value)}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 rounded-full bg-muted border border-border focus:outline-none text-sm 2xl:text-base"
               />
               {searchQuery && (

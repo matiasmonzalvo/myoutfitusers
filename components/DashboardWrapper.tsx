@@ -34,6 +34,7 @@ import { Jelly, Quantum } from "ldrs/react";
 import "ldrs/react/Jelly.css";
 import { AvatarHub } from "./AvatarHub";
 import { SearchProvider } from "@/lib/contexts/search-context";
+import { MobileShoppingCart } from "./MobileShoppingCart";
 
 interface DashboardWrapperProps {
   children: React.ReactNode;
@@ -158,6 +159,8 @@ export function DashboardWrapper({
                 >
                   {children}
                 </CardLayout>
+                {/* Mobile Shopping Cart - visible en toda la app en mobile */}
+                <MobileShoppingCart />
               </div>
               <div className="hidden lg:flex flex-row bg-background">
                 <div className="lg:w-[55%] xl:w-[65%] 2xl:w-[60%] relative flex items-start justify-end bg-background pl-10 pb-10">

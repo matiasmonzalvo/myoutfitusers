@@ -16,6 +16,7 @@ import { useShoppingCart } from "@/lib/contexts/shopping-cart-context";
 import { useOutfit } from "@/lib/contexts/outfit-context";
 import { useState, useRef, useEffect } from "react";
 import { AuthRequiredDialog } from "@/components/auth/auth-required-dialog";
+import Image from "next/image";
 
 interface ProductCardProps {
   product: Product;
@@ -161,6 +162,7 @@ export function ProductCard({ product, isAuthenticated }: ProductCardProps) {
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = "/placeholder.png";
                 }}
+                onContextMenu={(e) => e.preventDefault()}
               />
             </Link>
             {/* <div className="absolute top-2 right-2">
@@ -225,10 +227,12 @@ export function ProductCard({ product, isAuthenticated }: ProductCardProps) {
                   href={`/${product.brands?.brand_username}`}
                   className="flex items-center justify-start gap-1 self-start mt-0.5"
                 >
-                  <img
-                    src={product.brands?.logo_url}
-                    alt={product.brands?.brand_name}
-                    className="w-4 h-4 rounded-full border border-border"
+                  <Image
+                    src={product.brands?.logo_url || ""}
+                    alt={product.brands?.brand_name || ""}
+                    width={16}
+                    height={16}
+                    className="w-4 h-4 rounded-full border border-border object-cover"
                   />
                   <p className="text-[13px] leading-[1] text-muted-foreground font-medium capitalize">
                     {product.brands?.brand_name}
