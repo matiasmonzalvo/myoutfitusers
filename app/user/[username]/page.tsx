@@ -3,13 +3,12 @@ import { notFound } from "next/navigation";
 import { UserProfileView } from "@/components/user-profile/user-profile-view";
 
 interface PageProps {
-  params: Promise<{
+  params: {
     username: string;
-  }>;
+  };
 }
 
 export default async function UserProfilePage({ params }: PageProps) {
-  const { username } = await params;
   const supabase = await createServerClient();
 
   // Obtener el usuario loggeado (puede ser null - la página es pública)
@@ -21,7 +20,7 @@ export default async function UserProfilePage({ params }: PageProps) {
   const { data: profile, error: profileError } = await supabase
     .from("user_profiles")
     .select("*")
-    .eq("username", username)
+    .eq("username", params.username)
     .single();
 
   if (profileError || !profile) {

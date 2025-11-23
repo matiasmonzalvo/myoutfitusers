@@ -3,9 +3,8 @@ import { createServerClient } from "@/lib/supabase/server";
 
 export async function POST(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
-  const { id } = await params;
   try {
     const supabase = await createServerClient();
     const {
@@ -23,7 +22,7 @@ export async function POST(
     const { data: outfit, error: outfitError } = await supabase
       .from("outfits")
       .select("id")
-      .eq("id", id)
+      .eq("id", params.id)
       .single();
 
     if (outfitError || !outfit) {
@@ -31,10 +30,12 @@ export async function POST(
     }
 
     // Intentar dar like
-    const { error: likeError } = await supabase.from("outfit_likes").insert({
-      outfit_id: id,
-      user_id: user.id,
-    });
+    const { error: likeError } = await supabase
+      .from("outfit_likes")
+      .insert({
+        outfit_id: params.id,
+        user_id: user.id,
+      });
 
     if (likeError) {
       // Si ya existe el like (violación de constraint UNIQUE)
@@ -51,7 +52,7 @@ export async function POST(
     const { data: likesData } = await supabase
       .from("outfits")
       .select("likes_count")
-      .eq("id", id)
+      .eq("id", params.id)
       .single();
 
     return NextResponse.json({
@@ -72,9 +73,8 @@ export async function POST(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
-  const { id } = await params;
   try {
     const supabase = await createServerClient();
     const {
@@ -92,7 +92,7 @@ export async function DELETE(
     const { error: unlikeError } = await supabase
       .from("outfit_likes")
       .delete()
-      .eq("outfit_id", id)
+      .eq("outfit_id", params.id)
       .eq("user_id", user.id);
 
     if (unlikeError) {
@@ -103,7 +103,7 @@ export async function DELETE(
     const { data: likesData } = await supabase
       .from("outfits")
       .select("likes_count")
-      .eq("id", id)
+      .eq("id", params.id)
       .single();
 
     return NextResponse.json({
@@ -122,3 +122,4 @@ export async function DELETE(
     );
   }
 }
+

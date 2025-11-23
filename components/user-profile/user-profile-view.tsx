@@ -20,7 +20,6 @@ interface Outfit {
   image_url: string;
   products: any[];
   created_at: string;
-  likes_count: number;
 }
 
 interface UserProfileViewProps {
