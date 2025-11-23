@@ -3,8 +3,9 @@ import { createServerClient } from "@/lib/supabase/server";
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const supabase = await createServerClient();
     const {
@@ -22,7 +23,7 @@ export async function DELETE(
     const { data: outfit, error: fetchError } = await supabase
       .from("outfits")
       .select("*")
-      .eq("id", params.id)
+      .eq("id", id)
       .eq("user_id", user.id)
       .single();
 
@@ -50,7 +51,7 @@ export async function DELETE(
     const { error: deleteError } = await supabase
       .from("outfits")
       .delete()
-      .eq("id", params.id)
+      .eq("id", id)
       .eq("user_id", user.id);
 
     if (deleteError) {
