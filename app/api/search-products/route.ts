@@ -31,7 +31,8 @@ export async function GET(request: NextRequest) {
           brand_name,
           brand_username,
           logo_url,
-          website_url
+          website_url,
+          is_verified_brand
         )
       `
       )

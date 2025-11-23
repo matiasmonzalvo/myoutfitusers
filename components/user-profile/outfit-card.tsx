@@ -8,7 +8,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { OutfitDetailDialog } from "./outfit-detail-dialog";
 import { useRouter } from "next/navigation";
 
 interface Outfit {
@@ -25,6 +24,7 @@ interface OutfitCardProps {
   isOwnProfile: boolean;
   isLiked: boolean;
   isAuthenticated: boolean;
+  username: string;
 }
 
 export function OutfitCard({
@@ -32,9 +32,9 @@ export function OutfitCard({
   isOwnProfile,
   isLiked: initialIsLiked,
   isAuthenticated,
+  username,
 }: OutfitCardProps) {
   const router = useRouter();
-  const [showDetail, setShowDetail] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLiked, setIsLiked] = useState(initialIsLiked);
   const [likesCount, setLikesCount] = useState(outfit.likes_count || 0);
@@ -108,71 +108,62 @@ export function OutfitCard({
   };
 
   return (
-    <>
-      <div className="group relative aspect-square rounded-2xl overflow-hidden bg-muted border border-border transition-all cursor-pointer">
-        {/* Imagen del outfit */}
-        <div
-          onClick={() => setShowDetail(true)}
-          className="w-full h-full relative"
-        >
-          <img
-            src={outfit.image_url}
-            alt={outfit.name}
-            className="w-full h-full object-cover"
-            onContextMenu={(e) => e.preventDefault()}
-          />
-        </div>
-
-        {/* Botón de like */}
-        <div className="absolute bottom-3 right-3  z-10 flex items-center gap-2">
-          <button
-            onClick={handleLike}
-            disabled={isLiking}
-            className={`flex items-center cursor-pointer gap-1.5 transition-all ${
-              isLiked ? " text-red-500" : "text-neutral-800"
-            }`}
-          >
-            <Heart
-              className={`w-6 h-6 transition-all ${
-                isLiked ? "fill-red-500" : ""
-              }`}
-            />
-          </button>
-        </div>
-
-        {/* Menú de opciones (solo para el dueño) */}
-        {isOwnProfile && (
-          <div className="absolute top-2 right-2 z-10">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  className="p-2 rounded-full bg-white/90 hover:bg-white shadow-md transition-all"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <MoreVertical className="w-4 h-4" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={handleDelete}
-                  disabled={isDeleting}
-                  className="text-red-600 cursor-pointer"
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  {isDeleting ? "Deleting..." : "Delete"}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        )}
+    <div className="group relative aspect-square rounded-2xl overflow-hidden bg-muted border border-border transition-all cursor-pointer">
+      {/* Imagen del outfit */}
+      <div
+        onClick={() => router.push(`/user/${username}/outfit/${outfit.id}`)}
+        className="w-full h-full relative"
+      >
+        <img
+          src={outfit.image_url}
+          alt={outfit.name}
+          className="w-full h-full object-cover"
+          onContextMenu={(e) => e.preventDefault()}
+        />
       </div>
 
-      {/* Dialog de detalle */}
-      <OutfitDetailDialog
-        open={showDetail}
-        onOpenChange={setShowDetail}
-        outfit={outfit}
-      />
-    </>
+      {/* Botón de like */}
+      <div className="absolute bottom-2 right-2  z-10 flex items-center gap-2">
+        <button
+          onClick={handleLike}
+          disabled={isLiking}
+          className={`flex items-center cursor-pointer gap-1.5 transition-all ${
+            isLiked ? " text-red-500" : "text-neutral-800"
+          }`}
+        >
+          <Heart
+            className={`w-5 h-5 transition-all ${
+              isLiked ? "fill-red-500" : ""
+            }`}
+          />
+        </button>
+      </div>
+
+      {/* Menú de opciones (solo para el dueño) */}
+      {isOwnProfile && (
+        <div className="absolute top-2 right-2 z-10">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="p-2 rounded-full bg-white/90 hover:bg-white shadow-md transition-all"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MoreVertical className="w-4 h-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="text-red-600 cursor-pointer"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                {isDeleting ? "Deleting..." : "Delete"}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
+    </div>
   );
 }

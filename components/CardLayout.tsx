@@ -10,6 +10,8 @@ import {
   ShoppingBag,
   Menu,
   CreditCard,
+  UserRound,
+  CircleUserRound,
 } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -85,6 +87,7 @@ export function CardLayout({
   // Estados para el usuario
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
   const supabase = createServerClient();
 
   // Estados para datos pre-cargados del tooltip
@@ -427,16 +430,19 @@ export function CardLayout({
         } = await supabase.auth.getUser();
         setUser(user);
 
-        // Obtener la foto de perfil del usuario
+        // Obtener la foto de perfil y username del usuario
         if (user) {
           const { data: profile } = await supabase
             .from("user_profiles")
-            .select("profile_photo_url")
+            .select("profile_photo_url, username")
             .eq("id", user.id)
             .single();
 
           if (profile?.profile_photo_url) {
             setProfilePhotoUrl(profile.profile_photo_url);
+          }
+          if (profile?.username) {
+            setUsername(profile.username);
           }
         }
       };
@@ -448,19 +454,23 @@ export function CardLayout({
       } = supabase.auth.onAuthStateChange((event: any, session: any) => {
         setUser(session?.user ?? null);
         if (session?.user) {
-          // Recargar foto de perfil cuando cambie la sesión
+          // Recargar foto de perfil y username cuando cambie la sesión
           supabase
             .from("user_profiles")
-            .select("profile_photo_url")
+            .select("profile_photo_url, username")
             .eq("id", session.user.id)
             .single()
             .then(({ data }: { data: any }) => {
               if (data?.profile_photo_url) {
                 setProfilePhotoUrl(data.profile_photo_url);
               }
+              if (data?.username) {
+                setUsername(data.username);
+              }
             });
         } else {
           setProfilePhotoUrl(null);
+          setUsername(null);
         }
       });
 
@@ -468,6 +478,7 @@ export function CardLayout({
     } else {
       setUser(null);
       setProfilePhotoUrl(null);
+      setUsername(null);
     }
   }, [isAuthenticated, supabase.auth]);
 
@@ -709,11 +720,11 @@ export function CardLayout({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-44">
                     <DropdownMenuItem
-                      onClick={() => router.push("/outfits")}
+                      onClick={() => router.push(`/user/${username}`)}
                       className="cursor-pointer"
                     >
-                      <Bookmark className="h-4 w-4" />
-                      My outfits
+                      <CircleUserRound className="h-4 w-4" />
+                      Profile
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => router.push("/billing")}
