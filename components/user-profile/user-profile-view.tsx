@@ -3,9 +3,16 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Settings, Grid3x3, Bookmark } from "lucide-react";
+import { Settings, Grid3x3, Bookmark, ChevronDown } from "lucide-react";
 import { OutfitCard } from "./outfit-card";
 import type { Product } from "@/lib/actions/products";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { sortProductsByCategory } from "@/lib/utils/product-sorting";
 
 interface UserProfile {
   id: string;
@@ -44,14 +51,19 @@ export function UserProfileView({
 }: UserProfileViewProps) {
   const [activeTab, setActiveTab] = useState<"outfits" | "saved">("outfits");
 
+  // Ordenar productos por categoría
+  const sortedCurrentOutfitProducts = sortProductsByCategory(
+    currentOutfitProducts
+  );
+
   return (
     <div className="w-full">
       {/* Header con foto de perfil y username */}
-      <div className="w-full border-b border-border bg-background">
+      <div className="w-full bg-background">
         <div className="w-full">
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+          <div className="flex flex-col items-center gap-4">
             {/* Foto de perfil (outfit actual o avatar base) */}
-            <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-border bg-muted flex-shrink-0">
+            <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border border-border bg-muted flex-shrink-0">
               {profileImageUrl ? (
                 <img
                   src={profileImageUrl}
@@ -69,14 +81,14 @@ export function UserProfileView({
             {/* Info del usuario */}
             <div className="flex-1 text-center md:text-left space-y-4">
               <div className="space-y-2">
-                <div className="flex items-center justify-center md:justify-start gap-4">
-                  <h1 className="text-3xl font-bold tracking-tight">
-                    {profile.username}
+                <div className="flex items-center justify-center gap-2">
+                  <h1 className="text-3xl font-bold tracking-tight leading-[1] ">
+                    @{profile.username}
                   </h1>
                   {isOwnProfile && (
                     <Link
                       href="/settings"
-                      className="p-2 hover:bg-muted rounded-lg transition-colors"
+                      className="mt-1 hover:bg-muted rounded-lg transition-colors"
                     >
                       <Settings className="w-5 h-5" />
                     </Link>
@@ -85,88 +97,83 @@ export function UserProfileView({
               </div>
 
               {/* Stats */}
-              <div className="flex items-center justify-center md:justify-start gap-8 text-sm">
+              <div className="flex items-center justify-center gap-8 text-base">
                 <div>
                   <span className="font-semibold">{outfits.length}</span>{" "}
                   <span className="text-muted-foreground">outfits</span>
                 </div>
-                {currentOutfitProducts.length > 0 && (
-                  <div>
-                    <span className="font-semibold">
-                      {currentOutfitProducts.length}
-                    </span>{" "}
-                    <span className="text-muted-foreground">
-                      items in current outfit
-                    </span>
-                  </div>
-                )}
               </div>
 
-              {/* Productos del outfit actual */}
-              {currentOutfitProducts.length > 0 && (
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Current outfit:
-                  </p>
-                  <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-                    {currentOutfitProducts.map(
-                      (product: any, index: number) => (
-                        <Link
-                          key={index}
-                          href={`/product/${product.id}`}
-                          className="px-3 py-1.5 bg-muted hover:bg-muted/80 rounded-full text-xs font-medium transition-colors"
-                        >
-                          {product.name}
-                        </Link>
-                      )
-                    )}
-                  </div>
-                </div>
-              )}
+              {/* Dropdown del outfit actual */}
+              <div className="flex items-center justify-center">
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    asChild
+                    disabled={currentOutfitProducts.length === 0}
+                  >
+                    <button
+                      className="w-auto rounded-full bg-muted border border-border transition-all cursor-pointer flex items-center justify-center px-3 py-2 hover:opacity-80 focus:outline-none ring-0 focus:ring-0 focus:ring-offset-0 relative disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={currentOutfitProducts.length === 0}
+                    >
+                      <span className="text-sm font-medium">
+                        Current Outfit
+                      </span>
+                      {currentOutfitProducts.length > 0 && (
+                        <div className="text-[10px] lg:text-[12px] mx-1 text-primary font-medium w-4.5 h-4.5 bg-primary/10 rounded-full flex items-center justify-center">
+                          {currentOutfitProducts.length}
+                        </div>
+                      )}
+                      <ChevronDown className="w-4 h-4" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="center"
+                    sideOffset={6}
+                    side="bottom"
+                    className="w-[266px] max-h-[400px] overflow-y-auto p-0 rounded-2xl"
+                  >
+                    {sortedCurrentOutfitProducts.map((product) => (
+                      <DropdownMenuItem
+                        key={product.id}
+                        className="cursor-pointer px-3 py-3 flex items-center gap-3"
+                        onClick={() => {
+                          if (product.product_link) {
+                            window.open(product.product_link, "_blank");
+                          }
+                        }}
+                      >
+                        <div className="w-10 h-10 rounded-lg overflow-hidden border border-border flex-shrink-0 flex justify-center items-center bg-white">
+                          <img
+                            src={product.images?.[0] || "/placeholder.png"}
+                            alt={product.name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src =
+                                "/placeholder.png";
+                            }}
+                            onContextMenu={(e) => e.preventDefault()}
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-foreground truncate">
+                            {product.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {product.brands?.brand_name}
+                          </p>
+                        </div>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Tabs de navegación */}
-      <div className="w-full border-b border-border bg-background sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="flex items-center justify-center gap-16">
-            <button
-              onClick={() => setActiveTab("outfits")}
-              className={`flex items-center gap-2 py-4 border-b-2 transition-colors ${
-                activeTab === "outfits"
-                  ? "border-foreground text-foreground"
-                  : "border-transparent text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <Grid3x3 className="w-4 h-4" />
-              <span className="text-sm font-semibold uppercase tracking-wide">
-                Outfits
-              </span>
-            </button>
-
-            {isOwnProfile && (
-              <button
-                onClick={() => setActiveTab("saved")}
-                className={`flex items-center gap-2 py-4 border-b-2 transition-colors ${
-                  activeTab === "saved"
-                    ? "border-foreground text-foreground"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <Bookmark className="w-4 h-4" />
-                <span className="text-sm font-semibold uppercase tracking-wide">
-                  Saved
-                </span>
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-
       {/* Contenido - Grid de outfits */}
-      <div className="max-w-5xl mx-auto px-4 py-8">
+      <div className="w-full  py-8">
         {activeTab === "outfits" && (
           <>
             {outfits.length === 0 ? (

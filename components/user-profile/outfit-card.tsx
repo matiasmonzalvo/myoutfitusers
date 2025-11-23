@@ -109,7 +109,7 @@ export function OutfitCard({
 
   return (
     <>
-      <div className="group relative aspect-square rounded-lg overflow-hidden bg-muted border border-border hover:border-primary transition-all cursor-pointer">
+      <div className="group relative aspect-square rounded-2xl overflow-hidden bg-muted border border-border transition-all cursor-pointer">
         {/* Imagen del outfit */}
         <div
           onClick={() => setShowDetail(true)}
@@ -121,35 +121,22 @@ export function OutfitCard({
             className="w-full h-full object-cover"
             onContextMenu={(e) => e.preventDefault()}
           />
-
-          {/* Overlay con info al hacer hover */}
-          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 text-white">
-            <h3 className="text-lg font-semibold text-center mb-2 line-clamp-2">
-              {outfit.name}
-            </h3>
-            <p className="text-sm text-white/80">
-              {outfit.products.length} items
-            </p>
-          </div>
         </div>
 
         {/* Botón de like */}
-        <div className="absolute bottom-3 left-3 z-10 flex items-center gap-2">
+        <div className="absolute bottom-3 right-3  z-10 flex items-center gap-2">
           <button
             onClick={handleLike}
             disabled={isLiking}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full shadow-lg transition-all ${
-              isLiked
-                ? "bg-red-500 text-white"
-                : "bg-white/90 hover:bg-white text-gray-900"
+            className={`flex items-center cursor-pointer gap-1.5 transition-all ${
+              isLiked ? " text-red-500" : "text-neutral-800"
             }`}
           >
             <Heart
-              className={`w-4 h-4 transition-all ${
-                isLiked ? "fill-current" : ""
+              className={`w-6 h-6 transition-all ${
+                isLiked ? "fill-red-500" : ""
               }`}
             />
-            <span className="text-sm font-medium">{likesCount}</span>
           </button>
         </div>
 
@@ -189,4 +176,3 @@ export function OutfitCard({
     </>
   );
 }
-
