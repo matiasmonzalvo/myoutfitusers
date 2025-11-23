@@ -235,6 +235,44 @@ IMPORTANT:
       outfitIndex
     );
 
+    // Guardar en avatar_history
+    console.log("Saving outfit to avatar_history...");
+    
+    // Combinar productos del outfit actual con los nuevos productos
+    const { data: currentHistory } = await supabase
+      .from("avatar_history")
+      .select("products")
+      .eq("user_id", user.id)
+      .eq("is_current", true)
+      .single();
+
+    const previousProducts = currentHistory?.products as any[] || [];
+    const allProducts = [...previousProducts, ...products];
+
+    // Marcar todos los outfits anteriores como no actuales
+    await supabase
+      .from("avatar_history")
+      .update({ is_current: false })
+      .eq("user_id", user.id);
+
+    // Insertar el nuevo outfit como actual
+    const { error: historyError } = await supabase
+      .from("avatar_history")
+      .insert({
+        user_id: user.id,
+        outfit_index: outfitIndex,
+        outfit_image_url: outfitImageUrl,
+        products: allProducts,
+        is_current: true,
+      });
+
+    if (historyError) {
+      console.error("Error saving to avatar_history:", historyError);
+      // No fallar la generación si falla el guardado en history
+    } else {
+      console.log("Outfit saved to avatar_history successfully");
+    }
+
     // Sistema de try-ons prepagados
     try {
       // Verificar si los productos son de marcas verificadas

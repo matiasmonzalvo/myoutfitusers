@@ -57,6 +57,7 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
     faceEnhancementUsed,
     setFaceEnhancementUsed,
     outfitHistoryCount,
+    refreshOutfitFromDatabase,
   } = useOutfit();
   const { selectedProducts, removeProduct, clearCart } = useShoppingCart();
   const [showSaveDialog, setShowSaveDialog] = useState(false);
@@ -193,23 +194,13 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
       }
 
       const data = await response.json();
-      await setOutfitImageUrl(data.outfitImageUrl);
 
       // Guardar el canvas de debug
       if (data.productsCanvasDebugUrl) {
         setProductsCanvasDebugUrl(data.productsCanvasDebugUrl);
       }
 
-      // Combinar productos del outfit actual con los nuevos productos
-      // Ya no permitimos reemplazar productos de la misma categoría,
-      // solo agregar nuevas categorías
-      const updatedProducts = [...currentOutfitProducts, ...selectedProducts];
-
-      // Guardar los productos actualizados del outfit con el índice
-      setCurrentOutfitProducts(updatedProducts, data.outfitIndex);
-
       // Registrar eventos de "worn" para cada producto que se vistió
-      // Solo registramos los productos que se agregaron en esta acción (selectedProducts)
       selectedProducts.forEach(async (product) => {
         try {
           await fetch("/api/products/track-event", {
@@ -224,6 +215,9 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
           console.error("Error tracking worn event:", error);
         }
       });
+
+      // Refrescar outfit desde la base de datos
+      await refreshOutfitFromDatabase();
 
       // Resetear el estado de face enhancement cuando se genera un nuevo outfit
       setFaceEnhancementUsed(false);
@@ -270,11 +264,10 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
       }
 
       const data = await response.json();
-      await setOutfitImageUrl(data.enhancedImageUrl);
       setProductsCanvasUrl(data.productsCanvasUrl); // Recibir el canvas del backend
 
-      // Actualizar el historial con el nuevo outfit mejorado
-      setCurrentOutfitProducts(currentOutfitProducts, data.outfitIndex);
+      // Refrescar outfit desde la base de datos
+      await refreshOutfitFromDatabase();
 
       setFaceEnhancementUsed(true);
     } catch (error) {

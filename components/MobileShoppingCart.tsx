@@ -28,6 +28,7 @@ export function MobileShoppingCart() {
     currentOutfitProducts,
     setCurrentOutfitProducts,
     setFaceEnhancementUsed,
+    refreshOutfitFromDatabase,
   } = useOutfit();
   const [imageDimensions, setImageDimensions] = useState<
     Record<string, { width: number; height: number }>
@@ -129,13 +130,6 @@ export function MobileShoppingCart() {
       }
 
       const data = await response.json();
-      await setOutfitImageUrl(data.outfitImageUrl);
-
-      // Combinar productos del outfit actual con los nuevos productos
-      const updatedProducts = [...currentOutfitProducts, ...selectedProducts];
-
-      // Guardar los productos actualizados del outfit con el índice
-      setCurrentOutfitProducts(updatedProducts, data.outfitIndex);
 
       // Registrar eventos de "worn" para cada producto que se vistió
       selectedProducts.forEach(async (product) => {
@@ -152,6 +146,9 @@ export function MobileShoppingCart() {
           console.error("Error tracking worn event:", error);
         }
       });
+
+      // Refrescar outfit desde la base de datos
+      await refreshOutfitFromDatabase();
 
       // Resetear el estado de face enhancement cuando se genera un nuevo outfit
       setFaceEnhancementUsed(false);

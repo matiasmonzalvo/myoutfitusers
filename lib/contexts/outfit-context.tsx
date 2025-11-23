@@ -16,25 +16,19 @@ import type { Product } from "@/lib/actions/products";
 
 interface OutfitContextType {
   outfitImageUrl: string | null;
-  setOutfitImageUrl: (url: string | null) => Promise<void>;
+  setOutfitImageUrl: (url: string | null) => void;
   isGeneratingOutfit: boolean;
   setIsGeneratingOutfit: (loading: boolean) => void;
   rollbackOutfit: () => Promise<void>;
   currentOutfitProducts: Product[];
-  setCurrentOutfitProducts: (products: Product[], outfitIndex?: number) => void;
+  setCurrentOutfitProducts: (products: Product[]) => void;
   faceEnhancementUsed: boolean;
   setFaceEnhancementUsed: (used: boolean) => void;
   outfitHistoryCount: number;
-  outfitHistory: Array<{ products: Product[]; index: number }>;
+  refreshOutfitFromDatabase: () => Promise<void>;
 }
 
 const OutfitContext = createContext<OutfitContextType | undefined>(undefined);
-
-// Guardamos el historial de outfits en localStorage
-// Las imágenes se guardan en Supabase Storage (bucket: current-outfits)
-const STORAGE_KEY_OUTFIT_URL_PREFIX = "outfit_current_url_";
-const STORAGE_KEY_HISTORY_PREFIX = "outfit_history_";
-const STORAGE_KEY_FACE_ENHANCEMENT_PREFIX = "outfit_face_enhancement_";
 
 export function OutfitProvider({ children }: { children: ReactNode }) {
   const [outfitImageUrl, setOutfitImageUrlState] = useState<string | null>(
@@ -47,9 +41,7 @@ export function OutfitProvider({ children }: { children: ReactNode }) {
     []
   );
   const [faceEnhancementUsed, setFaceEnhancementUsedState] = useState(false);
-  const [outfitHistory, setOutfitHistory] = useState<
-    Array<{ products: Product[]; index: number }>
-  >([]);
+  const [outfitHistoryCount, setOutfitHistoryCount] = useState(0);
   const supabase = createServerClient();
 
   // Obtener el ID del usuario actual
@@ -77,7 +69,7 @@ export function OutfitProvider({ children }: { children: ReactNode }) {
         setFaceEnhancementUsedState(false);
 
         if (newUserId) {
-          loadOutfitFromStorage(newUserId);
+          loadOutfitFromDatabase(newUserId);
         }
       } else if (!newUserId) {
         // Si el usuario se deslogueó, limpiar todo
@@ -92,164 +84,70 @@ export function OutfitProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, [supabase.auth, userId]);
 
-  // Función para cargar el outfit del localStorage
-  const loadOutfitFromStorage = (currentUserId: string) => {
+  // Función para cargar el outfit desde la base de datos
+  const loadOutfitFromDatabase = async (currentUserId: string) => {
     try {
-      const urlKey = `${STORAGE_KEY_OUTFIT_URL_PREFIX}${currentUserId}`;
-      const historyKey = `${STORAGE_KEY_HISTORY_PREFIX}${currentUserId}`;
-      const faceEnhancementKey = `${STORAGE_KEY_FACE_ENHANCEMENT_PREFIX}${currentUserId}`;
+      // Obtener el outfit actual del usuario desde la base de datos
+      const { data: currentOutfit, error } = await supabase
+        .from("avatar_history")
+        .select("*")
+        .eq("user_id", currentUserId)
+        .eq("is_current", true)
+        .single();
 
-      // Cargar la URL del outfit (ahora es una URL de Supabase Storage, no base64)
-      const savedUrl = localStorage.getItem(urlKey);
-      if (savedUrl) {
-        setOutfitImageUrlState(savedUrl);
+      if (error && error.code !== "PGRST116") {
+        // PGRST116 es "no rows returned", lo cual es válido
+        console.error("Error loading outfit from database:", error);
+        return;
       }
 
-      // Cargar historial de outfits
-      const savedHistory = localStorage.getItem(historyKey);
-      if (savedHistory) {
-        try {
-          const history = JSON.parse(savedHistory) as Array<{
-            products: Product[];
-            index: number;
-          }>;
-          setOutfitHistory(history);
+      if (currentOutfit) {
+        // Cargar el outfit actual
+        setOutfitImageUrlState(currentOutfit.outfit_image_url);
+        setCurrentOutfitProducts(currentOutfit.products as Product[]);
 
-          // El outfit actual es el último del historial
-          if (history.length > 0) {
-            const lastOutfit = history[history.length - 1];
-            setCurrentOutfitProducts(lastOutfit.products);
-          } else {
-            setCurrentOutfitProducts([]);
-          }
-        } catch (parseError) {
-          console.error("Error parsing saved history:", parseError);
-          setOutfitHistory([]);
-          setCurrentOutfitProducts([]);
-        }
+        // Contar el historial
+        const { count } = await supabase
+          .from("avatar_history")
+          .select("*", { count: "exact", head: true })
+          .eq("user_id", currentUserId);
+
+        setOutfitHistoryCount(count || 0);
       } else {
-        setOutfitHistory([]);
+        // No hay outfit actual, resetear todo
+        setOutfitImageUrlState(null);
         setCurrentOutfitProducts([]);
+        setOutfitHistoryCount(0);
       }
 
-      // Cargar estado de face enhancement
-      const savedFaceEnhancement = localStorage.getItem(faceEnhancementKey);
-      if (savedFaceEnhancement) {
-        setFaceEnhancementUsedState(savedFaceEnhancement === "true");
-      } else {
-        setFaceEnhancementUsedState(false);
-      }
+      setFaceEnhancementUsedState(false);
     } catch (error) {
-      console.error("Error loading outfit from localStorage:", error);
+      console.error("Error loading outfit from database:", error);
     }
   };
 
-  // Cargar la imagen del localStorage al montar el componente
+  // Cargar la imagen desde la base de datos al montar el componente
   useEffect(() => {
     if (userId) {
-      loadOutfitFromStorage(userId);
+      loadOutfitFromDatabase(userId);
     }
     setIsHydrated(true);
   }, [userId]);
 
-  // Escuchar cambios en los productos del outfit (para cuando se completa el onboarding)
-  useEffect(() => {
-    if (!userId) return;
-
-    const handleProductsUpdated = (e: CustomEvent) => {
-      if (e.detail?.products) {
-        setCurrentOutfitProducts(e.detail.products);
-      }
-    };
-
-    // Agregar listener para el evento personalizado
-    window.addEventListener(
-      "outfitProductsUpdated",
-      handleProductsUpdated as EventListener
-    );
-
-    return () => {
-      window.removeEventListener(
-        "outfitProductsUpdated",
-        handleProductsUpdated as EventListener
-      );
-    };
-  }, [userId]);
-
-  // Función wrapper para guardar la URL del outfit en localStorage
-  // La imagen ya está en Supabase Storage, solo guardamos la URL
-  const setOutfitImageUrl = async (url: string | null) => {
+  // Función simple para setear la URL (solo para el estado local)
+  const setOutfitImageUrl = (url: string | null) => {
     setOutfitImageUrlState(url);
-
-    if (!userId) return;
-
-    try {
-      const urlKey = `${STORAGE_KEY_OUTFIT_URL_PREFIX}${userId}`;
-
-      if (url) {
-        // Guardar solo la URL (mucho más ligero que base64)
-        localStorage.setItem(urlKey, url);
-      } else {
-        localStorage.removeItem(urlKey);
-      }
-    } catch (error) {
-      console.error("Error saving outfit URL to localStorage:", error);
-    }
-  };
-
-  // Función para guardar historial en localStorage
-  const saveHistoryToStorage = (
-    history: Array<{ products: Product[]; index: number }>
-  ) => {
-    if (!userId) return;
-
-    try {
-      const historyKey = `${STORAGE_KEY_HISTORY_PREFIX}${userId}`;
-
-      if (history.length > 0) {
-        localStorage.setItem(historyKey, JSON.stringify(history));
-      } else {
-        localStorage.removeItem(historyKey);
-      }
-    } catch (error) {
-      console.error("Error saving history to localStorage:", error);
-    }
-  };
-
-  // Wrapper para setCurrentOutfitProducts que también actualiza el historial
-  const updateCurrentOutfitProducts = (
-    products: Product[],
-    outfitIndex?: number
-  ) => {
-    setCurrentOutfitProducts(products);
-
-    // Si se proporciona un índice, actualizar el historial
-    if (outfitIndex !== undefined) {
-      const newHistory = [...outfitHistory, { products, index: outfitIndex }];
-      setOutfitHistory(newHistory);
-      saveHistoryToStorage(newHistory);
-    }
   };
 
   // Función para actualizar el estado de face enhancement
   const setFaceEnhancementUsed = (used: boolean) => {
     setFaceEnhancementUsedState(used);
+  };
 
+  // Función para refrescar desde la base de datos
+  const refreshOutfitFromDatabase = async () => {
     if (!userId) return;
-
-    try {
-      const faceEnhancementKey = `${STORAGE_KEY_FACE_ENHANCEMENT_PREFIX}${userId}`;
-      if (used) {
-        localStorage.setItem(faceEnhancementKey, "true");
-      } else {
-        localStorage.removeItem(faceEnhancementKey);
-      }
-    } catch (error) {
-      console.error(
-        "Error saving face enhancement state to localStorage:",
-        error
-      );
-    }
+    await loadOutfitFromDatabase(userId);
   };
 
   // Función para hacer rollback al outfit anterior
@@ -257,36 +155,63 @@ export function OutfitProvider({ children }: { children: ReactNode }) {
     if (!userId) return;
 
     try {
-      // Si no hay historial, eliminar todos los outfits y volver al avatar base
-      if (outfitHistory.length === 0) {
-        await deleteAllOutfitsClientSide(userId);
-        await setOutfitImageUrl(null);
-        setCurrentOutfitProducts([]);
-        setOutfitHistory([]);
-        saveHistoryToStorage([]);
-        setFaceEnhancementUsed(false);
+      // Obtener el outfit actual desde la BD
+      const { data: currentOutfit } = await supabase
+        .from("avatar_history")
+        .select("*")
+        .eq("user_id", userId)
+        .eq("is_current", true)
+        .single();
+
+      if (!currentOutfit) {
+        // Si no hay outfit actual, no hay nada que hacer
+        console.log("No current outfit to rollback");
         return;
       }
 
-      // Eliminar el último outfit del storage y obtener el anterior
-      const { previousUrl } = await deleteLastOutfitClientSide(userId);
+      // Eliminar la imagen del storage
+      await deleteLastOutfitClientSide(userId);
 
-      // Actualizar el historial eliminando el último
-      const newHistory = outfitHistory.slice(0, -1);
-      setOutfitHistory(newHistory);
-      saveHistoryToStorage(newHistory);
+      // Eliminar el outfit actual de la BD
+      await supabase
+        .from("avatar_history")
+        .delete()
+        .eq("user_id", userId)
+        .eq("outfit_index", currentOutfit.outfit_index);
 
-      // Si hay un outfit anterior, mostrarlo
-      if (previousUrl && newHistory.length > 0) {
-        const previousOutfit = newHistory[newHistory.length - 1];
-        await setOutfitImageUrl(previousUrl);
-        setCurrentOutfitProducts(previousOutfit.products);
+      // Buscar el outfit anterior (el de mayor índice que quede)
+      const { data: previousOutfit } = await supabase
+        .from("avatar_history")
+        .select("*")
+        .eq("user_id", userId)
+        .order("outfit_index", { ascending: false })
+        .limit(1)
+        .single();
+
+      if (previousOutfit) {
+        // Marcar el outfit anterior como actual
+        await supabase
+          .from("avatar_history")
+          .update({ is_current: true })
+          .eq("user_id", userId)
+          .eq("outfit_index", previousOutfit.outfit_index);
+
+        // Actualizar el estado local
+        setOutfitImageUrl(previousOutfit.outfit_image_url);
+        setCurrentOutfitProducts(previousOutfit.products as Product[]);
       } else {
-        // Si no hay más outfits, volver al avatar base
-        await setOutfitImageUrl(null);
+        // No hay más outfits, volver al avatar base
+        setOutfitImageUrl(null);
         setCurrentOutfitProducts([]);
       }
 
+      // Actualizar el contador
+      const { count } = await supabase
+        .from("avatar_history")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", userId);
+
+      setOutfitHistoryCount(count || 0);
       setFaceEnhancementUsed(false);
     } catch (error) {
       console.error("Error during rollback:", error);
@@ -303,11 +228,11 @@ export function OutfitProvider({ children }: { children: ReactNode }) {
         setIsGeneratingOutfit,
         rollbackOutfit,
         currentOutfitProducts,
-        setCurrentOutfitProducts: updateCurrentOutfitProducts,
+        setCurrentOutfitProducts,
         faceEnhancementUsed,
         setFaceEnhancementUsed,
-        outfitHistoryCount: outfitHistory.length,
-        outfitHistory,
+        outfitHistoryCount,
+        refreshOutfitFromDatabase,
       }}
     >
       {children}
