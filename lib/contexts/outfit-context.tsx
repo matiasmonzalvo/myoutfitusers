@@ -65,7 +65,6 @@ export function OutfitProvider({ children }: { children: ReactNode }) {
         setUserId(newUserId);
         setOutfitImageUrlState(null);
         setCurrentOutfitProducts([]);
-        setOutfitHistory([]);
         setFaceEnhancementUsedState(false);
 
         if (newUserId) {
@@ -76,7 +75,6 @@ export function OutfitProvider({ children }: { children: ReactNode }) {
         setUserId(null);
         setOutfitImageUrlState(null);
         setCurrentOutfitProducts([]);
-        setOutfitHistory([]);
         setFaceEnhancementUsedState(false);
       }
     });
