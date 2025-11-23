@@ -48,7 +48,7 @@ export function UserProfileView({
     <div className="w-full">
       {/* Header con foto de perfil y username */}
       <div className="w-full border-b border-border bg-background">
-        <div className="max-w-5xl mx-auto px-4 py-8">
+        <div className="w-full">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
             {/* Foto de perfil (outfit actual o avatar base) */}
             <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-border bg-muted flex-shrink-0">
@@ -109,15 +109,17 @@ export function UserProfileView({
                     Current outfit:
                   </p>
                   <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-                    {currentOutfitProducts.map((product: any, index: number) => (
-                      <Link
-                        key={index}
-                        href={`/product/${product.id}`}
-                        className="px-3 py-1.5 bg-muted hover:bg-muted/80 rounded-full text-xs font-medium transition-colors"
-                      >
-                        {product.name}
-                      </Link>
-                    ))}
+                    {currentOutfitProducts.map(
+                      (product: any, index: number) => (
+                        <Link
+                          key={index}
+                          href={`/product/${product.id}`}
+                          className="px-3 py-1.5 bg-muted hover:bg-muted/80 rounded-full text-xs font-medium transition-colors"
+                        >
+                          {product.name}
+                        </Link>
+                      )
+                    )}
                   </div>
                 </div>
               )}
@@ -212,4 +214,3 @@ export function UserProfileView({
     </div>
   );
 }
-
