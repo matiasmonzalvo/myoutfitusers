@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MoreVertical, Trash2, Heart } from "lucide-react";
+import { MoreVertical, Trash2, Heart, MoreHorizontal } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -145,10 +145,10 @@ export function OutfitCard({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
-                className="p-2 rounded-full bg-white/90 hover:bg-white shadow-md transition-all"
+                className="transition-all cursor-pointer"
                 onClick={(e) => e.stopPropagation()}
               >
-                <MoreVertical className="w-4 h-4" />
+                <MoreHorizontal className="w-4 h-4 text-neutral-800" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
