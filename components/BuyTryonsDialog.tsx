@@ -29,24 +29,27 @@ export function BuyTryonsDialog({
   const tryOnPacks = [
     {
       name: "Small",
-      price: "$2",
-      tryOns: 20,
-      pricePerTryOn: "$0.1",
-      polarProductId: "211d365b-b5de-4072-8690-1b25fd97ad3d",
+      price: "$5",
+      tryOns: 60,
+      savings: "",
+      popular: false,
+      polarProductId: "77bc8e98-468a-4a23-89b3-bc4384fd3b04", // TODO: Add when created in Polar
     },
     {
       name: "Medium",
-      price: "$5",
-      tryOns: 60,
-      pricePerTryOn: "$0.083",
-      polarProductId: "ccd87a31-f6ba-44b7-989d-1effa9de9437",
+      price: "$10",
+      tryOns: 140,
+      savings: "14.3%",
+      popular: false,
+      polarProductId: "b72b2959-c7bb-4adb-9359-997422fb30d2", // TODO: Add when created in Polar
     },
     {
       name: "Large",
-      price: "$10",
-      tryOns: 150,
-      pricePerTryOn: "$0.066",
-      polarProductId: "9b883ae1-b120-4226-ad88-2ca5f19d3078",
+      price: "$20",
+      tryOns: 300,
+      savings: "20%",
+      popular: true,
+      polarProductId: "23829530-6f2c-4151-984f-bd9a65abfc42",
     },
   ];
 
@@ -133,7 +136,15 @@ export function BuyTryonsDialog({
                 <div className="text-xl font-bold tracking-tight flex flex-col items-end gap-1.5">
                   {pack.price}{" "}
                   <span className="text-sm text-muted-foreground font-medium">
-                    ({pack.pricePerTryOn} / try-on)
+                    {pack.savings ? (
+                      <span className="text-sm text-primary font-medium">
+                        Save {pack.savings}
+                      </span>
+                    ) : (
+                      <span className="text-sm text-muted-foreground font-medium">
+                        Base plan
+                      </span>
+                    )}
                   </span>
                 </div>
               </div>
