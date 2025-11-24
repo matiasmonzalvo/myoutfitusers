@@ -43,10 +43,8 @@ export async function POST(request: Request) {
       .eq("id", user.id)
       .single();
 
-    // Inicializar Polar SDK con sandbox
     const polar = new Polar({
       accessToken: process.env.POLAR_ACCESS_TOKEN,
-      server: "sandbox", // Usar sandbox para testing
     });
 
     // Crear checkout session
@@ -85,5 +83,3 @@ export async function POST(request: Request) {
     );
   }
 }
-
-

@@ -60,7 +60,6 @@ export async function POST(request: Request) {
       }
 
       // Mapear product_id a nombre de paquete y try-ons
-      // Estos IDs deben coincidir con los de Polar Sandbox
       const packageMapping: Record<
         string,
         { name: string; tryOns: number; price: number }
