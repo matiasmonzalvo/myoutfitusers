@@ -133,10 +133,10 @@ export default function PricingPage() {
         title="Wear yout outfits"
         description="Create your account to start wearing your outfits"
       />
-      <div className="bg-background py-4">
+      <div className="bg-background py-0 lg:py-4">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-10">
+          <div className="text-center mb-6 lg:mb-10">
             <h1 className="text-4xl md:text-5xl 2xl:text-6xl font-bold tracking-tighter mb-4">
               We're just starting
             </h1>
@@ -156,9 +156,10 @@ export default function PricingPage() {
                     <CardTitle className="text-2xl font-bold tracking-tight mb-2">
                       Users
                     </CardTitle>
-                    <CardDescription className="text-lg text-muted-foreground font-medium tracking-tight leading-tight w-[70%]">
-                      Pay only for items that aren't from partner brands on the
-                      platform. Choose your try-ons package.
+                    <CardDescription className="text-lg text-muted-foreground font-medium tracking-tight leading-tight w-full lg:w-[70%]">
+                      We only charge for try-ons that are not from partner
+                      brands on the platform. This benefits are free for all
+                      users.
                     </CardDescription>
                   </div>
                 </CardHeader>
@@ -184,7 +185,7 @@ export default function PricingPage() {
                     <span className="text-sm text-foreground font-medium mb-4">
                       Example:
                     </span>
-                    <div className="flex items-center gap-2 text-2xl font-semibold tracking-tight mb-4">
+                    <div className="flex items-center gap-2 text-xl lg:text-2xl font-semibold tracking-tight mb-4">
                       <Image
                         src="https://mohyrbuvfktjlxzpxbwb.supabase.co/storage/v1/object/public/brand-logos/551608484_18567162979020081_1135468084872726555_n.jpg"
                         alt="Brand A"
@@ -215,11 +216,11 @@ export default function PricingPage() {
                           strokeLinejoin="round"
                         />
                       </svg>
-                      <span className="ml-2 text-xl text-[#00c950] font-medium tracking-tight">
+                      <span className="ml-2 text-base lg:text-xl text-[#00c950] font-medium tracking-tight">
                         (Free)
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
+                    <div className="flex items-center gap-2 text-xl lg:text-2xl font-semibold tracking-tight">
                       <Image
                         src="https://mohyrbuvfktjlxzpxbwb.supabase.co/storage/v1/object/public/brand-logos/564201508_18563819479045765_7618693513437726799_n.jpg"
                         alt="Brand A"
@@ -250,7 +251,7 @@ export default function PricingPage() {
                           strokeLinejoin="round"
                         />
                       </svg>
-                      <span className="ml-2 text-xl text-muted-foreground font-medium tracking-tight">
+                      <span className="ml-2 text-base lg:text-xl text-muted-foreground font-medium tracking-tight">
                         (Try-ons usage)
                       </span>
                     </div>
@@ -277,7 +278,7 @@ export default function PricingPage() {
                       </div>
                     )}
                     {isLoading === pack.name && (
-                      <div className="absolute inset-0 bg-background/80 flex items-center justify-center rounded-lg z-10">
+                      <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
                         <Loader className="w-4 h-4 animate-spin text-foreground" />
                       </div>
                     )}
