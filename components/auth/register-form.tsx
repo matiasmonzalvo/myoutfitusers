@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { createServerClient } from "@/lib/supabase/client";
-import { Loader2 } from "lucide-react";
+import { Loader, Loader2 } from "lucide-react";
 import { AuthErrorHandler } from "./auth-error-handler";
 
 export function RegisterForm() {
@@ -139,8 +139,8 @@ export function RegisterForm() {
           )}
 
           {message && (
-            <div className="w-full px-3 py-2 rounded-md bg-green-100">
-              <span className="text-sm text-green-700">{message}</span>
+            <div className="w-full px-3 py-2 rounded-full bg-green-600/10">
+              <span className="text-sm text-green-600">{message}</span>
             </div>
           )}
 
@@ -193,7 +193,7 @@ export function RegisterForm() {
             disabled={loading || googleLoading}
           >
             {loading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader className="mr-2 h-4 w-4 animate-spin text-white" />
             ) : emailValidated ? (
               "Create account"
             ) : (
@@ -224,7 +224,7 @@ export function RegisterForm() {
           disabled={loading || googleLoading}
         >
           {googleLoading ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Loader className="mr-2 h-4 w-4 animate-spin text-foreground" />
           ) : (
             <>
               <svg
