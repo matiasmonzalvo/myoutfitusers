@@ -34,24 +34,7 @@ const sections = [
       { title: "What are Try-Ons?", href: "/guide/try-ons" },
       { title: "Partner Brands", href: "/guide/partner-brands" },
       { title: "Best Practices", href: "/guide/best-practices" },
-    ],
-  },
-  {
-    title: "Tips & Tricks",
-    id: "tips-tricks",
-    items: [
-      { title: "Optimal Try-On Strategy", href: "/guide/optimal-strategy" },
       { title: "Common Issues", href: "/guide/common-issues" },
-      { title: "Category Layering", href: "/guide/category-layering" },
-    ],
-  },
-  {
-    title: "Account & Billing",
-    id: "account-billing",
-    items: [
-      { title: "Managing Your Account", href: "/guide/managing-account" },
-      { title: "Purchasing Try-Ons", href: "/guide/purchasing-tryons" },
-      { title: "Saving Outfits", href: "/guide/saving-outfits" },
     ],
   },
 ];

@@ -309,7 +309,7 @@ export default function BillingPage() {
             <p>• Each time you click "Wear it", one try-on is consumed</p>
             <p>
               • Products from{" "}
-              <strong className="text-green-600">
+              <strong className="text-green-500">
                 verified brands (green badge)
               </strong>{" "}
               are FREE and don't consume try-ons

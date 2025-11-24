@@ -7,22 +7,26 @@ export default function TryOnsPage() {
       <h1 className="text-4xl 2xl:text-[44px] font-bold tracking-tighter mb-2">
         What are Try-Ons?
       </h1>
-      <p className="text-base text-foreground mb-8 leading-[1.4]">
+      <p className="text-base text-foreground mb-8 leading-[1.6]">
         Try-ons are the core feature of My Outfit, allowing you to visualize how
-        products look on your personal avatar before making a purchase.
+        products look on your personal avatar before making a purchase. A try-on
+        is a virtual fitting session where you can see how clothing and
+        accessories look on your avatar. The AI understands both the fit and
+        design of each product, creating realistic visualizations. A sigle
+        try-on can include multiple products. Whether you try on 1 item or 3
+        items from non-partner brands, it counts as one try-on credit. However,
+        we recommend trying on 1-2 items at a time for the best results.
+        <br />
+        <span className="text-green-500">
+          Remember that the try-ons usage is only for non-partner brands'
+          products. Partner brands offer free try-ons, so you don't need to use
+          a try-on credit for them.
+        </span>
       </p>
 
       <div className="space-y-10">
         {/* Overview */}
         <section>
-          <h2 className="text-3xl font-bold tracking-tight mb-4">
-            How Try-Ons Work
-          </h2>
-          <p className="text-base text-foreground mb-6">
-            A try-on is a virtual fitting session where you can see how clothing
-            and accessories look on your avatar. The AI understands both the fit
-            and design of each product, creating realistic visualizations.
-          </p>
           <div className="grid md:grid-cols-3 gap-4 p-4 bg-white dark:bg-black/50 rounded-xl border border-border">
             <div className="p-2">
               <div className="font-bold tracking-tighter text-foreground mb-2 text-3xl">

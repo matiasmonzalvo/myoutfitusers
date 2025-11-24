@@ -65,20 +65,20 @@ export async function POST(request: Request) {
         string,
         { name: string; tryOns: number; price: number }
       > = {
-        "211d365b-b5de-4072-8690-1b25fd97ad3d": {
+        "77bc8e98-468a-4a23-89b3-bc4384fd3b04": {
           name: "small",
-          tryOns: 20,
-          price: 2.0,
-        },
-        "ccd87a31-f6ba-44b7-989d-1effa9de9437": {
-          name: "medium",
           tryOns: 60,
           price: 5.0,
         },
-        "9b883ae1-b120-4226-ad88-2ca5f19d3078": {
-          name: "large",
-          tryOns: 150,
+        "b72b2959-c7bb-4adb-9359-997422fb30d2": {
+          name: "medium",
+          tryOns: 140,
           price: 10.0,
+        },
+        "23829530-6f2c-4151-984f-bd9a65abfc42": {
+          name: "large",
+          tryOns: 300,
+          price: 20.0,
         },
       };
 

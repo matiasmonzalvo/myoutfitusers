@@ -22,7 +22,7 @@ export default function BestPracticesPage() {
             <div className="">
               <div className="flex items-start">
                 <div>
-                  <h3 className="font-semibold text-foreground mb-2">
+                  <h3 className="font-semibold text-primary mb-2">
                     Use 1-2 Items Per Try-On
                   </h3>
                   <p className="text-base text-foreground">
@@ -37,7 +37,7 @@ export default function BestPracticesPage() {
             <div className="">
               <div className="flex items-start">
                 <div>
-                  <h3 className="font-semibold text-foreground mb-2">
+                  <h3 className="font-semibold text-primary mb-2">
                     Start With Sneakers or Pants + Sneakers
                   </h3>
                   <p className="text-base text-foreground">
@@ -52,7 +52,7 @@ export default function BestPracticesPage() {
             <div className="">
               <div className="flex items-start">
                 <div>
-                  <h3 className="font-semibold text-foreground mb-2">
+                  <h3 className="font-semibold text-primary mb-2">
                     Detailed Items Need Solo Try-Ons
                   </h3>
                   <p className="text-base text-foreground">
@@ -63,57 +63,21 @@ export default function BestPracticesPage() {
                 </div>
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* Optimal Strategy */}
-        <section>
-          <h2 className="text-3xl font-bold tracking-tight mb-4">
-            Optimal Try-On Strategy
-          </h2>
-          <p className="text-base text-foreground mb-2">
-            Follow this recommended order for building outfits:
-          </p>
-          <div className="space-y-3">
-            <div className="flex items-start gap-4 ">
-              <div className="flex items-center gap-2">
-                <h3 className="font-semibold">Sneakers First:</h3>
-                <p className="text-sm text-foreground">
-                  Try on your chosen sneakers as the foundation of your outfit.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4 ">
-              <div className="flex items-center gap-2">
-                <h3 className="font-semibold">Add Pants:</h3>
-                <p className="text-sm text-foreground">
-                  Try on pants (or shorts) after sneakers to build the lower
-                  half.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4 ">
-              <div className="flex items-center gap-2">
-                <h3 className="font-semibold">Upper Body Items:</h3>
-                <p className="text-sm text-foreground">
-                  Add shirts, hoodies, or t-shirts one at a time.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4 ">
-              <div className="flex items-center gap-2">
-                <h3 className="font-semibold">Layering Pieces:</h3>
-                <p className="text-sm text-foreground">
-                  Add jackets, coats, or vests last for the final layered look.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-4 ">
-              <div className="flex items-center gap-2">
-                <h3 className="font-semibold">Accessories:</h3>
-                <p className="text-sm text-foreground">
-                  Add hats, bags, or jewelry as finishing touches.
-                </p>
+            <div className="">
+              <div className="flex items-start">
+                <div>
+                  <h3 className="font-semibold text-primary mb-2">
+                    If you're trying on a hoodie, don't add a t-shirt before.
+                  </h3>
+                  <p className="text-base text-foreground">
+                    If the sweatshirt or hoodie completely covers the t-shirt
+                    underneath (like zip hoodies or thick pullovers), it's
+                    better to try it on without adding a t-shirt first. This
+                    saves a step and won’t affect the final result, since the
+                    hoodie will fully cover the layer beneath anyway.
+                  </p>
+                </div>
               </div>
             </div>
           </div>

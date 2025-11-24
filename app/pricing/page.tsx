@@ -37,25 +37,25 @@ export default function PricingPage() {
       name: "Small",
       price: "$5",
       tryOns: 60,
-      pricePerTryOn: "$0.083",
+      savings: "",
       popular: false,
-      polarProductId: "ccd87a31-f6ba-44b7-989d-1effa9de9437", // TODO: Add when created in Polar
+      polarProductId: "77bc8e98-468a-4a23-89b3-bc4384fd3b04", // TODO: Add when created in Polar
     },
     {
       name: "Medium",
       price: "$10",
-      tryOns: 150,
-      pricePerTryOn: "$0.066",
+      tryOns: 140,
+      savings: "14.3%",
       popular: false,
-      polarProductId: "9b883ae1-b120-4226-ad88-2ca5f19d3078", // TODO: Add when created in Polar
+      polarProductId: "b72b2959-c7bb-4adb-9359-997422fb30d2", // TODO: Add when created in Polar
     },
     {
       name: "Large",
       price: "$20",
-      tryOns: 360,
-      pricePerTryOn: "$0.055",
+      tryOns: 300,
+      savings: "20%",
       popular: true,
-      polarProductId: "211d365b-b5de-4072-8690-1b25fd97ad3d", // Your $2 product
+      polarProductId: "23829530-6f2c-4151-984f-bd9a65abfc42", // Your $20 product
     },
   ];
 
@@ -209,8 +209,8 @@ export default function PricingPage() {
                         />
                         <path
                           d="M9 12.8929L10.8 14.5L15 9.5"
-                          stroke="#ffffff"
-                          strokeWidth="1.5"
+                          stroke="var(--background)"
+                          strokeWidth="3"
                           strokeLinecap="round"
                           strokeLinejoin="round"
                         />
@@ -244,8 +244,8 @@ export default function PricingPage() {
                         />
                         <path
                           d="M9 12.8929L10.8 14.5L15 9.5"
-                          stroke="#ffffff"
-                          strokeWidth="1.5"
+                          stroke="var(--background)"
+                          strokeWidth="3"
                           strokeLinecap="round"
                           strokeLinejoin="round"
                         />
@@ -263,12 +263,19 @@ export default function PricingPage() {
                 {tryOnPacks.map((pack, index) => (
                   <div
                     key={index}
-                    className={`flex-1 p-8 flex flex-col justify-between relative transition-colors cursor-pointer group ${
+                    className={`flex-1 p-8 flex flex-col justify-between relative transition-colors group ${
                       !pack.polarProductId
                         ? "opacity-50 cursor-not-allowed"
                         : ""
                     } ${pack.popular ? "bg-background/30" : ""}`}
                   >
+                    {pack.popular && (
+                      <div className="absolute top-0 right-6 -translate-y-1/2 flex items-center justify-center rounded-lg z-10">
+                        <span className="rounded-full bg-primary px-3 py-1 text-xs font-semibold text-white tracking-tight">
+                          Recommended
+                        </span>
+                      </div>
+                    )}
                     {isLoading === pack.name && (
                       <div className="absolute inset-0 bg-background/80 flex items-center justify-center rounded-lg z-10">
                         <Loader className="w-4 h-4 animate-spin text-foreground" />
@@ -294,13 +301,19 @@ export default function PricingPage() {
 
                       <div className="text-2xl font-bold tracking-tight flex flex-col items-end gap-1.5">
                         {pack.price}{" "}
-                        <span className="text-base text-muted-foreground font-medium">
-                          ({pack.pricePerTryOn} / try-on)
-                        </span>
+                        {pack.savings ? (
+                          <span className="text-base text-primary font-medium">
+                            Save {pack.savings}
+                          </span>
+                        ) : (
+                          <span className="text-base text-muted-foreground font-medium">
+                            Base plan
+                          </span>
+                        )}
                       </div>
                     </div>
                     <button
-                      className={`mt-4 text-base cursor-pointer rounded-full font-medium tracking-tight py-2 transition-all ${pack.popular ? "bg-primary text-white hover:opacity-80" : "border border-border text-foreground hover:bg-background"}`}
+                      className={`mt-4 text-base cursor-pointer rounded-full font-medium tracking-tight py-2 transition-all ${pack.popular ? "bg-primary text-white hover:opacity-80" : "border border-border bg-background/50 text-foreground hover:bg-background"}`}
                       onClick={() =>
                         handlePurchase(pack.polarProductId, pack.name)
                       }
