@@ -35,6 +35,7 @@ import "ldrs/react/Jelly.css";
 import { AvatarHub } from "./AvatarHub";
 import { SearchProvider } from "@/lib/contexts/search-context";
 import { MobileShoppingCart } from "./MobileShoppingCart";
+import Image from "next/image";
 
 interface DashboardWrapperProps {
   children: React.ReactNode;
@@ -142,7 +143,66 @@ export function DashboardWrapper({
               className="p-0 w-64 max-w-none bg-background border-r border-border"
             >
               <SheetTitle className="sr-only">Sidebar</SheetTitle>
-              <Sidebar isCollapsed={false} onToggle={() => {}} />
+              <div className="flex flex-col h-full p-4">
+                <div className="space-y-1">
+                  <Link href="/" className="block py-3">
+                    <Image
+                      src="/logo.png"
+                      alt="Outfiterz"
+                      width={120}
+                      height={120}
+                      className="w-10 h-10 lg:w-12 lg:h-12 dark:invert"
+                    />
+                  </Link>
+                  <Link
+                    href="/about"
+                    className="block py-3 rounded-lg font-medium text-foreground hover:bg-muted transition-colors cursor-pointer"
+                    onClick={() => setIsMobileSidebarOpen(false)}
+                  >
+                    About
+                  </Link>
+                  <Link
+                    href="/guide"
+                    className="block py-3 rounded-lg font-medium text-foreground hover:bg-muted transition-colors cursor-pointer"
+                    onClick={() => setIsMobileSidebarOpen(false)}
+                  >
+                    Guide
+                  </Link>
+                  <Link
+                    href="/pricing"
+                    className="block py-3 rounded-lg font-medium text-foreground hover:bg-muted transition-colors cursor-pointer"
+                    onClick={() => setIsMobileSidebarOpen(false)}
+                  >
+                    Pricing
+                  </Link>
+                  <Link
+                    href="/contact"
+                    className="block py-3 rounded-lg font-medium text-foreground hover:bg-muted transition-colors cursor-pointer"
+                    onClick={() => setIsMobileSidebarOpen(false)}
+                  >
+                    Contact
+                  </Link>
+                </div>
+
+                {!isAuthenticated && (
+                  <div className="space-y-3 pt-4">
+                    <Link
+                      href="/login"
+                      className="block w-full py-2 px-4 text-center font-medium text-foreground border border-border rounded-full bg-muted hover:opacity-80 transition-all cursor-pointer"
+                      onClick={() => setIsMobileSidebarOpen(false)}
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      href="/register"
+                      className="block w-full py-2 px-4 text-center bg-primary text-white font-medium rounded-full hover:opacity-80 transition-all cursor-pointer"
+                      onClick={() => setIsMobileSidebarOpen(false)}
+                    >
+                      Sign Up
+                    </Link>
+                  </div>
+                )}
+              </div>
             </SheetContent>
           </Sheet>
           <SidebarInset ref={insetRef} className="relative flex-1 min-w-0 z-50">

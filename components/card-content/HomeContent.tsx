@@ -296,7 +296,7 @@ export function HomeContent({ isAuthenticated }: HomeContentProps) {
 
   return (
     <div className="pb-6 h-auto w-full overflow-hidden">
-      <div className=" lg:hidden w-auto pt-4 lg:p-10 mb-10 lg:h-screen flex flex-col items-center justify-start ">
+      <div className=" lg:hidden w-auto pt-0 lg:p-10 mb-10 lg:h-screen flex flex-col items-center justify-start ">
         <AvatarHub isAuthenticated={isAuthenticated} />
       </div>
       <div className="w-full mx-auto">
