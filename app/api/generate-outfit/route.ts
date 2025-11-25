@@ -152,16 +152,25 @@ export async function POST(request: Request) {
     });
 
     // Construir el prompt simplificado para Gemini
-    const systemPrompt = `Dress the person in the first image with the items from the second image:
+    // Usar singular o plural según la cantidad de productos
+    const isSingleItem = sortedProducts.length === 1;
+    const systemPrompt = isSingleItem
+      ? `Dress the person in the first image with the item from the second image:
+
+${productDescriptions.join("\n")}
+
+IMPORTANT:
+- Keep the person's original pose straight, with arms relaxed at the sides.
+- Use the description only to guide the shape, fit, and material of the item.
+- The clothing design and colors must look exactly like the item in the picture.`
+      : `Dress the person in the first image with the items from the second image:
 
 ${productDescriptions.join("\n")}
 
 IMPORTANT:
 - Keep the person's original pose straight, with arms relaxed at the sides.
 - Use the descriptions only to guide the shape, fit, and material of each item.
-- Use the images only for the design, colors, and details.
-- Do not invent or add anything that is not shown in the images.
-- The clothing must look exactly like the items in the pictures.`;
+- The clothing design and colors must look exactly like the items in the pictures.`;
 
     // Construir el prompt con las imágenes
     // Primera imagen: avatar base o outfit actual
@@ -237,7 +246,7 @@ IMPORTANT:
 
     // Guardar en avatar_history
     console.log("Saving outfit to avatar_history...");
-    
+
     // Combinar productos del outfit actual con los nuevos productos
     const { data: currentHistory } = await supabase
       .from("avatar_history")
@@ -246,7 +255,7 @@ IMPORTANT:
       .eq("is_current", true)
       .single();
 
-    const previousProducts = currentHistory?.products as any[] || [];
+    const previousProducts = (currentHistory?.products as any[]) || [];
     const allProducts = [...previousProducts, ...products];
 
     // Marcar todos los outfits anteriores como no actuales
@@ -278,13 +287,18 @@ IMPORTANT:
       // Verificar si los productos son de marcas verificadas
       const { data: productsData, error: productsError } = await supabase
         .from("products")
-        .select(`
+        .select(
+          `
           id,
           brands (
             is_verified_brand
           )
-        `)
-        .in("id", products.map((p: any) => p.id));
+        `
+        )
+        .in(
+          "id",
+          products.map((p: any) => p.id)
+        );
 
       if (productsError) {
         console.error("Error fetching products for billing:", productsError);
@@ -298,12 +312,14 @@ IMPORTANT:
       if (allProductsVerified) {
         // GRATIS - Todos los productos son de marcas verificadas
         // Registrar el uso pero NO descontar try-ons
-        const { error: usageError } = await supabase.from("tryons_usage").insert({
-          user_id: user.id,
-          action: "generate_outfit",
-          products_used: products.map((p: any) => p.id),
-          was_free: true,
-        });
+        const { error: usageError } = await supabase
+          .from("tryons_usage")
+          .insert({
+            user_id: user.id,
+            action: "generate_outfit",
+            products_used: products.map((p: any) => p.id),
+            was_free: true,
+          });
 
         if (usageError) {
           console.error("Error tracking free usage:", usageError);
@@ -326,9 +342,10 @@ IMPORTANT:
 
         if (profileData.try_ons_left <= 0) {
           return NextResponse.json(
-            { 
-              error: "You don't have any try-ons left. Please purchase a package to continue.",
-              code: "NO_TRYONS_LEFT"
+            {
+              error:
+                "You don't have any try-ons left. Please purchase a package to continue.",
+              code: "NO_TRYONS_LEFT",
             },
             { status: 402 } // 402 Payment Required
           );
@@ -349,12 +366,14 @@ IMPORTANT:
         }
 
         // Registrar el uso
-        const { error: usageError } = await supabase.from("tryons_usage").insert({
-          user_id: user.id,
-          action: "generate_outfit",
-          products_used: products.map((p: any) => p.id),
-          was_free: false,
-        });
+        const { error: usageError } = await supabase
+          .from("tryons_usage")
+          .insert({
+            user_id: user.id,
+            action: "generate_outfit",
+            products_used: products.map((p: any) => p.id),
+            was_free: false,
+          });
 
         if (usageError) {
           console.error("Error tracking usage:", usageError);
