@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { createServerClient } from "@/lib/supabase/client";
-import { Loader, Loader2 } from "lucide-react";
+import { Loader, Loader2, Eye, EyeOff } from "lucide-react";
 import { AuthErrorHandler } from "./auth-error-handler";
 
 export function RegisterForm() {
@@ -29,6 +29,8 @@ export function RegisterForm() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [emailValidated, setEmailValidated] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
   const supabase = createServerClient();
 
@@ -159,30 +161,54 @@ export function RegisterForm() {
 
           {emailValidated && (
             <>
-              <div className="space-y-2">
+              <div className=" relative">
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={loading || googleLoading}
-                  className="text-base px-4 py-2 w-full rounded-full bg-muted border border-border focus:outline-none "
+                  className="text-base px-4 py-2 pr-12 w-full rounded-full bg-muted border border-border focus:outline-none "
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  disabled={loading || googleLoading}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
               </div>
 
-              <div className="space-y-2">
+              <div className="relative">
                 <input
                   id="confirmPassword"
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm Password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   disabled={loading || googleLoading}
-                  className="text-base px-4 py-2 w-full rounded-full bg-muted border border-border focus:outline-none "
+                  className="text-base px-4 py-2 pr-12 w-full rounded-full bg-muted border border-border focus:outline-none "
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  disabled={loading || googleLoading}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
               </div>
             </>
           )}
