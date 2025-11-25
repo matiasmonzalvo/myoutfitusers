@@ -17,6 +17,7 @@ export interface UserProfile {
   avatar_url: string | null;
   profile_photo_url: string | null;
   avatar_regenerations_left: number;
+  try_ons_left: number;
   onboarding_completed: boolean;
   created_at: string;
   updated_at: string;

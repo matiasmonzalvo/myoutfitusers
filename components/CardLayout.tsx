@@ -70,6 +70,20 @@ export function CardLayout({
   const { selectedFilter, setSelectedFilter } = useCategoryFilter();
   const { searchQuery, setSearchQuery } = useSearch();
 
+  // Estado para detectar si es pantalla menor a lg (1024px)
+  const [isLgScreen, setIsLgScreen] = useState(false);
+
+  // Detectar tamaño de pantalla
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsLgScreen(window.innerWidth >= 1024);
+    };
+
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
   // Estados para tooltips
   const [showMenTooltip, setShowMenTooltip] = useState(false);
   const [showWomenTooltip, setShowWomenTooltip] = useState(false);
@@ -765,12 +779,14 @@ export function CardLayout({
               <button
                 onClick={() => router.push("/brands")}
                 onMouseEnter={() => {
+                  if (!isLgScreen) return;
                   if (brandsTooltipTimeoutRef.current) {
                     clearTimeout(brandsTooltipTimeoutRef.current);
                   }
                   setShowBrandsTooltip(true);
                 }}
                 onMouseLeave={() => {
+                  if (!isLgScreen) return;
                   brandsTooltipTimeoutRef.current = setTimeout(() => {
                     setShowBrandsTooltip(false);
                   }, 100);
@@ -790,12 +806,14 @@ export function CardLayout({
               <button
                 onClick={() => router.push("/browse/men")}
                 onMouseEnter={() => {
+                  if (!isLgScreen) return;
                   if (menTooltipTimeoutRef.current) {
                     clearTimeout(menTooltipTimeoutRef.current);
                   }
                   setShowMenTooltip(true);
                 }}
                 onMouseLeave={() => {
+                  if (!isLgScreen) return;
                   menTooltipTimeoutRef.current = setTimeout(() => {
                     setShowMenTooltip(false);
                   }, 100);
@@ -809,12 +827,14 @@ export function CardLayout({
               <button
                 onClick={() => router.push("/browse/women")}
                 onMouseEnter={() => {
+                  if (!isLgScreen) return;
                   if (womenTooltipTimeoutRef.current) {
                     clearTimeout(womenTooltipTimeoutRef.current);
                   }
                   setShowWomenTooltip(true);
                 }}
                 onMouseLeave={() => {
+                  if (!isLgScreen) return;
                   womenTooltipTimeoutRef.current = setTimeout(() => {
                     setShowWomenTooltip(false);
                   }, 100);
@@ -828,12 +848,14 @@ export function CardLayout({
               <Link
                 href="/category/footwear"
                 onMouseEnter={() => {
+                  if (!isLgScreen) return;
                   if (sneakersTooltipTimeoutRef.current) {
                     clearTimeout(sneakersTooltipTimeoutRef.current);
                   }
                   setShowSneakersTooltip(true);
                 }}
                 onMouseLeave={() => {
+                  if (!isLgScreen) return;
                   sneakersTooltipTimeoutRef.current = setTimeout(() => {
                     setShowSneakersTooltip(false);
                   }, 100);
@@ -847,12 +869,14 @@ export function CardLayout({
               <Link
                 href="/category/accesories"
                 onMouseEnter={() => {
+                  if (!isLgScreen) return;
                   if (accessoriesTooltipTimeoutRef.current) {
                     clearTimeout(accessoriesTooltipTimeoutRef.current);
                   }
                   setShowAccessoriesTooltip(true);
                 }}
                 onMouseLeave={() => {
+                  if (!isLgScreen) return;
                   accessoriesTooltipTimeoutRef.current = setTimeout(() => {
                     setShowAccessoriesTooltip(false);
                   }, 100);

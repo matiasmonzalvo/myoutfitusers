@@ -539,11 +539,13 @@ export function OnboardingForm() {
       }
 
       // Actualizar el perfil solo con el avatar y marcar onboarding como completado
+      // También asignar 5 try-ons iniciales al usuario
       const { error: updateError } = await supabase
         .from("user_profiles")
         .update({
           onboarding_completed: true,
           avatar_url: generatedAvatar,
+          try_ons_left: 5,
         })
         .eq("id", user.id);
 

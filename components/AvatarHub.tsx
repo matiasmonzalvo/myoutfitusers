@@ -606,7 +606,7 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
 
                 <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
                   The model can make mistakes.{" "}
-                  <Link href="/guide" className="text-primary">
+                  <Link href="/guide/best-practices" className="text-primary">
                     Learn how to use it here.
                   </Link>
                 </div>
