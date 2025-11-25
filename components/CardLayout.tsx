@@ -796,12 +796,12 @@ export function CardLayout({
                 Brands
               </button>
             </div>
-            <button
-              onClick={() => {}}
+            <Link
+              href="/new"
               className={`cursor-pointer px-2 py-2 font-semibold text-base transition-colors ${"text-foreground"}`}
             >
-              Trending
-            </button>
+              New
+            </Link>
             <div className="relative">
               <button
                 onClick={() => router.push("/browse/men")}
