@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronRight, AlertTriangle, CheckCircle } from "lucide-react";
+import { ChevronRight, AlertTriangle, Check } from "lucide-react";
 
 export default function CommonIssuesPage() {
   return (
@@ -21,8 +21,8 @@ export default function CommonIssuesPage() {
 
           {/* Issue 1 */}
           <div className="space-y-6">
-            <div className="border border-orange-500/30 rounded-xl overflow-hidden">
-              <div className="bg-orange-500/5 p-4 border-b border-orange-500/30">
+            <div className="border border-neutral-500/10 rounded-xl overflow-hidden">
+              <div className="bg-neutral-500/10 p-4 border-b border-neutral-500/10">
                 <div className="flex items-start gap-3">
                   <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
                   <div>
@@ -38,7 +38,7 @@ export default function CommonIssuesPage() {
               </div>
               <div className="p-4">
                 <div className="flex items-start gap-3 mb-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                  <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                   <div>
                     <h4 className="font-semibold text-green-500 mb-2">
                       Solutions:
@@ -74,8 +74,8 @@ export default function CommonIssuesPage() {
             </div>
 
             {/* Issue 2 */}
-            <div className="border border-orange-500/30 rounded-xl overflow-hidden">
-              <div className="bg-orange-500/5 p-4 border-b border-orange-500/30">
+            <div className="border border-neutral-500/10 rounded-xl overflow-hidden">
+              <div className="bg-neutral-500/10 p-4 border-b border-neutral-500/10">
                 <div className="flex items-start gap-3">
                   <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
                   <div>
@@ -91,7 +91,7 @@ export default function CommonIssuesPage() {
               </div>
               <div className="p-4">
                 <div className="flex items-start gap-3 mb-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                  <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                   <div>
                     <h4 className="font-semibold text-green-500 mb-2">
                       Solutions:
@@ -127,8 +127,8 @@ export default function CommonIssuesPage() {
             </div>
 
             {/* Issue 3 */}
-            <div className="border border-orange-500/30 rounded-xl overflow-hidden">
-              <div className="bg-orange-500/5 p-4 border-b border-orange-500/30">
+            <div className="border border-neutral-500/10 rounded-xl overflow-hidden">
+              <div className="bg-neutral-500/10 p-4 border-b border-neutral-500/10">
                 <div className="flex items-start gap-3">
                   <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
                   <div>
@@ -143,7 +143,7 @@ export default function CommonIssuesPage() {
               </div>
               <div className="p-4">
                 <div className="flex items-start gap-3 mb-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                  <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                   <div>
                     <h4 className="font-semibold text-green-500 mb-2">
                       Explanation:
@@ -186,8 +186,8 @@ export default function CommonIssuesPage() {
             </div>
 
             {/* Issue 4 */}
-            <div className="border border-orange-500/30 rounded-xl overflow-hidden">
-              <div className="bg-orange-500/5 p-4 border-b border-orange-500/30">
+            <div className="border border-neutral-500/10 rounded-xl overflow-hidden">
+              <div className="bg-neutral-500/10 p-4 border-b border-neutral-500/10">
                 <div className="flex items-start gap-3">
                   <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
                   <div>
@@ -203,7 +203,7 @@ export default function CommonIssuesPage() {
               </div>
               <div className="p-4">
                 <div className="flex items-start gap-3 mb-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                  <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                   <div>
                     <h4 className="font-semibold text-green-500 mb-2">
                       Solutions:
@@ -240,8 +240,8 @@ export default function CommonIssuesPage() {
             </div>
 
             {/* Issue 5 */}
-            <div className="border border-orange-500/30 rounded-xl overflow-hidden">
-              <div className="bg-orange-500/5 p-4 border-b border-orange-500/30">
+            <div className="border border-neutral-500/10 rounded-xl overflow-hidden">
+              <div className="bg-neutral-500/10 p-4 border-b border-neutral-500/10">
                 <div className="flex items-start gap-3">
                   <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
                   <div>
@@ -257,7 +257,7 @@ export default function CommonIssuesPage() {
               </div>
               <div className="p-4">
                 <div className="flex items-start gap-3 mb-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                  <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                   <div>
                     <h4 className="font-semibold text-green-500 mb-2">
                       Explanation:
@@ -276,8 +276,8 @@ export default function CommonIssuesPage() {
             </div>
 
             {/* Issue 6 */}
-            <div className="border border-orange-500/30 rounded-xl overflow-hidden">
-              <div className="bg-orange-500/5 p-4 border-b border-orange-500/30">
+            <div className="border border-neutral-500/10 rounded-xl overflow-hidden">
+              <div className="bg-neutral-500/10 p-4 border-b border-neutral-500/10">
                 <div className="flex items-start gap-3">
                   <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
                   <div>
@@ -293,7 +293,7 @@ export default function CommonIssuesPage() {
               </div>
               <div className="p-4">
                 <div className="flex items-start gap-3 mb-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                  <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                   <div>
                     <h4 className="font-semibold text-green-500 mb-2">
                       Solutions:

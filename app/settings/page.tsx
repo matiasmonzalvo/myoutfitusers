@@ -384,56 +384,6 @@ export default function SettingsPage() {
                   </Alert>
                 )}
 
-                {/* Profile Photo Section */}
-                <div className="space-y-4">
-                  <Label>Profile Photo</Label>
-                  <div className="flex items-center gap-6">
-                    <div className="relative">
-                      <div className="w-24 h-24 rounded-full border-2 border-border overflow-hidden bg-muted">
-                        {profilePhotoPreview ? (
-                          <Image
-                            src={profilePhotoPreview}
-                            alt="Profile"
-                            width={96}
-                            height={96}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <User className="h-12 w-12 text-muted-foreground" />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <input
-                        type="file"
-                        id="profile-photo-upload"
-                        accept="image/*"
-                        onChange={handleProfilePhotoChange}
-                        className="hidden"
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() =>
-                          document
-                            .getElementById("profile-photo-upload")
-                            ?.click()
-                        }
-                        className="rounded-full"
-                        disabled={uploadingPhoto}
-                      >
-                        <Upload className="h-4 w-4 mr-2" />
-                        {uploadingPhoto ? "Uploading..." : "Upload Photo"}
-                      </Button>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        PNG, JPG or WEBP. Max 5MB.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
                 {/* Email (Read-only) */}
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>

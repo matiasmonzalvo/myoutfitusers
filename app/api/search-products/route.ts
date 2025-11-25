@@ -16,11 +16,26 @@ export async function GET(request: NextRequest) {
 
     const supabase = await createServerClient();
 
-    // Búsqueda optimizada - primero buscamos productos por nombre
-    // Luego buscaremos por marca en una consulta separada
-    const searchTerm = `%${query}%`;
+    // Dividir la búsqueda en palabras individuales (mínimo 2 caracteres)
+    const searchWords = query
+      .trim()
+      .toLowerCase()
+      .split(/\s+/)
+      .filter((word) => word.length >= 2);
 
-    // Construir query base para nombre de producto
+    if (searchWords.length === 0) {
+      return NextResponse.json({ products: [] });
+    }
+
+    // Crear términos de búsqueda para cada palabra
+    const searchTerms = searchWords.map((word) => `%${word}%`);
+
+    // Buscar productos que coincidan con CUALQUIER palabra en el nombre
+    // Usamos OR para cada palabra
+    const nameOrConditions = searchWords
+      .map((word) => `name.ilike.%${word}%`)
+      .join(",");
+
     let productsByNameQuery = supabase
       .from("products")
       .select(
@@ -37,7 +52,7 @@ export async function GET(request: NextRequest) {
       `
       )
       .eq("is_active", true)
-      .ilike("name", searchTerm);
+      .or(nameOrConditions);
 
     // Aplicar filtro de género si existe
     if (gender === "men" || gender === "women") {
@@ -51,13 +66,17 @@ export async function GET(request: NextRequest) {
 
     const { data: productsByName, error: error1 } = await productsByNameQuery
       .order("created_at", { ascending: false })
-      .limit(50);
+      .limit(100);
 
-    // Búsqueda en marcas
+    // Búsqueda en marcas - también buscar por cada palabra
+    const brandOrConditions = searchWords
+      .map((word) => `brand_name.ilike.%${word}%,brand_username.ilike.%${word}%`)
+      .join(",");
+
     const { data: brands, error: error2 } = await supabase
       .from("brands")
       .select("id")
-      .or(`brand_name.ilike.${searchTerm},brand_username.ilike.${searchTerm}`);
+      .or(brandOrConditions);
 
     const brandIds = brands?.map((b) => b.id) || [];
 
@@ -73,7 +92,8 @@ export async function GET(request: NextRequest) {
             brand_name,
             brand_username,
             logo_url,
-            website_url
+            website_url,
+            is_verified_brand
           )
         `
         )
@@ -95,7 +115,7 @@ export async function GET(request: NextRequest) {
 
       const { data, error: error3 } = await productsByBrandQuery
         .order("created_at", { ascending: false })
-        .limit(50);
+        .limit(100);
 
       productsByBrand = data || [];
     }
@@ -115,66 +135,84 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ products: [] });
     }
 
-    // Implementar fuzzy matching en el lado del servidor para mejor precisión
-    const fuzzyMatch = (text: string, searchTerm: string): number => {
+    // Función para calcular cuántas palabras de búsqueda coinciden
+    const calculateWordMatches = (
+      text: string,
+      words: string[]
+    ): { matches: number; exactMatches: number; score: number } => {
       const textLower = text.toLowerCase();
-      const searchLower = searchTerm.toLowerCase();
-
-      // Coincidencia exacta
-      if (textLower === searchLower) return 100;
-
-      // Comienza con el término
-      if (textLower.startsWith(searchLower)) return 90;
-
-      // Contiene el término
-      if (textLower.includes(searchLower)) return 80;
-
-      // Fuzzy matching básico (Levenshtein simplificado)
       let matches = 0;
-      let searchIndex = 0;
+      let exactMatches = 0;
 
-      for (
-        let i = 0;
-        i < textLower.length && searchIndex < searchLower.length;
-        i++
-      ) {
-        if (textLower[i] === searchLower[searchIndex]) {
+      for (const word of words) {
+        if (textLower.includes(word)) {
           matches++;
-          searchIndex++;
+          // Verificar si es una palabra completa (no parte de otra palabra)
+          const regex = new RegExp(`\\b${word}\\b`, "i");
+          if (regex.test(text)) {
+            exactMatches++;
+          }
         }
       }
 
-      const ratio = matches / searchLower.length;
-      return ratio > 0.6 ? ratio * 70 : 0;
+      // Calcular score basado en coincidencias
+      // Más peso a coincidencias exactas de palabras
+      const totalWords = words.length;
+      const matchRatio = matches / totalWords;
+      const exactRatio = exactMatches / totalWords;
+
+      // Score: exactMatches tienen más peso
+      const score = exactRatio * 60 + matchRatio * 40;
+
+      return { matches, exactMatches, score };
     };
 
-    // Ordenar por relevancia
-    const scoredProducts =
-      products?.map((product) => {
-        const nameScore = fuzzyMatch(product.name, query);
-        const brandNameScore = product.brands?.brand_name
-          ? fuzzyMatch(product.brands.brand_name, query)
-          : 0;
-        const brandUsernameScore = product.brands?.brand_username
-          ? fuzzyMatch(product.brands.brand_username, query)
-          : 0;
+    // Calcular relevancia para cada producto
+    const scoredProducts = products.map((product) => {
+      const nameResult = calculateWordMatches(product.name, searchWords);
+      const brandNameResult = product.brands?.brand_name
+        ? calculateWordMatches(product.brands.brand_name, searchWords)
+        : { matches: 0, exactMatches: 0, score: 0 };
+      const brandUsernameResult = product.brands?.brand_username
+        ? calculateWordMatches(product.brands.brand_username, searchWords)
+        : { matches: 0, exactMatches: 0, score: 0 };
 
-        const maxScore = Math.max(
-          nameScore,
-          brandNameScore,
-          brandUsernameScore
-        );
+      // Combinar scores: nombre del producto tiene más peso
+      const nameScore = nameResult.score * 1.5;
+      const brandScore = Math.max(brandNameResult.score, brandUsernameResult.score);
 
-        return {
-          ...product,
-          relevanceScore: maxScore,
-        };
-      }) || [];
+      // Total de palabras que coinciden (entre nombre y marca)
+      const totalMatches = Math.max(
+        nameResult.matches,
+        brandNameResult.matches,
+        brandUsernameResult.matches
+      );
 
-    // Filtrar productos con score mínimo y ordenar por relevancia
+      // Score final: combinación de nombre y marca
+      const finalScore = nameScore + brandScore * 0.5;
+
+      // Bonus por coincidencia con todas las palabras
+      const allWordsBonus = totalMatches === searchWords.length ? 20 : 0;
+
+      return {
+        ...product,
+        relevanceScore: finalScore + allWordsBonus,
+        matchedWords: totalMatches,
+      };
+    });
+
+    // Filtrar productos que tengan al menos una palabra coincidente
+    // y ordenar por relevancia
     const filteredProducts = scoredProducts
-      .filter((p) => p.relevanceScore > 30)
-      .sort((a, b) => b.relevanceScore - a.relevanceScore);
+      .filter((p) => p.matchedWords > 0)
+      .sort((a, b) => {
+        // Primero ordenar por número de palabras coincidentes
+        if (b.matchedWords !== a.matchedWords) {
+          return b.matchedWords - a.matchedWords;
+        }
+        // Luego por score de relevancia
+        return b.relevanceScore - a.relevanceScore;
+      });
 
     // Aplicar paginación
     const paginatedProducts = filteredProducts.slice(offset, offset + limit);

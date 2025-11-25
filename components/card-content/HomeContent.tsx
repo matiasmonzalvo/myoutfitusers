@@ -30,7 +30,7 @@ export function HomeContent({ isAuthenticated }: HomeContentProps) {
   const [isGenderLoaded, setIsGenderLoaded] = useState(false);
   const { selectedFilter } = useCategoryFilter();
   const { searchQuery, isSearching, setIsSearching } = useSearch();
-  const observerTarget = useRef<HTMLDivElement>(null);
+  // observerTarget ya no se usa, se reemplazó por callback ref setObserverTarget
   const offsetRef = useRef(0);
   const searchOffsetRef = useRef(0);
   const isLoadingRef = useRef(false);
@@ -214,9 +214,11 @@ export function HomeContent({ isAuthenticated }: HomeContentProps) {
 
   // Debounce para la búsqueda (300ms)
   useEffect(() => {
-    // Si hay query, marcar como "buscando" INMEDIATAMENTE
+    // Si hay query, marcar como "buscando" INMEDIATAMENTE y limpiar resultados anteriores
     if (searchQuery.trim()) {
       setIsSearching(true);
+      setSearchResults([]); // Limpiar resultados anteriores inmediatamente
+      searchOffsetRef.current = 0;
     }
 
     const timeoutId = setTimeout(() => {
@@ -235,43 +237,76 @@ export function HomeContent({ isAuthenticated }: HomeContentProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFilter]);
 
-  // Configurar IntersectionObserver para infinite scroll
+  // Referencia al observer para poder limpiarlo
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const observerNodeRef = useRef<HTMLDivElement | null>(null);
+
+  // Refs para valores que el observer necesita leer (siempre actualizados)
+  const searchQueryRef = useRef(searchQuery);
+  const hasMoreRef = useRef(hasMore);
+  const searchHasMoreRef = useRef(searchHasMore);
+  const loadProductsRef = useRef(loadProducts);
+  const searchProductsRef = useRef(searchProducts);
+
+  // Mantener refs actualizados
   useEffect(() => {
-    const observer = new IntersectionObserver(
+    searchQueryRef.current = searchQuery;
+    hasMoreRef.current = hasMore;
+    searchHasMoreRef.current = searchHasMore;
+    loadProductsRef.current = loadProducts;
+    searchProductsRef.current = searchProducts;
+  }, [searchQuery, hasMore, searchHasMore, loadProducts, searchProducts]);
+
+  // Callback ref para el elemento observer - se ejecuta cuando el elemento aparece/desaparece del DOM
+  const setObserverTarget = useCallback((node: HTMLDivElement | null) => {
+    // Limpiar observer anterior
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+      observerRef.current = null;
+    }
+
+    observerNodeRef.current = node;
+
+    // Si no hay nodo, no hacer nada
+    if (!node) return;
+
+    // Crear nuevo observer
+    observerRef.current = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && !loadingMore && !loading) {
+        // Solo actuar si el elemento es visible y no estamos cargando
+        if (
+          entries[0].isIntersecting &&
+          !isSearchLoadingRef.current &&
+          !isLoadingRef.current
+        ) {
+          const currentSearchQuery = searchQueryRef.current;
+          const currentSearchHasMore = searchHasMoreRef.current;
+          const currentHasMore = hasMoreRef.current;
+
           // Si hay búsqueda activa, cargar más resultados de búsqueda
-          if (searchQuery.trim() && searchHasMore) {
-            searchProducts(searchQuery, false);
+          if (currentSearchQuery.trim() && currentSearchHasMore) {
+            searchProductsRef.current(currentSearchQuery, false);
           }
           // Si no hay búsqueda, cargar más productos normales
-          else if (!searchQuery.trim() && hasMore) {
-            loadProducts(false);
+          else if (!currentSearchQuery.trim() && currentHasMore) {
+            loadProductsRef.current(false);
           }
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1, rootMargin: "200px" }
     );
 
-    const currentTarget = observerTarget.current;
-    if (currentTarget) {
-      observer.observe(currentTarget);
-    }
+    observerRef.current.observe(node);
+  }, []);
 
+  // Limpiar observer al desmontar
+  useEffect(() => {
     return () => {
-      if (currentTarget) {
-        observer.unobserve(currentTarget);
+      if (observerRef.current) {
+        observerRef.current.disconnect();
       }
     };
-  }, [
-    hasMore,
-    searchHasMore,
-    loadingMore,
-    loading,
-    searchQuery,
-    loadProducts,
-    searchProducts,
-  ]);
+  }, []);
 
   // Determinar qué productos mostrar
   const displayProducts = searchQuery.trim() ? searchResults : filteredProducts;
@@ -328,7 +363,7 @@ export function HomeContent({ isAuthenticated }: HomeContentProps) {
             {/* Elemento observador para infinite scroll */}
             {((searchQuery.trim() && searchHasMore) ||
               (!searchQuery.trim() && hasMore)) && (
-              <div ref={observerTarget} className="w-full py-8 ">
+              <div ref={setObserverTarget} className="w-full py-8 ">
                 {loadingMore && (
                   <div className="grid grid-cols-2 lg:grid-cols-4 2xl:grid-cols-4 gap-4">
                     {Array.from({ length: 8 }).map((_, index) => (

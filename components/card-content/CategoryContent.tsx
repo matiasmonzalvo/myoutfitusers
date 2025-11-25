@@ -25,10 +25,13 @@ export function CategoryContent({
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [searchHasMore, setSearchHasMore] = useState(true);
   const { searchQuery, isSearching, setIsSearching } = useSearch();
   const observerTarget = useRef<HTMLDivElement>(null);
   const offsetRef = useRef(0);
+  const searchOffsetRef = useRef(0);
   const isLoadingRef = useRef(false);
+  const isSearchLoadingRef = useRef(false);
 
   // Función para cargar productos filtrados por categoría y género
   const loadProducts = useCallback(
@@ -101,31 +104,69 @@ export function CategoryContent({
     loadProducts(true);
   }, [loadProducts]);
 
-  // Búsqueda de productos con debounce
+  // Búsqueda de productos con paginación
   const searchProducts = useCallback(
-    async (query: string) => {
+    async (query: string, reset: boolean = false) => {
       if (!query.trim()) {
         setSearchResults([]);
         setIsSearching(false);
+        setSearchHasMore(true);
+        searchOffsetRef.current = 0;
         return;
       }
 
-      setIsSearching(true);
+      // Prevenir múltiples cargas simultáneas
+      if (isSearchLoadingRef.current) return;
+
+      isSearchLoadingRef.current = true;
+
       try {
+        if (reset) {
+          setIsSearching(true);
+          searchOffsetRef.current = 0;
+          setSearchHasMore(true);
+        } else {
+          setLoadingMore(true);
+        }
+
+        const currentOffset = reset ? 0 : searchOffsetRef.current;
+        
         // Construir URL con parámetros
-        let url = `/api/search-products?q=${encodeURIComponent(query)}&category=${category}`;
+        let url = `/api/search-products?q=${encodeURIComponent(query)}&category=${category}&limit=${PRODUCTS_PER_PAGE}&offset=${currentOffset}`;
         if (gender) {
           url += `&gender=${gender}`;
         }
 
         const response = await fetch(url);
         const data = await response.json();
-        setSearchResults(data.products || []);
+        const results = data.products || [];
+
+        if (results.length < PRODUCTS_PER_PAGE) {
+          setSearchHasMore(false);
+        }
+
+        if (reset) {
+          setSearchResults(results);
+          searchOffsetRef.current = PRODUCTS_PER_PAGE;
+        } else {
+          setSearchResults((prev) => {
+            const existingIds = new Set(prev.map((p) => p.id));
+            const newProducts = results.filter(
+              (p: Product) => !existingIds.has(p.id)
+            );
+            return [...prev, ...newProducts];
+          });
+          searchOffsetRef.current = currentOffset + PRODUCTS_PER_PAGE;
+        }
       } catch (error) {
         console.error("Error searching products:", error);
-        setSearchResults([]);
+        if (reset) {
+          setSearchResults([]);
+        }
       } finally {
         setIsSearching(false);
+        setLoadingMore(false);
+        isSearchLoadingRef.current = false;
       }
     },
     [setIsSearching, category, gender]
@@ -133,13 +174,15 @@ export function CategoryContent({
 
   // Debounce para la búsqueda (300ms)
   useEffect(() => {
-    // Si hay query, marcar como "buscando" INMEDIATAMENTE
+    // Si hay query, marcar como "buscando" INMEDIATAMENTE y limpiar resultados anteriores
     if (searchQuery.trim()) {
       setIsSearching(true);
+      setSearchResults([]); // Limpiar resultados anteriores inmediatamente
+      searchOffsetRef.current = 0;
     }
 
     const timeoutId = setTimeout(() => {
-      searchProducts(searchQuery);
+      searchProducts(searchQuery, true); // Reset en cada nueva búsqueda
     }, 300);
 
     return () => clearTimeout(timeoutId);
@@ -147,19 +190,23 @@ export function CategoryContent({
 
   // Configurar IntersectionObserver para infinite scroll
   useEffect(() => {
+    // No observar si estamos en estado de carga inicial o búsqueda
+    if (isSearching || loading) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
-        if (
-          entries[0].isIntersecting &&
-          hasMore &&
-          !loadingMore &&
-          !loading &&
-          !searchQuery.trim()
-        ) {
-          loadProducts(false);
+        if (entries[0].isIntersecting && !loadingMore && !isSearchLoadingRef.current) {
+          // Si hay búsqueda activa, cargar más resultados de búsqueda
+          if (searchQuery.trim() && searchHasMore) {
+            searchProducts(searchQuery, false);
+          }
+          // Si no hay búsqueda, cargar más productos normales
+          else if (!searchQuery.trim() && hasMore) {
+            loadProducts(false);
+          }
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1, rootMargin: "100px" }
     );
 
     const currentTarget = observerTarget.current;
@@ -172,7 +219,7 @@ export function CategoryContent({
         observer.unobserve(currentTarget);
       }
     };
-  }, [hasMore, loadingMore, loading, searchQuery, loadProducts]);
+  }, [hasMore, searchHasMore, loadingMore, loading, isSearching, searchQuery, loadProducts, searchProducts]);
 
   // Determinar qué productos mostrar
   const displayProducts = searchQuery.trim() ? searchResults : filteredProducts;
@@ -226,11 +273,12 @@ export function CategoryContent({
             </div>
 
             {/* Elemento observador para infinite scroll */}
-            {!searchQuery.trim() && hasMore && (
+            {((searchQuery.trim() && searchHasMore) ||
+              (!searchQuery.trim() && hasMore)) && (
               <div ref={observerTarget} className="w-full py-8">
                 {loadingMore && (
                   <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
-                    {Array.from({ length: 16 }).map((_, index) => (
+                    {Array.from({ length: 8 }).map((_, index) => (
                       <ProductCardSkeleton key={`loading-${index}`} />
                     ))}
                   </div>
