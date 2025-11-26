@@ -127,13 +127,8 @@ export default function PrivacyPolicyPage() {
                 </p>
                 <ul className="list-disc list-inside text-sm lg:text-base text-muted-foreground mb-6 space-y-2">
                   <li>
-                    <strong>Authentication Providers</strong> (e.g., Google,
-                    Apple, or other OAuth services)
-                  </li>
-                  <li>
-                    <strong>Product Catalog Partners</strong> (e.g., StockX, or
-                    brand APIs) — product metadata such as item names, colors,
-                    materials, and pricing.
+                    <strong>Authentication Providers</strong> (e.g., Google or
+                    other OAuth services)
                   </li>
                   <li>
                     <strong>Payment Processors</strong> (e.g., Polar, Stripe) —
