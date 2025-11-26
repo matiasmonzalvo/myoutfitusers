@@ -3,13 +3,12 @@ import Footer from "@/components/Footer";
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="bg-background force-dark-theme">
+    <div className="bg-background">
       <main className="w-full mx-auto relative h-full overflow-x-hidden">
-        <Header />
         <div className="md:w-full">
-          <section className="flex flex-col min-h-screen w-full pt-16">
-            <div className="lg:w-5xl 2xl:w-7xl border-x border-border mx-auto lg:py-20 py-10 lg:px-12 px-4">
-              <h1 className="text-4xl lg:text-6xl 2xl:text-7xl font-[600] text-left tracking-tighter text-foreground mb-8">
+          <section className="flex flex-col min-h-screen w-full pt-4">
+            <div className="lg:px-0 px-4">
+              <h1 className="text-4xl lg:text-5xl font-[600] text-left tracking-tighter text-foreground mb-8">
                 Privacy Policy
               </h1>
 
@@ -367,10 +366,10 @@ export default function PrivacyPolicyPage() {
                   You can exercise these rights via your account settings or by
                   contacting us at{" "}
                   <a
-                    href="mailto:privacy@myoutfit.app"
+                    href="mailto:contact@myout.fit"
                     className="text-[#0095f6] hover:underline"
                   >
-                    privacy@myoutfit.app
+                    contact@myout.fit
                   </a>
                   .
                 </p>
@@ -480,7 +479,7 @@ export default function PrivacyPolicyPage() {
                   <li>
                     Email:{" "}
                     <a
-                      href="mailto:privacy@myoutfit.app"
+                      href="mailto:contact@myout.fit"
                       className="text-[#0095f6] hover:underline"
                     >
                       contact@myout.fit

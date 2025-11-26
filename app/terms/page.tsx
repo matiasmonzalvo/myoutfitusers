@@ -3,13 +3,12 @@ import Footer from "@/components/Footer";
 
 export default function TermsPage() {
   return (
-    <div className="bg-background force-dark-theme">
+    <div className="bg-background">
       <main className="w-full mx-auto relative h-full overflow-x-hidden">
-        <Header />
         <div className="md:w-full">
-          <section className="flex flex-col min-h-screen w-full pt-16">
-            <div className="lg:w-5xl 2xl:w-7xl border-x border-border mx-auto lg:py-20 py-10 lg:px-12 px-4">
-              <h1 className="text-4xl lg:text-6xl 2xl:text-7xl font-[600] text-left tracking-tighter text-foreground mb-8">
+          <section className="flex flex-col min-h-screen w-full pt-4">
+            <div className="lg:px-0 px-4">
+              <h1 className="text-4xl lg:text-5xl font-[600] text-left tracking-tighter text-foreground mb-8">
                 Terms of Use
               </h1>
 
@@ -434,10 +433,10 @@ export default function TermsPage() {
                 <p className="text-sm lg:text-base text-muted-foreground mb-6">
                   You may also terminate your account voluntarily by contacting{" "}
                   <a
-                    href="mailto:support@myoutfit.app"
+                    href="mailto:contact@myout.fit"
                     className="text-[#0095f6] hover:underline"
                   >
-                    support@myoutfit.app
+                    contact@myout.fit
                   </a>
                   .
                 </p>
@@ -548,20 +547,10 @@ export default function TermsPage() {
                       contact@myout.fit
                     </a>
                   </li>
-                  <li>
-                    Feedback page:{" "}
-                    <a
-                      href="/feedback"
-                      className="text-[#0095f6] hover:underline"
-                    >
-                      /feedback
-                    </a>
-                  </li>
                 </ul>
               </div>
             </div>
           </section>
-          <Footer />
         </div>
       </main>
     </div>
