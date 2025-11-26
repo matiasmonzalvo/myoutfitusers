@@ -284,7 +284,7 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
 
   if (!isAuthenticated) {
     return (
-      <div className="w-full lg:w-auto lg:p-10 lg:h-screen relative flex items-center justify-start">
+      <div className="w-full lg:w-auto lg:p-10 lg:h-screen relative flex-col items-center justify-start">
         <div className="w-full lg:w-auto lg:h-full border border-border rounded-[30px] overflow-hidden relative flex flex-col items-center justify-center bg-white dark:bg-black/50 p-6 lg:p-0 gap-2 lg:gap-0">
           <img
             src="/myoutfitgif2.gif"
@@ -314,6 +314,25 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
                 Sign up
               </button>
             </div>
+          </div>
+        </div>
+        <div className="w-full relative px-6 items-center justify-between mt-2 hidden lg:flex">
+          <span className="text-[11px] text-muted-foreground">
+            All rights reserved © {new Date().getFullYear()}
+          </span>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/terms"
+              className="text-[11px] text-muted-foreground hover:text-foreground transition-all"
+            >
+              Terms
+            </Link>
+            <Link
+              href="/privacy-policy"
+              className="text-[11px] text-muted-foreground hover:text-foreground transition-all"
+            >
+              Privacy Policy
+            </Link>
           </div>
         </div>
       </div>
@@ -730,6 +749,25 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
             </div>
           </div>
         )}
+        <div className="w-full relative px-6 items-center justify-between mt-2 -mb-2 hidden lg:flex">
+          <span className="text-[11px] text-muted-foreground">
+            All rights reserved © {new Date().getFullYear()}
+          </span>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/terms"
+              className="text-[11px] text-muted-foreground hover:text-foreground transition-all"
+            >
+              Terms
+            </Link>
+            <Link
+              href="/privacy-policy"
+              className="text-[11px] text-muted-foreground hover:text-foreground transition-all"
+            >
+              Privacy Policy
+            </Link>
+          </div>
+        </div>
       </div>
     </TooltipProvider>
   );
