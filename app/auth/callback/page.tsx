@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createServerClient } from "@/lib/supabase/client";
-import { Loader2 } from "lucide-react";
+import { Loader, Loader2 } from "lucide-react";
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -46,10 +46,10 @@ export default function AuthCallbackPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background">
       <div className="flex flex-col items-center space-y-4">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-lg font-medium">Completando autenticación...</p>
+        <Loader className="h-8 w-8 animate-spin text-foreground" />
+        <p className="text-lg font-medium">Authenticating...</p>
         <p className="text-sm text-muted-foreground">
-          Por favor espera mientras te redirigimos
+          Please wait while we redirect you
         </p>
       </div>
     </div>
