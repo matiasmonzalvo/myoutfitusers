@@ -79,7 +79,7 @@ export function OnboardingForm() {
       if (!user) return;
 
       const { data: history, error } = await supabase
-        .from("avatar_history")
+        .from("avatar_generations")
         .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: true });
@@ -328,8 +328,46 @@ export function OnboardingForm() {
         return;
       }
 
-      // Pasar al siguiente paso
-      setStep("photos");
+      // Verificar si el usuario ya tiene avatares generados y no le quedan regeneraciones
+      // Esto ocurre cuando el usuario se desloguea y vuelve a entrar después de usar todas las regeneraciones
+      const { data: existingAvatars } = await supabase
+        .from("avatar_generations")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: true });
+
+      const { data: profile } = await supabase
+        .from("user_profiles")
+        .select("avatar_regenerations_left")
+        .eq("id", user.id)
+        .single();
+
+      // Si ya tiene avatares y no le quedan regeneraciones, saltar al paso de preview
+      if (
+        existingAvatars &&
+        existingAvatars.length > 0 &&
+        profile &&
+        profile.avatar_regenerations_left <= 0
+      ) {
+        setAvatarHistory(existingAvatars);
+        setRegenerationsLeft(0);
+
+        // Seleccionar el avatar que ya estaba seleccionado o el más reciente
+        const selected = existingAvatars.find((a: any) => a.is_selected);
+        if (selected) {
+          setSelectedAvatarId(selected.id);
+          setGeneratedAvatar(selected.avatar_url);
+        } else {
+          const latest = existingAvatars[existingAvatars.length - 1];
+          setSelectedAvatarId(latest.id);
+          setGeneratedAvatar(latest.avatar_url);
+        }
+
+        setStep("preview");
+      } else {
+        // Pasar al paso de fotos normalmente
+        setStep("photos");
+      }
     } catch (err) {
       console.error("Error en onboarding:", err);
       setError("Ocurrió un error inesperado");
@@ -445,6 +483,13 @@ export function OnboardingForm() {
       return;
     }
 
+    // Limpiar las fotos anteriores para que el usuario suba nuevas
+    setFullBodyPhoto(null);
+    setFacePhoto(null);
+    setFullBodyPreview(null);
+    setFacePreview(null);
+    setAdditionalNotes("");
+
     // Volver al paso de fotos para subir nuevas fotos
     setStep("photos");
     setError("");
@@ -454,7 +499,7 @@ export function OnboardingForm() {
     try {
       // Desmarcar todos los avatares
       const { error: unselectError } = await supabase
-        .from("avatar_history")
+        .from("avatar_generations")
         .update({ is_selected: false })
         .eq("user_id", (await supabase.auth.getUser()).data.user?.id || "");
 
@@ -465,7 +510,7 @@ export function OnboardingForm() {
 
       // Marcar el avatar seleccionado
       const { error: selectError } = await supabase
-        .from("avatar_history")
+        .from("avatar_generations")
         .update({ is_selected: true })
         .eq("id", avatarId);
 
@@ -488,11 +533,6 @@ export function OnboardingForm() {
       return;
     }
 
-    if (!fullBodyPhoto || !facePhoto) {
-      setError("No se encontraron las fotos originales");
-      return;
-    }
-
     setLoading(true);
     setError("");
 
@@ -508,34 +548,38 @@ export function OnboardingForm() {
         return;
       }
 
-      // Subir la foto del cuerpo completo con nombre fijo para poder encontrarla después
-      const bodyFileName = `${user.id}/body.${fullBodyPhoto.name.split(".").pop()}`;
-      const { error: bodyUploadError } = await supabase.storage
-        .from("user-photos")
-        .upload(bodyFileName, fullBodyPhoto, {
-          cacheControl: "3600",
-          upsert: true, // Reemplazar si ya existe
-        });
+      // Solo subir fotos si el usuario tiene fotos nuevas
+      // Si el usuario ya tenía avatares previos y volvió al onboarding, las fotos ya están en el storage
+      if (fullBodyPhoto && facePhoto) {
+        // Subir la foto del cuerpo completo con nombre fijo para poder encontrarla después
+        const bodyFileName = `${user.id}/body.${fullBodyPhoto.name.split(".").pop()}`;
+        const { error: bodyUploadError } = await supabase.storage
+          .from("user-photos")
+          .upload(bodyFileName, fullBodyPhoto, {
+            cacheControl: "3600",
+            upsert: true, // Reemplazar si ya existe
+          });
 
-      if (bodyUploadError) {
-        console.error("Error uploading body photo:", bodyUploadError);
-        throw new Error("Error al subir la foto del cuerpo");
-      }
+        if (bodyUploadError) {
+          console.error("Error uploading body photo:", bodyUploadError);
+          throw new Error("Error al subir la foto del cuerpo");
+        }
 
-      // Subir la foto del rostro con nombre fijo para poder encontrarla después
-      const faceFileName = `${user.id}/face.${facePhoto.name.split(".").pop()}`;
-      const { error: faceUploadError } = await supabase.storage
-        .from("user-photos")
-        .upload(faceFileName, facePhoto, {
-          cacheControl: "3600",
-          upsert: true, // Reemplazar si ya existe
-        });
+        // Subir la foto del rostro con nombre fijo para poder encontrarla después
+        const faceFileName = `${user.id}/face.${facePhoto.name.split(".").pop()}`;
+        const { error: faceUploadError } = await supabase.storage
+          .from("user-photos")
+          .upload(faceFileName, facePhoto, {
+            cacheControl: "3600",
+            upsert: true, // Reemplazar si ya existe
+          });
 
-      if (faceUploadError) {
-        console.error("Error uploading face photo:", faceUploadError);
-        // Intentar eliminar la foto del cuerpo si falló la del rostro
-        await supabase.storage.from("user-photos").remove([bodyFileName]);
-        throw new Error("Error al subir la foto del rostro");
+        if (faceUploadError) {
+          console.error("Error uploading face photo:", faceUploadError);
+          // Intentar eliminar la foto del cuerpo si falló la del rostro
+          await supabase.storage.from("user-photos").remove([bodyFileName]);
+          throw new Error("Error al subir la foto del rostro");
+        }
       }
 
       // Actualizar el perfil solo con el avatar y marcar onboarding como completado
@@ -551,10 +595,6 @@ export function OnboardingForm() {
 
       if (updateError) {
         console.error("Error updating profile:", updateError);
-        // Intentar eliminar las fotos si falló la actualización del perfil
-        await supabase.storage
-          .from("user-photos")
-          .remove([bodyFileName, faceFileName]);
         throw updateError;
       }
 
@@ -764,7 +804,7 @@ export function OnboardingForm() {
             <p className="text-sm text-muted-foreground mb-3 text-center">
               Select from your generated avatars:
             </p>
-            <div className="grid grid-cols-3 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-3  gap-3">
               {avatarHistory.map((avatar) => (
                 <button
                   key={avatar.id}
@@ -773,7 +813,7 @@ export function OnboardingForm() {
                   }
                   className={`relative aspect-square rounded-2xl overflow-hidden border-2 transition-all cursor-pointer ${
                     selectedAvatarId === avatar.id
-                      ? "border-primary ring-2 ring-primary ring-offset-2"
+                      ? "border-primary"
                       : "border-border hover:border-primary/50"
                   }`}
                 >
@@ -783,7 +823,7 @@ export function OnboardingForm() {
                     className="w-full h-full object-cover"
                   />
                   {selectedAvatarId === avatar.id && (
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center">
+                    <div className="absolute top-1 right-1 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center">
                       <Check className="w-4 h-4" />
                     </div>
                   )}
@@ -796,7 +836,7 @@ export function OnboardingForm() {
           </div>
         )}
 
-        <div className="flex gap-4">
+        <div className="flex flex-col lg:flex-row gap-4">
           <Button
             variant="outline"
             onClick={handleRegenerateAvatar}
@@ -811,13 +851,9 @@ export function OnboardingForm() {
           <Button
             onClick={handleCompleteSetup}
             disabled={loading || generatingAvatar}
-            className="flex-1 rounded-full cursor-pointer"
+            className="flex-1 rounded-full cursor-pointer text-white font-medium"
           >
-            {loading ? (
-              <Loader className="h-4 w-4 animate-spin" />
-            ) : (
-              "Complete Setup"
-            )}
+            {loading ? <Loader className="h-4 w-4 animate-spin" /> : "Continue"}
           </Button>
         </div>
       </div>

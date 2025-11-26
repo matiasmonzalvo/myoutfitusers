@@ -3,7 +3,7 @@ import { createServerClient } from "@/lib/supabase/server";
 import { GoogleGenAI } from "@google/genai";
 
 // Configurar el tamaño máximo del body (10MB)
-export const maxDuration = 60; // 60 seconds for Gemini API
+export const maxDuration = 120; // 120 seconds for Gemini API
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
@@ -150,7 +150,7 @@ export async function POST(request: Request) {
 
     if (uploadError) {
       console.error("Upload error:", uploadError);
-      throw new Error("Failed to upload avatar");
+      throw new Error("Please try again");
     }
 
     // Obtener la URL pública
@@ -160,7 +160,7 @@ export async function POST(request: Request) {
 
     // Obtener el número de generación actual
     const { count: generationCount } = await supabase
-      .from("avatar_history")
+      .from("avatar_generations")
       .select("*", { count: "exact", head: true })
       .eq("user_id", user.id);
 
@@ -168,7 +168,7 @@ export async function POST(request: Request) {
 
     // Guardar en el historial de avatares
     const { error: historyError } = await supabase
-      .from("avatar_history")
+      .from("avatar_generations")
       .insert({
         user_id: user.id,
         avatar_url: publicUrl,
@@ -193,7 +193,7 @@ export async function POST(request: Request) {
 
     // Obtener todo el historial de avatares
     const { data: avatarHistory } = await supabase
-      .from("avatar_history")
+      .from("avatar_generations")
       .select("*")
       .eq("user_id", user.id)
       .order("created_at", { ascending: true });

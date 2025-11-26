@@ -24,12 +24,12 @@ export default function CommonIssuesPage() {
             <div className="border border-neutral-500/10 rounded-xl overflow-hidden">
               <div className="bg-neutral-500/10 p-4 border-b border-neutral-500/10">
                 <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
+                  <AlertTriangle className="w-5 h-5 text-foreground flex-shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="font-semibold text-orange-500">
+                    <h3 className="font-semibold text-foreground">
                       Products Not Looking Accurate
                     </h3>
-                    <p className="text-sm text-orange-500 mt-1">
+                    <p className="text-sm text-foreground mt-1">
                       The product appears distorted, blurry, or doesn't match
                       the original design.
                     </p>
@@ -77,12 +77,12 @@ export default function CommonIssuesPage() {
             <div className="border border-neutral-500/10 rounded-xl overflow-hidden">
               <div className="bg-neutral-500/10 p-4 border-b border-neutral-500/10">
                 <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
+                  <AlertTriangle className="w-5 h-5 text-foreground flex-shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="font-semibold text-orange-500">
+                    <h3 className="font-semibold text-foreground">
                       Logos Appearing on Wrong Products
                     </h3>
-                    <p className="text-sm text-orange-500 mt-1">
+                    <p className="text-sm text-foreground mt-1">
                       Famous brand logos (Nike, Adidas) showing up on products
                       from different brands.
                     </p>
@@ -130,12 +130,12 @@ export default function CommonIssuesPage() {
             <div className="border border-neutral-500/10 rounded-xl overflow-hidden">
               <div className="bg-neutral-500/10 p-4 border-b border-neutral-500/10">
                 <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
+                  <AlertTriangle className="w-5 h-5 text-foreground flex-shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="font-semibold text-orange-500">
+                    <h3 className="font-semibold text-foreground">
                       Avatar Face Looks Different
                     </h3>
-                    <p className="text-sm text-orange-500 mt-1">
+                    <p className="text-sm text-foreground mt-1">
                       The avatar's face changes slightly after each try-on.
                     </p>
                   </div>
@@ -189,12 +189,12 @@ export default function CommonIssuesPage() {
             <div className="border border-neutral-500/10 rounded-xl overflow-hidden">
               <div className="bg-neutral-500/10 p-4 border-b border-neutral-500/10">
                 <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
+                  <AlertTriangle className="w-5 h-5 text-foreground flex-shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="font-semibold text-orange-500">
+                    <h3 className="font-semibold text-foreground">
                       Can't Try On Another Item of Same Category
                     </h3>
-                    <p className="text-sm text-orange-500 mt-1">
+                    <p className="text-sm text-foreground mt-1">
                       Unable to try on a different hoodie, pants, or shoes
                       without removing the previous one.
                     </p>
@@ -243,12 +243,12 @@ export default function CommonIssuesPage() {
             <div className="border border-neutral-500/10 rounded-xl overflow-hidden">
               <div className="bg-neutral-500/10 p-4 border-b border-neutral-500/10">
                 <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
+                  <AlertTriangle className="w-5 h-5 text-foreground flex-shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="font-semibold text-orange-500">
+                    <h3 className="font-semibold text-foreground">
                       Background is Darker or Changed
                     </h3>
-                    <p className="text-sm text-orange-500 mt-1">
+                    <p className="text-sm text-foreground mt-1">
                       The background behind the avatar darkens or changes with
                       each try-on.
                     </p>
@@ -279,12 +279,12 @@ export default function CommonIssuesPage() {
             <div className="border border-neutral-500/10 rounded-xl overflow-hidden">
               <div className="bg-neutral-500/10 p-4 border-b border-neutral-500/10">
                 <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
+                  <AlertTriangle className="w-5 h-5 text-foreground flex-shrink-0 mt-0.5" />
                   <div>
-                    <h3 className="font-semibold text-orange-500">
+                    <h3 className="font-semibold text-foreground">
                       Try-On Failed or Produced Strange Results
                     </h3>
-                    <p className="text-sm text-orange-500 mt-1">
+                    <p className="text-sm text-foreground mt-1">
                       The try-on completely failed or produced nonsensical
                       results.
                     </p>
