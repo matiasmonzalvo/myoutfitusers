@@ -193,13 +193,13 @@ export function OnboardingForm() {
 
     // Validaciones del username
     if (formData.username.length < 3) {
-      setError("El nombre de usuario debe tener al menos 3 caracteres");
+      setError("The username must be at least 3 characters");
       setLoading(false);
       return;
     }
 
     if (usernameAvailable === false) {
-      setError("Este nombre de usuario ya está en uso");
+      setError("This username is already in use");
       setLoading(false);
       return;
     }
@@ -210,7 +210,7 @@ export function OnboardingForm() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        setError("No se pudo obtener la información del usuario");
+        setError("Could not get user information");
         setLoading(false);
         return;
       }
@@ -236,9 +236,9 @@ export function OnboardingForm() {
 
           if (updateError) {
             if (updateError.code === "23505") {
-              setError("Este nombre de usuario ya está en uso");
+              setError("This username is already in use");
             } else {
-              setError(`Error al actualizar el perfil: ${updateError.message}`);
+              setError(`Error updating profile: ${updateError.message}`);
             }
             setLoading(false);
             return;
@@ -261,9 +261,9 @@ export function OnboardingForm() {
 
         if (insertError) {
           if (insertError.code === "23505") {
-            setError("Este nombre de usuario ya está en uso");
+            setError("This username is already in use");
           } else {
-            setError(`Error al crear el perfil: ${insertError.message}`);
+            setError(`Error creating profile: ${insertError.message}`);
           }
           setLoading(false);
           return;
@@ -273,8 +273,8 @@ export function OnboardingForm() {
       // Pasar al siguiente paso
       setStep("profile");
     } catch (err) {
-      console.error("Error en onboarding:", err);
-      setError("Ocurrió un error inesperado");
+      console.error("Error onboarding:", err);
+      setError("An unexpected error occurred");
     } finally {
       setLoading(false);
     }
@@ -287,19 +287,19 @@ export function OnboardingForm() {
 
     // Validaciones de características físicas
     if (formData.age < 13 || formData.age > 120) {
-      setError("Debes tener entre 13 y 120 años");
+      setError("You must be between 13 and 120 years old");
       setLoading(false);
       return;
     }
 
     if (formData.height < 50 || formData.height > 300) {
-      setError("Por favor ingresa una altura válida (50-300 cm)");
+      setError("Please enter a valid height (50-300 cm)");
       setLoading(false);
       return;
     }
 
     if (formData.weight < 20 || formData.weight > 500) {
-      setError("Por favor ingresa un peso válido (20-500 kg)");
+      setError("Please enter a valid weight (20-500 kg)");
       setLoading(false);
       return;
     }
