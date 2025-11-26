@@ -8,7 +8,7 @@ export default function PrivacyPolicyPage() {
         <div className="md:w-full">
           <section className="flex flex-col min-h-screen w-full pt-4">
             <div className="lg:px-0 px-4">
-              <h1 className="text-4xl lg:text-5xl font-[600] text-left tracking-tighter text-foreground mb-8">
+              <h1 className="text-4xl lg:text-5xl font-[600] text-left tracking-tighter text-foreground mb-4">
                 Privacy Policy
               </h1>
 

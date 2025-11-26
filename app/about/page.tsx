@@ -1,184 +1,96 @@
-import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { Header } from "@/components/layout/header";
+import Footer from "@/components/Footer";
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-background py-16 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl 2xl:text-6xl font-bold tracking-tight mb-4">
-            About My Outfit
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            The future of online shopping is here. Try on real products on your
-            personalized avatar before you buy.
-          </p>
+    <div className="bg-background">
+      <main className="w-full mx-auto relative h-full overflow-x-hidden">
+        <div className="md:w-full">
+          <section className="flex flex-col min-h-screen w-full pt-4">
+            <div className="lg:px-0 px-4">
+              <h1 className="text-4xl lg:text-5xl font-[600] text-left tracking-tighter text-foreground mb-4">
+                About Us
+              </h1>
+
+              <div className="prose prose-invert max-w-none">
+                <p className="text-sm lg:text-base text-muted-foreground mb-6">
+                  At My Outfit, we believe fashion and technology can coexist in
+                  a way that forever changes how people experience clothing. Our
+                  story began with a simple question: Why should people have to
+                  imagine how they'd look in something — when they could
+                  actually see it?
+                </p>
+
+                <p className="text-sm lg:text-base text-muted-foreground mb-6">
+                  From that idea, we built a platform powered by artificial
+                  intelligence that lets users try on real brand products
+                  instantly, accurately, and effortlessly — from anywhere in the
+                  world.
+                </p>
+
+                <h2 className="text-2xl font-semibold text-foreground mb-4">
+                  Redefining Online Shopping
+                </h2>
+                <p className="text-sm lg:text-base text-muted-foreground mb-6">
+                  For years, online shopping has looked the same: photos, sizes,
+                  and descriptions — but never a true "try-on" experience. My
+                  Outfit redefines that. Our AI technology generates realistic
+                  visualizations of each user wearing the items they choose,
+                  allowing them to explore combinations, experiment with styles,
+                  and see complete outfits before making a decision. What used
+                  to be guesswork is now a reliable, personal, and immersive
+                  experience.
+                </p>
+
+                <h2 className="text-2xl font-semibold text-foreground mb-4">
+                  More Than a Tool — A Community
+                </h2>
+                <p className="text-sm lg:text-base text-muted-foreground mb-6">
+                  But My Outfit is more than a tool — it's a community. Users
+                  can create, save, and share their outfits, explore others'
+                  creations, and discover new trends directly from real people.
+                  Every outfit becomes an act of expression and creativity,
+                  fueling a new kind of social interaction inside the digital
+                  fashion world.
+                </p>
+
+                <h2 className="text-2xl font-semibold text-foreground mb-4">
+                  Our Mission
+                </h2>
+                <p className="text-sm lg:text-base text-muted-foreground mb-6">
+                  Our mission is clear: to revolutionize the way people try on
+                  products, removing the distance between the user and the
+                  brand, between inspiration and decision. At the same time, we
+                  give brands a unique opportunity to showcase their products in
+                  real, authentic contexts — not on models, but on the people
+                  who actually love and wear them.
+                </p>
+
+                <h2 className="text-2xl font-semibold text-foreground mb-4">
+                  The Future of Getting Dressed
+                </h2>
+                <p className="text-sm lg:text-base text-muted-foreground mb-6">
+                  My Outfit represents the future of getting dressed digitally.
+                  It's a platform that doesn't just display clothes — it brings
+                  them to life through the person wearing them. Every detail,
+                  from visual precision to user experience, is designed with one
+                  goal: to make trying on something new not a barrier, but the
+                  beginning of a new way to express yourself.
+                </p>
+
+                <p className="text-sm lg:text-base text-muted-foreground mb-6 italic">
+                  Because fashion is not about what you wear — it's about how it
+                  makes you feel.
+                </p>
+
+                <p className="text-sm lg:text-base text-muted-foreground mb-6 font-medium">
+                  And now, for the first time, you can truly see that feeling.
+                </p>
+              </div>
+            </div>
+          </section>
         </div>
-
-        {/* Mission */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold tracking-tight mb-4">Our Mission</h2>
-          <p className="text-lg text-muted-foreground leading-relaxed mb-4">
-            My Outfit is revolutionizing the way people shop for clothes online.
-            We believe that everyone deserves to see how clothing will actually
-            look on them before making a purchase—not just on generic models.
-          </p>
-          <p className="text-lg text-muted-foreground leading-relaxed">
-            By leveraging cutting-edge AI technology, we create personalized
-            avatars that accurately represent your body shape and features,
-            allowing you to virtually try on thousands of products from hundreds
-            of brands.
-          </p>
-        </section>
-
-        {/* How It Works */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold tracking-tight mb-6">
-            How It Works
-          </h2>
-          <div className="space-y-6">
-            <div className="flex gap-4">
-              <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xl flex-shrink-0">
-                1
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">
-                  Create Your Avatar
-                </h3>
-                <p className="text-muted-foreground">
-                  Upload two photos and our AI generates a realistic 3D avatar
-                  that looks just like you.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xl flex-shrink-0">
-                2
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">
-                  Browse & Select Products
-                </h3>
-                <p className="text-muted-foreground">
-                  Explore thousands of products from your favorite brands and
-                  add them to your virtual fitting room.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xl flex-shrink-0">
-                3
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2">Try On & Share</h3>
-                <p className="text-muted-foreground">
-                  See how products look on your avatar, create stunning outfits,
-                  and share them with friends before purchasing.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Why My Outfit */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold tracking-tight mb-6">
-            Why My Outfit?
-          </h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="border border-border rounded-xl p-6">
-              <h3 className="text-lg font-semibold mb-2">
-                Personalized Experience
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Unlike traditional online shopping where you see clothes on
-                random models, you see them on YOUR avatar, giving you a true
-                sense of how they'll look on you.
-              </p>
-            </div>
-
-            <div className="border border-border rounded-xl p-6">
-              <h3 className="text-lg font-semibold mb-2">Reduce Returns</h3>
-              <p className="text-sm text-muted-foreground">
-                By seeing products on your avatar first, you can make more
-                confident purchasing decisions and reduce the likelihood of
-                returns.
-              </p>
-            </div>
-
-            <div className="border border-border rounded-xl p-6">
-              <h3 className="text-lg font-semibold mb-2">
-                Official Products Only
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Every product on our platform is official and links directly to
-                authorized retailers. We never sell counterfeit items.
-              </p>
-            </div>
-
-            <div className="border border-border rounded-xl p-6">
-              <h3 className="text-lg font-semibold mb-2">
-                Partner Brand Benefits
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Try on products from partner brands completely free. We're
-                working to make all brands on the platform partners.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Technology */}
-        <section className="mb-16">
-          <h2 className="text-3xl font-bold tracking-tight mb-4">
-            Our Technology
-          </h2>
-          <p className="text-lg text-muted-foreground leading-relaxed mb-4">
-            My Outfit is built on advanced artificial intelligence and computer
-            vision technology. Our AI models understand not just the appearance
-            of clothing, but also how fabrics drape, how different fits work, and
-            how garments layer together.
-          </p>
-          <p className="text-lg text-muted-foreground leading-relaxed">
-            We're constantly improving our models to provide more accurate and
-            realistic try-on experiences. As a startup in our early stages, we
-            appreciate your feedback and patience as we continue to refine and
-            enhance the platform.
-          </p>
-        </section>
-
-        {/* CTA */}
-        <section className="text-center">
-          <div className="border border-border rounded-2xl p-8 bg-gradient-to-br from-primary/5 to-purple-500/5">
-            <h2 className="text-3xl font-bold tracking-tight mb-4">
-              Ready to Transform Your Shopping Experience?
-            </h2>
-            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              Join thousands of users who are already using My Outfit to discover
-              their perfect style.
-            </p>
-            <div className="flex gap-4 justify-center">
-              <Link
-                href="/register"
-                className="px-6 py-3 bg-primary text-white rounded-full font-semibold hover:opacity-90 transition-opacity"
-              >
-                Create Account
-              </Link>
-              <Link
-                href="/guide"
-                className="px-6 py-3 border border-border rounded-full font-semibold hover:bg-muted transition-colors"
-              >
-                Read Guide
-              </Link>
-            </div>
-          </div>
-        </section>
-      </div>
+      </main>
     </div>
   );
 }
-
-
