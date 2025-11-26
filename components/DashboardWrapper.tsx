@@ -142,66 +142,89 @@ export function DashboardWrapper({
               side="left"
               className="p-0 w-64 max-w-none bg-background border-r border-border"
             >
-              <SheetTitle className="sr-only">Sidebar</SheetTitle>
-              <div className="flex flex-col h-full p-4">
-                <div className="space-y-1">
-                  <Link href="/" className="block py-3">
-                    <Image
-                      src="/logo.png"
-                      alt="Outfiterz"
-                      width={120}
-                      height={120}
-                      className="w-10 h-10 lg:w-12 lg:h-12 dark:invert"
-                    />
-                  </Link>
-                  <Link
-                    href="/about"
-                    className="block py-3 rounded-lg font-medium text-foreground hover:bg-muted transition-colors cursor-pointer"
-                    onClick={() => setIsMobileSidebarOpen(false)}
-                  >
-                    About
-                  </Link>
-                  <Link
-                    href="/guide"
-                    className="block py-3 rounded-lg font-medium text-foreground hover:bg-muted transition-colors cursor-pointer"
-                    onClick={() => setIsMobileSidebarOpen(false)}
-                  >
-                    Guide
-                  </Link>
-                  <Link
-                    href="/pricing"
-                    className="block py-3 rounded-lg font-medium text-foreground hover:bg-muted transition-colors cursor-pointer"
-                    onClick={() => setIsMobileSidebarOpen(false)}
-                  >
-                    Pricing
-                  </Link>
-                  <Link
-                    href="/contact"
-                    className="block py-3 rounded-lg font-medium text-foreground hover:bg-muted transition-colors cursor-pointer"
-                    onClick={() => setIsMobileSidebarOpen(false)}
-                  >
-                    Contact
-                  </Link>
-                </div>
-
-                {!isAuthenticated && (
-                  <div className="space-y-3 pt-4">
-                    <Link
-                      href="/login"
-                      className="block w-full py-2 px-4 text-center font-medium text-foreground border border-border rounded-full bg-muted hover:opacity-80 transition-all cursor-pointer"
-                      onClick={() => setIsMobileSidebarOpen(false)}
-                    >
-                      Login
+              <div className="w-full h-auto relative">
+                <SheetTitle className="sr-only">Sidebar</SheetTitle>
+                <div className="flex flex-col h-full p-4">
+                  <div className="space-y-1">
+                    <Link href="/" className="block py-3">
+                      <Image
+                        src="/logo.png"
+                        alt="Outfiterz"
+                        width={120}
+                        height={120}
+                        className="w-10 h-10 lg:w-12 lg:h-12 dark:invert"
+                      />
                     </Link>
                     <Link
-                      href="/register"
-                      className="block w-full py-2 px-4 text-center bg-primary text-white font-medium rounded-full hover:opacity-80 transition-all cursor-pointer"
+                      href="/about"
+                      className="block py-3 rounded-lg font-medium text-foreground hover:bg-muted transition-colors cursor-pointer"
                       onClick={() => setIsMobileSidebarOpen(false)}
                     >
-                      Sign Up
+                      About
+                    </Link>
+                    <Link
+                      href="/guide"
+                      className="block py-3 rounded-lg font-medium text-foreground hover:bg-muted transition-colors cursor-pointer"
+                      onClick={() => setIsMobileSidebarOpen(false)}
+                    >
+                      Guide
+                    </Link>
+                    <Link
+                      href="/pricing"
+                      className="block py-3 rounded-lg font-medium text-foreground hover:bg-muted transition-colors cursor-pointer"
+                      onClick={() => setIsMobileSidebarOpen(false)}
+                    >
+                      Pricing
+                    </Link>
+                    <Link
+                      href="/contact"
+                      className="block py-3 rounded-lg font-medium text-foreground hover:bg-muted transition-colors cursor-pointer"
+                      onClick={() => setIsMobileSidebarOpen(false)}
+                    >
+                      Contact
                     </Link>
                   </div>
-                )}
+
+                  {!isAuthenticated && (
+                    <div className="space-y-3 pt-4">
+                      <Link
+                        href="/login"
+                        className="block w-full py-2 px-4 text-center font-medium text-foreground border border-border rounded-full bg-muted hover:opacity-80 transition-all cursor-pointer"
+                        onClick={() => setIsMobileSidebarOpen(false)}
+                      >
+                        Login
+                      </Link>
+                      <Link
+                        href="/register"
+                        className="block w-full py-2 px-4 text-center bg-primary text-white font-medium rounded-full hover:opacity-80 transition-all cursor-pointer"
+                        onClick={() => setIsMobileSidebarOpen(false)}
+                      >
+                        Sign Up
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="absolute bottom-0 left-0 w-full p-4 pb-10 ">
+                <div className="w-full relative">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Link
+                      href="/terms"
+                      className="text-sm text-muted-foreground hover:text-foreground transition-all"
+                    >
+                      Terms
+                    </Link>
+                    <Link
+                      href="/privacy-policy"
+                      className="text-sm text-muted-foreground hover:text-foreground transition-all"
+                    >
+                      Privacy Policy
+                    </Link>
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    All rights reserved © {new Date().getFullYear()}
+                  </span>
+                </div>
               </div>
             </SheetContent>
           </Sheet>

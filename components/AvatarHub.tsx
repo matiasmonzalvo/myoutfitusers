@@ -317,19 +317,19 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
           </div>
         </div>
         <div className="w-full relative px-6 items-center justify-between mt-2 hidden lg:flex">
-          <span className="text-[11px] text-muted-foreground">
+          <span className="text-[11px] 2xl:text-sm text-muted-foreground">
             All rights reserved © {new Date().getFullYear()}
           </span>
           <div className="flex items-center gap-3">
             <Link
               href="/terms"
-              className="text-[11px] text-muted-foreground hover:text-foreground transition-all"
+              className="text-[11px] 2xl:text-sm text-muted-foreground hover:text-foreground transition-all"
             >
               Terms
             </Link>
             <Link
               href="/privacy-policy"
-              className="text-[11px] text-muted-foreground hover:text-foreground transition-all"
+              className="text-[11px] 2xl:text-sm text-muted-foreground hover:text-foreground transition-all"
             >
               Privacy Policy
             </Link>
@@ -750,19 +750,19 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
           </div>
         )}
         <div className="w-full relative px-6 items-center justify-between mt-2 -mb-2 hidden lg:flex">
-          <span className="text-[11px] text-muted-foreground">
+          <span className="text-[11px] 2xl:text-sm text-muted-foreground">
             All rights reserved © {new Date().getFullYear()}
           </span>
           <div className="flex items-center gap-3">
             <Link
               href="/terms"
-              className="text-[11px] text-muted-foreground hover:text-foreground transition-all"
+              className="text-[11px] 2xl:text-sm text-muted-foreground hover:text-foreground transition-all"
             >
               Terms
             </Link>
             <Link
               href="/privacy-policy"
-              className="text-[11px] text-muted-foreground hover:text-foreground transition-all"
+              className="text-[11px] 2xl:text-sm text-muted-foreground hover:text-foreground transition-all"
             >
               Privacy Policy
             </Link>
