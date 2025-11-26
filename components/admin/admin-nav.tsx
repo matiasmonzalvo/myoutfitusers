@@ -23,6 +23,7 @@ import {
   MenuSquareIcon,
   Invoice01Icon,
   CreditCardIcon,
+  Settings02Icon,
 } from "@hugeicons/core-free-icons";
 
 interface Brand {
@@ -97,6 +98,17 @@ const navItems = [
       />
     ),
   },
+  {
+    name: "Settings",
+    href: "/admin/settings",
+    icon: (
+      <HugeiconsIcon
+        icon={Settings02Icon}
+        className="text-foreground w-5 h-5"
+        strokeWidth={2}
+      />
+    ),
+  },
 ];
 
 export function AdminNav({ brand }: AdminNavProps) {
@@ -112,9 +124,9 @@ export function AdminNav({ brand }: AdminNavProps) {
   };
 
   return (
-    <div className="bg-background p-4 fixed top-0 left-0 bottom-0">
+    <div className="bg-neutral-100 dark:bg-black/0 p-4 fixed top-0 left-0 bottom-0">
       {/* Mobile Header */}
-      <div className="lg:hidden  z-50 bg-background border-b border-border">
+      <div className="lg:hidden  z-50 bg-neutral-100 dark:bg-black/0 border-b border-border">
         <div className="flex items-center justify-between px-4 py-4">
           <div className="flex items-center gap-3">
             {brand.logo_url && (
@@ -171,7 +183,7 @@ export function AdminNav({ brand }: AdminNavProps) {
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:block h-full  w-64 bg-background ">
+      <aside className="hidden lg:block h-full  w-64 bg-neutral-100 dark:bg-black/0 ">
         <div className="flex flex-col h-full">
           {/* Brand Header */}
           <div className="p-4">

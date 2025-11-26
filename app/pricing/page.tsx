@@ -159,7 +159,7 @@ export default function PricingPage() {
                     <CardDescription className="text-lg text-muted-foreground font-medium tracking-tight leading-tight w-full lg:w-[70%]">
                       We only charge for try-ons that are not from partner
                       brands on the platform. This benefits are free for all
-                      users.
+                      users. users.
                     </CardDescription>
                   </div>
                 </CardHeader>
@@ -327,7 +327,7 @@ export default function PricingPage() {
             </Card>
 
             {/* Brand Plan Card */}
-            <Card className="relative overflow-hidden border border-border shadow-none rounded-3xl bg-white dark:bg-black/50 ">
+            <Card className="relative flex flex-col min-[860px]:flex-row overflow-hidden border border-border shadow-none rounded-3xl bg-white dark:bg-black/50 ">
               <div className="w-full min-[860px]:w-1/2 flex flex-col p-2 border-b min-[860px]:border-b-0 border-r-0 min-[860px]:border-r border-border">
                 <CardHeader className="pb-[13px] relative">
                   <div className="flex flex-col items-start">
@@ -359,16 +359,26 @@ export default function PricingPage() {
                     ))}
                   </div>
 
-                  <Button
-                    onClick={() => router.push("/register")}
-                    className="w-full h-11 text-lg tracking-tight font-medium rounded-full bg-foreground text-background cursor-pointer hover:opacity-80 hover:bg-foreground transition-all"
-                    size="lg"
+                  <a
+                    href="mailto:contact@myout.fit"
+                    className="w-full h-11 text-lg tracking-tight font-medium rounded-full bg-foreground text-background cursor-pointer hover:opacity-80 hover:bg-foreground transition-all flex items-center justify-center"
                   >
                     Talk to sales
-                  </Button>
+                  </a>
                 </CardContent>
               </div>
-              <div className="w-1/2 flex flex-col divide-y divide-border"></div>
+              <div className="w-full min-[860px]:w-1/2 flex flex-col justify-end items-end relative h-full">
+                <img
+                  src="/brandslight.png"
+                  alt="Brand Page"
+                  className="w-full h-auto object-cover block dark:hidden"
+                />
+                <img
+                  src="/brandsdark.png"
+                  alt="Brand Page"
+                  className="w-full h-auto object-cover hidden dark:block"
+                />
+              </div>
             </Card>
           </div>
         </div>

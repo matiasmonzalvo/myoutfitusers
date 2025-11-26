@@ -275,7 +275,7 @@ export function AdminPerformanceView({ brandId }: AdminPerformanceViewProps) {
           </>
         ) : (
           <>
-            <div className="bg-white border border-border rounded-2xl p-6 flex flex-col">
+            <div className="bg-muted border border-border rounded-2xl p-6 flex flex-col">
               <div className="flex items-center justify-start gap-2 mb-3">
                 <ShoppingBag className="h-5 w-5 text-muted-foreground" />
                 <p className="text-base text-muted-foreground tracking-tight">
@@ -307,7 +307,7 @@ export function AdminPerformanceView({ brandId }: AdminPerformanceViewProps) {
               )}
             </div>
 
-            <div className="bg-white border border-border rounded-2xl p-6 flex flex-col">
+            <div className="bg-muted border border-border rounded-2xl p-6 flex flex-col">
               <div className="flex items-center justify-start gap-2 mb-3">
                 <Eye className="h-5 w-5 text-muted-foreground" />
                 <p className="text-base text-muted-foreground tracking-tight">
@@ -339,7 +339,7 @@ export function AdminPerformanceView({ brandId }: AdminPerformanceViewProps) {
               )}
             </div>
 
-            <div className="bg-white border border-border rounded-2xl p-6 flex flex-col">
+            <div className="bg-muted border border-border rounded-2xl p-6 flex flex-col">
               <div className="flex items-center justify-start gap-2 mb-3">
                 <TrendingUp className="h-5 w-5 text-muted-foreground" />
                 <p className="text-base text-muted-foreground tracking-tight">
@@ -388,7 +388,7 @@ export function AdminPerformanceView({ brandId }: AdminPerformanceViewProps) {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Performance Trend Chart */}
-        <div className="bg-white border border-border rounded-2xl p-6">
+        <div className="bg-muted border border-border rounded-2xl p-6">
           {loading ? (
             <div className="space-y-4 animate-pulse">
               <div className="h-6 w-48 bg-neutral-200 rounded mb-6" />
@@ -402,7 +402,7 @@ export function AdminPerformanceView({ brandId }: AdminPerformanceViewProps) {
               {chartData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={350}>
                   <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#737373" />
                     <XAxis dataKey="date" style={{ fontSize: 12 }} />
                     <YAxis style={{ fontSize: 12 }} />
                     <Tooltip />
@@ -429,7 +429,7 @@ export function AdminPerformanceView({ brandId }: AdminPerformanceViewProps) {
             </div>
           )}
         </div>
-        <div className="bg-white border border-border rounded-2xl p-6">
+        <div className="bg-muted border border-border rounded-2xl p-6">
           {loading ? (
             <div className="space-y-4 animate-pulse">
               <div className="h-6 w-48 bg-neutral-200 rounded mb-6" />
@@ -443,7 +443,7 @@ export function AdminPerformanceView({ brandId }: AdminPerformanceViewProps) {
               {topProducts.length > 0 ? (
                 <ResponsiveContainer width="100%" height={440}>
                   <BarChart data={topProducts}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#737373" />
                     <XAxis
                       dataKey="name"
                       angle={-45}
@@ -478,7 +478,7 @@ export function AdminPerformanceView({ brandId }: AdminPerformanceViewProps) {
         </div>
       </div>
       {/* Product Metrics */}
-      <div className="bg-white border border-border rounded-2xl p-6">
+      <div className="bg-muted border border-border rounded-2xl p-6">
         {loading ? (
           <div className="space-y-4 animate-pulse">
             <div className="h-6 w-48 bg-neutral-200 rounded mb-6" />
