@@ -128,6 +128,11 @@ export function OnboardingForm() {
     }
   }, [isInitialized]);
 
+  // Scroll hacia arriba cada vez que cambie el paso
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [step]);
+
   const checkUsernameAvailability = async (username: string) => {
     if (!username || username.length < 3) {
       setUsernameAvailable(null);
