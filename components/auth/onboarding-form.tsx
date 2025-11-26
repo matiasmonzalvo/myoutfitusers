@@ -39,10 +39,10 @@ export function OnboardingForm() {
   const [step, setStep] = useState<OnboardingStep>("username");
   const [formData, setFormData] = useState<OnboardingFormData>({
     username: "",
-    age: 18,
+    age: 0,
     gender: "other",
-    height: 170,
-    weight: 70,
+    height: 0,
+    weight: 0,
     body_type: "average",
   });
   const [loading, setLoading] = useState(false);
@@ -976,14 +976,6 @@ export function OnboardingForm() {
                   age: value === "" ? 0 : parseInt(value) || 0,
                 });
               }}
-              onBlur={(e) => {
-                if (e.target.value === "" || parseInt(e.target.value) < 13) {
-                  setFormData({
-                    ...formData,
-                    age: 18,
-                  });
-                }
-              }}
               required
               disabled={loading}
               className="text-lg px-4 py-2 w-full rounded-full bg-muted border border-border focus:outline-none"
@@ -1052,14 +1044,6 @@ export function OnboardingForm() {
                   height: value === "" ? 0 : parseFloat(value) || 0,
                 });
               }}
-              onBlur={(e) => {
-                if (e.target.value === "" || parseFloat(e.target.value) < 50) {
-                  setFormData({
-                    ...formData,
-                    height: 170,
-                  });
-                }
-              }}
               required
               disabled={loading}
               className="text-lg px-4 py-2 w-full rounded-full bg-muted border border-border focus:outline-none"
@@ -1085,14 +1069,6 @@ export function OnboardingForm() {
                   ...formData,
                   weight: value === "" ? 0 : parseFloat(value) || 0,
                 });
-              }}
-              onBlur={(e) => {
-                if (e.target.value === "" || parseFloat(e.target.value) < 20) {
-                  setFormData({
-                    ...formData,
-                    weight: 70,
-                  });
-                }
               }}
               required
               disabled={loading}
