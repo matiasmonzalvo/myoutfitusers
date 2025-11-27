@@ -214,7 +214,7 @@ export default function BrandProfilePage({ params }: BrandProfilePageProps) {
   return (
     <div className="min-h-screen bg-background -mt-2">
       {/* Header */}
-      <div className="border-b border-border pb-4 sticky top-0 z-10 bg-background">
+      <div className="border-b border-border pb-4  bg-background">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center space-x-2 mb-4">
             <div className="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden bg-white flex items-center justify-center">
