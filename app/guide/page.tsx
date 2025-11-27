@@ -58,7 +58,7 @@ export default function GuidePage() {
           </Link>
 
           <Link
-            href="/guide/try-ons"
+            href="/guide/start-wearing"
             className="block border border-border rounded-xl p-6 bg-white dark:bg-black/50 hover:opacity-80 transition-all"
           >
             <div className="flex items-start justify-between">

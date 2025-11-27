@@ -84,114 +84,59 @@ export function CardLayout({
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
-  // Estados para tooltips
-  const [showMenTooltip, setShowMenTooltip] = useState(false);
-  const [showWomenTooltip, setShowWomenTooltip] = useState(false);
-  const [showSneakersTooltip, setShowSneakersTooltip] = useState(false);
-  const [showBrandsTooltip, setShowBrandsTooltip] = useState(false);
-  const [showAccessoriesTooltip, setShowAccessoriesTooltip] = useState(false);
+  // Estado unificado para tooltip activo
+  type TooltipType =
+    | "women"
+    | "men"
+    | "sneakers"
+    | "brands"
+    | "accessories"
+    | null;
+  const [activeTooltip, setActiveTooltip] = useState<TooltipType>(null);
+  const [isTooltipClosing, setIsTooltipClosing] = useState(false);
 
-  // Estados para animación de cierre de tooltips
-  const [isWomenClosing, setIsWomenClosing] = useState(false);
-  const [isMenClosing, setIsMenClosing] = useState(false);
-  const [isSneakersClosing, setIsSneakersClosing] = useState(false);
-  const [isBrandsClosing, setIsBrandsClosing] = useState(false);
-  const [isAccessoriesClosing, setIsAccessoriesClosing] = useState(false);
+  // Refs para manejar los timeouts
+  const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Refs para manejar los timeouts de los tooltips
-  const menTooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const womenTooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const sneakersTooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const brandsTooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const accessoriesTooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Función para abrir tooltip (cambia contenido sin animar si ya hay uno abierto)
+  const openTooltip = useCallback((type: TooltipType) => {
+    // Cancelar cualquier timeout de cierre pendiente
+    if (tooltipTimeoutRef.current) {
+      clearTimeout(tooltipTimeoutRef.current);
+    }
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+    }
+    setIsTooltipClosing(false);
+    setActiveTooltip(type);
+  }, []);
 
-  // Refs para manejar los timeouts de animación de cierre
-  const womenCloseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const menCloseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const sneakersCloseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const brandsCloseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const accessoriesCloseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Funciones para cerrar tooltips con animación
-  const closeWomenTooltip = useCallback(() => {
-    setIsWomenClosing(true);
-    womenCloseTimeoutRef.current = setTimeout(() => {
-      setShowWomenTooltip(false);
-      setIsWomenClosing(false);
+  // Función para cerrar tooltip con animación
+  const closeTooltip = useCallback(() => {
+    setIsTooltipClosing(true);
+    closeTimeoutRef.current = setTimeout(() => {
+      setActiveTooltip(null);
+      setIsTooltipClosing(false);
     }, 300);
   }, []);
 
-  const closeMenTooltip = useCallback(() => {
-    setIsMenClosing(true);
-    menCloseTimeoutRef.current = setTimeout(() => {
-      setShowMenTooltip(false);
-      setIsMenClosing(false);
-    }, 300);
-  }, []);
+  // Función para programar cierre (con delay para permitir mover el cursor al tooltip)
+  const scheduleCloseTooltip = useCallback(() => {
+    tooltipTimeoutRef.current = setTimeout(() => {
+      closeTooltip();
+    }, 100);
+  }, [closeTooltip]);
 
-  const closeSneakersTooltip = useCallback(() => {
-    setIsSneakersClosing(true);
-    sneakersCloseTimeoutRef.current = setTimeout(() => {
-      setShowSneakersTooltip(false);
-      setIsSneakersClosing(false);
-    }, 300);
-  }, []);
-
-  const closeBrandsTooltip = useCallback(() => {
-    setIsBrandsClosing(true);
-    brandsCloseTimeoutRef.current = setTimeout(() => {
-      setShowBrandsTooltip(false);
-      setIsBrandsClosing(false);
-    }, 300);
-  }, []);
-
-  const closeAccessoriesTooltip = useCallback(() => {
-    setIsAccessoriesClosing(true);
-    accessoriesCloseTimeoutRef.current = setTimeout(() => {
-      setShowAccessoriesTooltip(false);
-      setIsAccessoriesClosing(false);
-    }, 300);
-  }, []);
-
-  // Funciones para abrir tooltips (cancelando cualquier animación de cierre)
-  const openWomenTooltip = useCallback(() => {
-    if (womenCloseTimeoutRef.current) {
-      clearTimeout(womenCloseTimeoutRef.current);
+  // Función para cancelar cierre programado
+  const cancelCloseTooltip = useCallback(() => {
+    if (tooltipTimeoutRef.current) {
+      clearTimeout(tooltipTimeoutRef.current);
     }
-    setIsWomenClosing(false);
-    setShowWomenTooltip(true);
-  }, []);
-
-  const openMenTooltip = useCallback(() => {
-    if (menCloseTimeoutRef.current) {
-      clearTimeout(menCloseTimeoutRef.current);
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
     }
-    setIsMenClosing(false);
-    setShowMenTooltip(true);
-  }, []);
-
-  const openSneakersTooltip = useCallback(() => {
-    if (sneakersCloseTimeoutRef.current) {
-      clearTimeout(sneakersCloseTimeoutRef.current);
-    }
-    setIsSneakersClosing(false);
-    setShowSneakersTooltip(true);
-  }, []);
-
-  const openBrandsTooltip = useCallback(() => {
-    if (brandsCloseTimeoutRef.current) {
-      clearTimeout(brandsCloseTimeoutRef.current);
-    }
-    setIsBrandsClosing(false);
-    setShowBrandsTooltip(true);
-  }, []);
-
-  const openAccessoriesTooltip = useCallback(() => {
-    if (accessoriesCloseTimeoutRef.current) {
-      clearTimeout(accessoriesCloseTimeoutRef.current);
-    }
-    setIsAccessoriesClosing(false);
-    setShowAccessoriesTooltip(true);
+    setIsTooltipClosing(false);
   }, []);
 
   // Estados para el usuario
@@ -876,16 +821,11 @@ export function CardLayout({
                 onClick={() => router.push("/brands")}
                 onMouseEnter={() => {
                   if (!isLgScreen) return;
-                  if (brandsTooltipTimeoutRef.current) {
-                    clearTimeout(brandsTooltipTimeoutRef.current);
-                  }
-                  openBrandsTooltip();
+                  openTooltip("brands");
                 }}
                 onMouseLeave={() => {
                   if (!isLgScreen) return;
-                  brandsTooltipTimeoutRef.current = setTimeout(() => {
-                    closeBrandsTooltip();
-                  }, 100);
+                  scheduleCloseTooltip();
                 }}
                 className={`cursor-pointer px-2 py-2 font-semibold text-base transition-colors ${"text-foreground"}`}
               >
@@ -903,16 +843,11 @@ export function CardLayout({
                 onClick={() => router.push("/browse/men")}
                 onMouseEnter={() => {
                   if (!isLgScreen) return;
-                  if (menTooltipTimeoutRef.current) {
-                    clearTimeout(menTooltipTimeoutRef.current);
-                  }
-                  openMenTooltip();
+                  openTooltip("men");
                 }}
                 onMouseLeave={() => {
                   if (!isLgScreen) return;
-                  menTooltipTimeoutRef.current = setTimeout(() => {
-                    closeMenTooltip();
-                  }, 100);
+                  scheduleCloseTooltip();
                 }}
                 className={`cursor-pointer px-2 py-2 font-semibold text-base transition-colors ${"text-foreground"}`}
               >
@@ -924,16 +859,11 @@ export function CardLayout({
                 onClick={() => router.push("/browse/women")}
                 onMouseEnter={() => {
                   if (!isLgScreen) return;
-                  if (womenTooltipTimeoutRef.current) {
-                    clearTimeout(womenTooltipTimeoutRef.current);
-                  }
-                  openWomenTooltip();
+                  openTooltip("women");
                 }}
                 onMouseLeave={() => {
                   if (!isLgScreen) return;
-                  womenTooltipTimeoutRef.current = setTimeout(() => {
-                    closeWomenTooltip();
-                  }, 100);
+                  scheduleCloseTooltip();
                 }}
                 className={`cursor-pointer px-2 py-2 font-semibold text-base transition-colors ${"text-foreground"}`}
               >
@@ -945,16 +875,11 @@ export function CardLayout({
                 href="/category/footwear"
                 onMouseEnter={() => {
                   if (!isLgScreen) return;
-                  if (sneakersTooltipTimeoutRef.current) {
-                    clearTimeout(sneakersTooltipTimeoutRef.current);
-                  }
-                  openSneakersTooltip();
+                  openTooltip("sneakers");
                 }}
                 onMouseLeave={() => {
                   if (!isLgScreen) return;
-                  sneakersTooltipTimeoutRef.current = setTimeout(() => {
-                    closeSneakersTooltip();
-                  }, 100);
+                  scheduleCloseTooltip();
                 }}
                 className={`cursor-pointer px-2 py-2 h-full flex items-center justify-center font-semibold text-base transition-colors ${"text-foreground"}`}
               >
@@ -966,16 +891,11 @@ export function CardLayout({
                 href="/category/accesories"
                 onMouseEnter={() => {
                   if (!isLgScreen) return;
-                  if (accessoriesTooltipTimeoutRef.current) {
-                    clearTimeout(accessoriesTooltipTimeoutRef.current);
-                  }
-                  openAccessoriesTooltip();
+                  openTooltip("accessories");
                 }}
                 onMouseLeave={() => {
                   if (!isLgScreen) return;
-                  accessoriesTooltipTimeoutRef.current = setTimeout(() => {
-                    closeAccessoriesTooltip();
-                  }, 100);
+                  scheduleCloseTooltip();
                 }}
                 className={`cursor-pointer mr-2 px-2 py-2 h-full flex items-center justify-center font-semibold text-base transition-colors ${"text-foreground"}`}
               >
@@ -997,538 +917,82 @@ export function CardLayout({
               ))} */}
           </div>
         </div>
-        {/* Contenedor para tooltips con clip-path para ocultar durante la animación */}
+        {/* Contenedor para tooltip unificado con clip-path para ocultar durante la animación */}
         <div className="relative" style={{ clipPath: "inset(0 0 -100vh 0)" }}>
-          {showWomenTooltip && (
+          {activeTooltip && (
             <div
               onMouseEnter={() => {
-                if (womenTooltipTimeoutRef.current) {
-                  clearTimeout(womenTooltipTimeoutRef.current);
-                }
-                openWomenTooltip();
+                cancelCloseTooltip();
               }}
               onMouseLeave={() => {
-                closeWomenTooltip();
+                closeTooltip();
               }}
               className={`absolute bg-background border-x border-b border-border rounded-b-2xl z-[5] p-6 w-full duration-300 ease-out ${
-                isWomenClosing
+                isTooltipClosing
                   ? "animate-out slide-out-to-top-full"
                   : "animate-in slide-in-from-top-full"
               }`}
             >
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {/* Trending Products */}
-                <div>
-                  <h3 className="text-base font-semibold text-foreground mb-3">
-                    Trending products
-                  </h3>
-                  <div className="space-y-4">
-                    {isDataLoaded ? (
-                      trendingProductsWomen.length > 0 ? (
-                        trendingProductsWomen.map((product) => (
-                          <Link
-                            key={product.id}
-                            href={`/product/${product.id}`}
-                            className="flex items-center gap-2 pr-4 group w-full text-left cursor-pointer"
-                          >
-                            {product.images && product.images.length > 0 ? (
-                              <div className="w-8 h-8 rounded-md border border-border overflow-hidden p-1 bg-white">
-                                <Image
-                                  src={product.images[0]}
-                                  alt={product.name}
-                                  width={32}
-                                  height={32}
-                                  className="w-full h-full object-cover"
-                                />
+              {/* Contenido Women */}
+              {activeTooltip === "women" && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div>
+                    <h3 className="text-base font-semibold text-foreground mb-3">
+                      Trending products
+                    </h3>
+                    <div className="space-y-4">
+                      {isDataLoaded ? (
+                        trendingProductsWomen.length > 0 ? (
+                          trendingProductsWomen.map((product) => (
+                            <Link
+                              key={product.id}
+                              href={`/product/${product.id}`}
+                              className="flex items-center gap-2 pr-4 group w-full text-left cursor-pointer"
+                            >
+                              {product.images && product.images.length > 0 ? (
+                                <div className="w-8 h-8 rounded-md border border-border overflow-hidden p-1 bg-white">
+                                  <Image
+                                    src={product.images[0]}
+                                    alt={product.name}
+                                    width={32}
+                                    height={32}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              ) : (
+                                <div className="w-8 h-8 rounded bg-gray-200" />
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <p className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors truncate font-medium tracking-tight">
+                                  {product.name}
+                                </p>
                               </div>
-                            ) : (
-                              <div className="w-8 h-8 rounded bg-gray-200" />
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <p className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors truncate font-medium tracking-tight">
-                                {product.name}
-                              </p>
-                              {/* {product.brands && (
-                              <p className="text-[10px] text-gray-500 truncate">
-                                {product.brands.brand_name}
-                              </p>
-                            )} */}
-                            </div>
-                          </Link>
-                        ))
+                            </Link>
+                          ))
+                        ) : (
+                          <p className="text-xs text-gray-500">
+                            No products available
+                          </p>
+                        )
                       ) : (
-                        <p className="text-xs text-gray-500">
-                          No products available
-                        </p>
-                      )
-                    ) : (
-                      <div className="flex items-center justify-center py-4">
-                        <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-                      </div>
-                    )}
+                        <div className="flex items-center justify-center py-4">
+                          <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-                {/* Trending Brands */}
-                <div>
-                  <h3 className="text-base font-semibold text-foreground mb-3">
-                    Trending brands
-                  </h3>
-                  <div className="space-y-4">
-                    {isDataLoaded ? (
-                      trendingBrandsWomen.length > 0 ? (
-                        trendingBrandsWomen.map((brand) => (
-                          <Link
-                            key={brand.id}
-                            href={`/${brand.brand_username}`}
-                            onClick={() => setShowWomenTooltip(false)}
-                            className="flex items-center gap-2 transition-colors group"
-                          >
-                            {brand.logo_url ? (
-                              <div className="w-8 h-8 rounded-full border border-border overflow-hidden">
-                                <Image
-                                  src={brand.logo_url}
-                                  alt={brand.brand_name}
-                                  width={24}
-                                  height={24}
-                                  className="w-full h-full  object-cover"
-                                />
-                              </div>
-                            ) : (
-                              <div className="w-6 h-6 rounded bg-gray-200 flex items-center justify-center text-[10px] font-semibold text-gray-600">
-                                {brand.brand_name.charAt(0)}
-                              </div>
-                            )}
-                            <span className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate">
-                              {brand.brand_name}
-                            </span>
-                          </Link>
-                        ))
-                      ) : (
-                        <p className="text-xs text-gray-500"></p>
-                      )
-                    ) : (
-                      <div className="flex items-center justify-center py-4">
-                        <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Shop by Category */}
-                <div>
-                  <h3 className="text-base font-semibold text-foreground mb-3">
-                    Shop by category
-                  </h3>
-                  <div className="space-y-2">
-                    {Object.entries(CATEGORY_LABELS)
-                      .filter(([key]) => key !== "all")
-                      .map(([key, label]) => (
-                        <Link
-                          key={key}
-                          href={`/category/${key}?gender=women`}
-                          onClick={() => {
-                            setShowWomenTooltip(false);
-                          }}
-                          className="block w-full text-left text-base text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate"
-                        >
-                          {label}
-                        </Link>
-                      ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-          {showMenTooltip && (
-            <div
-              onMouseEnter={() => {
-                if (menTooltipTimeoutRef.current) {
-                  clearTimeout(menTooltipTimeoutRef.current);
-                }
-                openMenTooltip();
-              }}
-              onMouseLeave={() => {
-                closeMenTooltip();
-              }}
-              className={`absolute bg-background border-x border-b border-border rounded-b-2xl z-[5] p-6 w-full duration-300 ease-out ${
-                isMenClosing
-                  ? "animate-out slide-out-to-top-full"
-                  : "animate-in slide-in-from-top-full"
-              }`}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {/* Trending Products */}
-                <div>
-                  <h3 className="text-base font-semibold text-foreground mb-3">
-                    Trending products
-                  </h3>
-                  <div className="space-y-4">
-                    {isDataLoaded ? (
-                      trendingProductsMen.length > 0 ? (
-                        trendingProductsMen.map((product) => (
-                          <Link
-                            key={product.id}
-                            href={`/product/${product.id}`}
-                            className="flex items-center gap-2 pr-4 group w-full text-left cursor-pointer"
-                          >
-                            {product.images && product.images.length > 0 ? (
-                              <div className="w-8 h-8 rounded-md border border-border overflow-hidden p-1 bg-white">
-                                <Image
-                                  src={product.images[0]}
-                                  alt={product.name}
-                                  width={32}
-                                  height={32}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                            ) : (
-                              <div className="w-8 h-8 rounded bg-gray-200" />
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <p className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors truncate font-medium tracking-tight">
-                                {product.name}
-                              </p>
-                            </div>
-                          </Link>
-                        ))
-                      ) : (
-                        <p className="text-xs text-gray-500">
-                          No products available
-                        </p>
-                      )
-                    ) : (
-                      <div className="flex items-center justify-center py-4">
-                        <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-                      </div>
-                    )}
-                  </div>
-                </div>
-                {/* Trending Brands */}
-                <div>
-                  <h3 className="text-base font-semibold text-foreground mb-3">
-                    Trending brands
-                  </h3>
-                  <div className="space-y-4">
-                    {isDataLoaded ? (
-                      trendingBrandsMen.length > 0 ? (
-                        trendingBrandsMen.map((brand) => (
-                          <Link
-                            key={brand.id}
-                            href={`/${brand.brand_username}`}
-                            onClick={() => setShowMenTooltip(false)}
-                            className="flex items-center gap-2 transition-colors group"
-                          >
-                            {brand.logo_url ? (
-                              <div className="w-8 h-8 rounded-full border border-border overflow-hidden">
-                                <Image
-                                  src={brand.logo_url}
-                                  alt={brand.brand_name}
-                                  width={24}
-                                  height={24}
-                                  className="w-full h-full  object-cover"
-                                />
-                              </div>
-                            ) : (
-                              <div className="w-6 h-6 rounded bg-gray-200 flex items-center justify-center text-[10px] font-semibold text-gray-600">
-                                {brand.brand_name.charAt(0)}
-                              </div>
-                            )}
-                            <span className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate">
-                              {brand.brand_name}
-                            </span>
-                          </Link>
-                        ))
-                      ) : (
-                        <p className="text-xs text-gray-500"></p>
-                      )
-                    ) : (
-                      <div className="flex items-center justify-center py-4">
-                        <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Shop by Category */}
-                <div>
-                  <h3 className="text-base font-semibold text-foreground mb-3">
-                    Shop by category
-                  </h3>
-                  <div className="space-y-2">
-                    {Object.entries(CATEGORY_LABELS)
-                      .filter(([key]) => key !== "all")
-                      .map(([key, label]) => (
-                        <Link
-                          key={key}
-                          href={`/category/${key}?gender=men`}
-                          onClick={() => {
-                            setShowMenTooltip(false);
-                          }}
-                          className="block w-full text-left text-base text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate"
-                        >
-                          {label}
-                        </Link>
-                      ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-          {showSneakersTooltip && (
-            <div
-              onMouseEnter={() => {
-                if (sneakersTooltipTimeoutRef.current) {
-                  clearTimeout(sneakersTooltipTimeoutRef.current);
-                }
-                openSneakersTooltip();
-              }}
-              onMouseLeave={() => {
-                closeSneakersTooltip();
-              }}
-              className={`absolute bg-background border-x border-b border-border rounded-b-2xl z-[5] p-6 w-full duration-300 ease-out ${
-                isSneakersClosing
-                  ? "animate-out slide-out-to-top-full"
-                  : "animate-in slide-in-from-top-full"
-              }`}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {/* Trending Sneakers */}
-                <div>
-                  <h3 className="text-base font-semibold text-foreground mb-3">
-                    Trending sneakers
-                  </h3>
-                  <div className="space-y-4">
-                    {isDataLoaded ? (
-                      trendingSneakers.length > 0 ? (
-                        trendingSneakers.map((product) => (
-                          <Link
-                            key={product.id}
-                            href={`/product/${product.id}`}
-                            className="flex items-center gap-2 pr-4 group w-full text-left cursor-pointer"
-                          >
-                            {product.images && product.images.length > 0 ? (
-                              <div className="w-8 h-8 rounded-md border border-border overflow-hidden p-1 bg-white">
-                                <Image
-                                  src={product.images[0]}
-                                  alt={product.name}
-                                  width={32}
-                                  height={32}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                            ) : (
-                              <div className="w-8 h-8 rounded bg-gray-200" />
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <p className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors truncate font-medium tracking-tight">
-                                {product.name}
-                              </p>
-                            </div>
-                          </Link>
-                        ))
-                      ) : (
-                        <p className="text-xs text-gray-500">
-                          No sneakers available
-                        </p>
-                      )
-                    ) : (
-                      <div className="flex items-center justify-center py-4">
-                        <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Popular Brands */}
-                <div>
-                  <h3 className="text-base font-semibold text-foreground mb-3">
-                    Popular brands
-                  </h3>
-                  <div className="space-y-4">
-                    {isDataLoaded ? (
-                      trendingSneakerBrands.length > 0 ? (
-                        trendingSneakerBrands.map((brand) => (
-                          <Link
-                            key={brand.id}
-                            href={`/${brand.brand_username}?category=footwear`}
-                            onClick={() => setShowSneakersTooltip(false)}
-                            className="flex items-center gap-2 transition-colors group"
-                          >
-                            {brand.logo_url ? (
-                              <div className="w-8 h-8 rounded-full border border-border overflow-hidden">
-                                <Image
-                                  src={brand.logo_url}
-                                  alt={brand.brand_name}
-                                  width={24}
-                                  height={24}
-                                  className="w-full h-full  object-cover"
-                                />
-                              </div>
-                            ) : (
-                              <div className="w-6 h-6 rounded bg-gray-200 flex items-center justify-center text-[10px] font-semibold text-gray-600">
-                                {brand.brand_name.charAt(0)}
-                              </div>
-                            )}
-                            <span className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate">
-                              {brand.brand_name}
-                            </span>
-                          </Link>
-                        ))
-                      ) : (
-                        <p className="text-xs text-gray-500"></p>
-                      )
-                    ) : (
-                      <div className="flex items-center justify-center py-4">
-                        <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Sneakers For */}
-                <div>
-                  <h3 className="text-base font-semibold text-foreground mb-3">
-                    Sneakers for:
-                  </h3>
-                  <div className="space-y-2">
-                    <Link
-                      href={`/category/footwear?gender=men`}
-                      onClick={() => {
-                        setShowSneakersTooltip(false);
-                      }}
-                      className="block w-full text-left text-base text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate"
-                    >
-                      Men
-                    </Link>
-                    <Link
-                      href={`/category/footwear?gender=women`}
-                      onClick={() => {
-                        setShowSneakersTooltip(false);
-                      }}
-                      className="block w-full text-left text-base text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate"
-                    >
-                      Women
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-          {showBrandsTooltip && (
-            <div
-              onMouseEnter={() => {
-                if (brandsTooltipTimeoutRef.current) {
-                  clearTimeout(brandsTooltipTimeoutRef.current);
-                }
-                openBrandsTooltip();
-              }}
-              onMouseLeave={() => {
-                closeBrandsTooltip();
-              }}
-              className={`absolute bg-background border-x border-b border-border rounded-b-2xl z-[5] p-6 w-full duration-300 ease-out ${
-                isBrandsClosing
-                  ? "animate-out slide-out-to-top-full"
-                  : "animate-in slide-in-from-top-full"
-              }`}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {/* Primera columna - 6 marcas */}
-                <div>
-                  <div className="space-y-4">
-                    {isDataLoaded ? (
-                      topBrands.slice(0, 6).length > 0 ? (
-                        topBrands.slice(0, 6).map((brand) => (
-                          <Link
-                            key={brand.id}
-                            href={`/${brand.brand_username}`}
-                            onClick={() => setShowBrandsTooltip(false)}
-                            className="flex items-center gap-2 transition-colors group"
-                          >
-                            {brand.logo_url ? (
-                              <div className="w-8 h-8 rounded-full border border-border overflow-hidden">
-                                <Image
-                                  src={brand.logo_url}
-                                  alt={brand.brand_name}
-                                  width={24}
-                                  height={24}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                            ) : (
-                              <div className="w-6 h-6 rounded bg-gray-200 flex items-center justify-center text-[10px] font-semibold text-gray-600">
-                                {brand.brand_name.charAt(0)}
-                              </div>
-                            )}
-                            <span className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate">
-                              {brand.brand_name}
-                            </span>
-                          </Link>
-                        ))
-                      ) : (
-                        <p className="text-xs text-gray-500"></p>
-                      )
-                    ) : (
-                      <div className="flex items-center justify-center py-4">
-                        <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Segunda columna - 6 marcas */}
-                <div>
-                  <div className="space-y-4">
-                    {isDataLoaded ? (
-                      topBrands.slice(6, 12).length > 0 ? (
-                        topBrands.slice(6, 12).map((brand) => (
-                          <Link
-                            key={brand.id}
-                            href={`/${brand.brand_username}`}
-                            onClick={() => setShowBrandsTooltip(false)}
-                            className="flex items-center gap-2 transition-colors group"
-                          >
-                            {brand.logo_url ? (
-                              <div className="w-8 h-8 rounded-full border border-border overflow-hidden">
-                                <Image
-                                  src={brand.logo_url}
-                                  alt={brand.brand_name}
-                                  width={24}
-                                  height={24}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                            ) : (
-                              <div className="w-6 h-6 rounded bg-gray-200 flex items-center justify-center text-[10px] font-semibold text-gray-600">
-                                {brand.brand_name.charAt(0)}
-                              </div>
-                            )}
-                            <span className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate">
-                              {brand.brand_name}
-                            </span>
-                          </Link>
-                        ))
-                      ) : (
-                        <p className="text-xs text-gray-500"></p>
-                      )
-                    ) : (
-                      <div className="flex items-center justify-center py-4">
-                        <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Tercera columna - 5 marcas + botón */}
-                <div>
-                  <div className="space-y-4">
-                    {isDataLoaded ? (
-                      topBrands.slice(12, 17).length > 0 ? (
-                        <>
-                          {topBrands.slice(12, 17).map((brand) => (
+                  <div>
+                    <h3 className="text-base font-semibold text-foreground mb-3">
+                      Trending brands
+                    </h3>
+                    <div className="space-y-4">
+                      {isDataLoaded ? (
+                        trendingBrandsWomen.length > 0 ? (
+                          trendingBrandsWomen.map((brand) => (
                             <Link
                               key={brand.id}
                               href={`/${brand.brand_username}`}
-                              onClick={() => setShowBrandsTooltip(false)}
+                              onClick={() => setActiveTooltip(null)}
                               className="flex items-center gap-2 transition-colors group"
                             >
                               {brand.logo_url ? (
@@ -1550,167 +1014,522 @@ export function CardLayout({
                                 {brand.brand_name}
                               </span>
                             </Link>
-                          ))}
-                          {/* Botón Explore all brands */}
-                          <button
-                            onClick={() => {
-                              router.push("/brands");
-                              setShowBrandsTooltip(false);
-                            }}
-                            className="mt-1 cursor-pointer text-primary font-medium rounded-full hover:opacity-90 transition-opacity text-sm"
-                          >
-                            Explore all brands
-                          </button>
-                        </>
+                          ))
+                        ) : (
+                          <p className="text-xs text-gray-500"></p>
+                        )
                       ) : (
-                        <p className="text-xs text-gray-500"></p>
-                      )
-                    ) : (
-                      <div className="flex items-center justify-center py-4">
-                        <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-                      </div>
-                    )}
+                        <div className="flex items-center justify-center py-4">
+                          <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </div>
-            </div>
-          )}
-          {showAccessoriesTooltip && (
-            <div
-              onMouseEnter={() => {
-                if (accessoriesTooltipTimeoutRef.current) {
-                  clearTimeout(accessoriesTooltipTimeoutRef.current);
-                }
-                openAccessoriesTooltip();
-              }}
-              onMouseLeave={() => {
-                closeAccessoriesTooltip();
-              }}
-              className={`absolute bg-background border-x border-b border-border rounded-b-2xl z-[5] p-6 w-full duration-300 ease-out ${
-                isAccessoriesClosing
-                  ? "animate-out slide-out-to-top-full"
-                  : "animate-in slide-in-from-top-full"
-              }`}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {/* Trending Accessories */}
-                <div>
-                  <h3 className="text-base font-semibold text-foreground mb-3">
-                    Trending accessories
-                  </h3>
-                  <div className="space-y-4">
-                    {isDataLoaded ? (
-                      trendingAccessories.length > 0 ? (
-                        trendingAccessories.map((product) => (
+                  <div>
+                    <h3 className="text-base font-semibold text-foreground mb-3">
+                      Shop by category
+                    </h3>
+                    <div className="space-y-2">
+                      {Object.entries(CATEGORY_LABELS)
+                        .filter(([key]) => key !== "all")
+                        .map(([key, label]) => (
                           <Link
-                            key={product.id}
-                            href={`/product/${product.id}`}
-                            className="flex items-center gap-2 pr-4 group w-full text-left cursor-pointer"
+                            key={key}
+                            href={`/category/${key}?gender=women`}
+                            onClick={() => setActiveTooltip(null)}
+                            className="block w-full text-left text-base text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate"
                           >
-                            {product.images && product.images.length > 0 ? (
-                              <div className="w-8 h-8 rounded-md border border-border overflow-hidden p-1 bg-white">
-                                <Image
-                                  src={product.images[0]}
-                                  alt={product.name}
-                                  width={32}
-                                  height={32}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                            ) : (
-                              <div className="w-8 h-8 rounded bg-gray-200" />
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <p className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors truncate font-medium tracking-tight">
-                                {product.name}
-                              </p>
-                            </div>
+                            {label}
                           </Link>
-                        ))
-                      ) : (
-                        <p className="text-xs text-gray-500"></p>
-                      )
-                    ) : (
-                      <div className="flex items-center justify-center py-4">
-                        <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-                      </div>
-                    )}
+                        ))}
+                    </div>
                   </div>
                 </div>
+              )}
 
-                {/* Popular Brands */}
-                <div>
-                  <h3 className="text-base font-semibold text-foreground mb-3">
-                    Popular brands
-                  </h3>
-                  <div className="space-y-4">
-                    {isDataLoaded ? (
-                      trendingAccessoryBrands.length > 0 ? (
-                        trendingAccessoryBrands.map((brand) => (
+              {/* Contenido Men */}
+              {activeTooltip === "men" && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div>
+                    <h3 className="text-base font-semibold text-foreground mb-3">
+                      Trending products
+                    </h3>
+                    <div className="space-y-4">
+                      {isDataLoaded ? (
+                        trendingProductsMen.length > 0 ? (
+                          trendingProductsMen.map((product) => (
+                            <Link
+                              key={product.id}
+                              href={`/product/${product.id}`}
+                              className="flex items-center gap-2 pr-4 group w-full text-left cursor-pointer"
+                            >
+                              {product.images && product.images.length > 0 ? (
+                                <div className="w-8 h-8 rounded-md border border-border overflow-hidden p-1 bg-white">
+                                  <Image
+                                    src={product.images[0]}
+                                    alt={product.name}
+                                    width={32}
+                                    height={32}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              ) : (
+                                <div className="w-8 h-8 rounded bg-gray-200" />
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <p className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors truncate font-medium tracking-tight">
+                                  {product.name}
+                                </p>
+                              </div>
+                            </Link>
+                          ))
+                        ) : (
+                          <p className="text-xs text-gray-500">
+                            No products available
+                          </p>
+                        )
+                      ) : (
+                        <div className="flex items-center justify-center py-4">
+                          <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-foreground mb-3">
+                      Trending brands
+                    </h3>
+                    <div className="space-y-4">
+                      {isDataLoaded ? (
+                        trendingBrandsMen.length > 0 ? (
+                          trendingBrandsMen.map((brand) => (
+                            <Link
+                              key={brand.id}
+                              href={`/${brand.brand_username}`}
+                              onClick={() => setActiveTooltip(null)}
+                              className="flex items-center gap-2 transition-colors group"
+                            >
+                              {brand.logo_url ? (
+                                <div className="w-8 h-8 rounded-full border border-border overflow-hidden">
+                                  <Image
+                                    src={brand.logo_url}
+                                    alt={brand.brand_name}
+                                    width={24}
+                                    height={24}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              ) : (
+                                <div className="w-6 h-6 rounded bg-gray-200 flex items-center justify-center text-[10px] font-semibold text-gray-600">
+                                  {brand.brand_name.charAt(0)}
+                                </div>
+                              )}
+                              <span className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate">
+                                {brand.brand_name}
+                              </span>
+                            </Link>
+                          ))
+                        ) : (
+                          <p className="text-xs text-gray-500"></p>
+                        )
+                      ) : (
+                        <div className="flex items-center justify-center py-4">
+                          <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-foreground mb-3">
+                      Shop by category
+                    </h3>
+                    <div className="space-y-2">
+                      {Object.entries(CATEGORY_LABELS)
+                        .filter(([key]) => key !== "all")
+                        .map(([key, label]) => (
                           <Link
-                            key={brand.id}
-                            href={`/${brand.brand_username}?category=accesories`}
-                            onClick={() => setShowAccessoriesTooltip(false)}
-                            className="flex items-center gap-2 transition-colors group"
+                            key={key}
+                            href={`/category/${key}?gender=men`}
+                            onClick={() => setActiveTooltip(null)}
+                            className="block w-full text-left text-base text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate"
                           >
-                            {brand.logo_url ? (
-                              <div className="w-8 h-8 rounded-full border border-border overflow-hidden">
-                                <Image
-                                  src={brand.logo_url}
-                                  alt={brand.brand_name}
-                                  width={24}
-                                  height={24}
-                                  className="w-full h-full  object-cover"
-                                />
-                              </div>
-                            ) : (
-                              <div className="w-6 h-6 rounded bg-gray-200 flex items-center justify-center text-[10px] font-semibold text-gray-600">
-                                {brand.brand_name.charAt(0)}
-                              </div>
-                            )}
-                            <span className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate">
-                              {brand.brand_name}
-                            </span>
+                            {label}
                           </Link>
-                        ))
-                      ) : (
-                        <p className="text-xs text-gray-500"></p>
-                      )
-                    ) : (
-                      <div className="flex items-center justify-center py-4">
-                        <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
-                      </div>
-                    )}
+                        ))}
+                    </div>
                   </div>
                 </div>
+              )}
 
-                {/* Accessories For */}
-                <div>
-                  <h3 className="text-base font-semibold text-foreground mb-3">
-                    Accessories for:
-                  </h3>
-                  <div className="space-y-2">
-                    <Link
-                      href={`/category/accesories?gender=men`}
-                      onClick={() => {
-                        setShowAccessoriesTooltip(false);
-                      }}
-                      className="block w-full text-left text-base text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate"
-                    >
-                      Men
-                    </Link>
-                    <Link
-                      href={`/category/accesories?gender=women`}
-                      onClick={() => {
-                        setShowAccessoriesTooltip(false);
-                      }}
-                      className="block w-full text-left text-base text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate"
-                    >
-                      Women
-                    </Link>
+              {/* Contenido Sneakers */}
+              {activeTooltip === "sneakers" && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div>
+                    <h3 className="text-base font-semibold text-foreground mb-3">
+                      Trending sneakers
+                    </h3>
+                    <div className="space-y-4">
+                      {isDataLoaded ? (
+                        trendingSneakers.length > 0 ? (
+                          trendingSneakers.map((product) => (
+                            <Link
+                              key={product.id}
+                              href={`/product/${product.id}`}
+                              className="flex items-center gap-2 pr-4 group w-full text-left cursor-pointer"
+                            >
+                              {product.images && product.images.length > 0 ? (
+                                <div className="w-8 h-8 rounded-md border border-border overflow-hidden p-1 bg-white">
+                                  <Image
+                                    src={product.images[0]}
+                                    alt={product.name}
+                                    width={32}
+                                    height={32}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              ) : (
+                                <div className="w-8 h-8 rounded bg-gray-200" />
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <p className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors truncate font-medium tracking-tight">
+                                  {product.name}
+                                </p>
+                              </div>
+                            </Link>
+                          ))
+                        ) : (
+                          <p className="text-xs text-gray-500">
+                            No sneakers available
+                          </p>
+                        )
+                      ) : (
+                        <div className="flex items-center justify-center py-4">
+                          <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-foreground mb-3">
+                      Popular brands
+                    </h3>
+                    <div className="space-y-4">
+                      {isDataLoaded ? (
+                        trendingSneakerBrands.length > 0 ? (
+                          trendingSneakerBrands.map((brand) => (
+                            <Link
+                              key={brand.id}
+                              href={`/${brand.brand_username}?category=footwear`}
+                              onClick={() => setActiveTooltip(null)}
+                              className="flex items-center gap-2 transition-colors group"
+                            >
+                              {brand.logo_url ? (
+                                <div className="w-8 h-8 rounded-full border border-border overflow-hidden">
+                                  <Image
+                                    src={brand.logo_url}
+                                    alt={brand.brand_name}
+                                    width={24}
+                                    height={24}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              ) : (
+                                <div className="w-6 h-6 rounded bg-gray-200 flex items-center justify-center text-[10px] font-semibold text-gray-600">
+                                  {brand.brand_name.charAt(0)}
+                                </div>
+                              )}
+                              <span className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate">
+                                {brand.brand_name}
+                              </span>
+                            </Link>
+                          ))
+                        ) : (
+                          <p className="text-xs text-gray-500"></p>
+                        )
+                      ) : (
+                        <div className="flex items-center justify-center py-4">
+                          <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-foreground mb-3">
+                      Sneakers for:
+                    </h3>
+                    <div className="space-y-2">
+                      <Link
+                        href="/category/footwear?gender=men"
+                        onClick={() => setActiveTooltip(null)}
+                        className="block w-full text-left text-base text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate"
+                      >
+                        Men
+                      </Link>
+                      <Link
+                        href="/category/footwear?gender=women"
+                        onClick={() => setActiveTooltip(null)}
+                        className="block w-full text-left text-base text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate"
+                      >
+                        Women
+                      </Link>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
+
+              {/* Contenido Brands */}
+              {activeTooltip === "brands" && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div>
+                    <div className="space-y-4">
+                      {isDataLoaded ? (
+                        topBrands.slice(0, 6).length > 0 ? (
+                          topBrands.slice(0, 6).map((brand) => (
+                            <Link
+                              key={brand.id}
+                              href={`/${brand.brand_username}`}
+                              onClick={() => setActiveTooltip(null)}
+                              className="flex items-center gap-2 transition-colors group"
+                            >
+                              {brand.logo_url ? (
+                                <div className="w-8 h-8 rounded-full border border-border overflow-hidden">
+                                  <Image
+                                    src={brand.logo_url}
+                                    alt={brand.brand_name}
+                                    width={24}
+                                    height={24}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              ) : (
+                                <div className="w-6 h-6 rounded bg-gray-200 flex items-center justify-center text-[10px] font-semibold text-gray-600">
+                                  {brand.brand_name.charAt(0)}
+                                </div>
+                              )}
+                              <span className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate">
+                                {brand.brand_name}
+                              </span>
+                            </Link>
+                          ))
+                        ) : (
+                          <p className="text-xs text-gray-500"></p>
+                        )
+                      ) : (
+                        <div className="flex items-center justify-center py-4">
+                          <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="space-y-4">
+                      {isDataLoaded ? (
+                        topBrands.slice(6, 12).length > 0 ? (
+                          topBrands.slice(6, 12).map((brand) => (
+                            <Link
+                              key={brand.id}
+                              href={`/${brand.brand_username}`}
+                              onClick={() => setActiveTooltip(null)}
+                              className="flex items-center gap-2 transition-colors group"
+                            >
+                              {brand.logo_url ? (
+                                <div className="w-8 h-8 rounded-full border border-border overflow-hidden">
+                                  <Image
+                                    src={brand.logo_url}
+                                    alt={brand.brand_name}
+                                    width={24}
+                                    height={24}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              ) : (
+                                <div className="w-6 h-6 rounded bg-gray-200 flex items-center justify-center text-[10px] font-semibold text-gray-600">
+                                  {brand.brand_name.charAt(0)}
+                                </div>
+                              )}
+                              <span className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate">
+                                {brand.brand_name}
+                              </span>
+                            </Link>
+                          ))
+                        ) : (
+                          <p className="text-xs text-gray-500"></p>
+                        )
+                      ) : (
+                        <div className="flex items-center justify-center py-4">
+                          <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="space-y-4">
+                      {isDataLoaded ? (
+                        topBrands.slice(12, 17).length > 0 ? (
+                          <>
+                            {topBrands.slice(12, 17).map((brand) => (
+                              <Link
+                                key={brand.id}
+                                href={`/${brand.brand_username}`}
+                                onClick={() => setActiveTooltip(null)}
+                                className="flex items-center gap-2 transition-colors group"
+                              >
+                                {brand.logo_url ? (
+                                  <div className="w-8 h-8 rounded-full border border-border overflow-hidden">
+                                    <Image
+                                      src={brand.logo_url}
+                                      alt={brand.brand_name}
+                                      width={24}
+                                      height={24}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="w-6 h-6 rounded bg-gray-200 flex items-center justify-center text-[10px] font-semibold text-gray-600">
+                                    {brand.brand_name.charAt(0)}
+                                  </div>
+                                )}
+                                <span className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate">
+                                  {brand.brand_name}
+                                </span>
+                              </Link>
+                            ))}
+                            <button
+                              onClick={() => {
+                                router.push("/brands");
+                                setActiveTooltip(null);
+                              }}
+                              className="mt-1 cursor-pointer text-primary font-medium rounded-full hover:opacity-90 transition-opacity text-sm"
+                            >
+                              Explore all brands
+                            </button>
+                          </>
+                        ) : (
+                          <p className="text-xs text-gray-500"></p>
+                        )
+                      ) : (
+                        <div className="flex items-center justify-center py-4">
+                          <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Contenido Accessories */}
+              {activeTooltip === "accessories" && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div>
+                    <h3 className="text-base font-semibold text-foreground mb-3">
+                      Trending accessories
+                    </h3>
+                    <div className="space-y-4">
+                      {isDataLoaded ? (
+                        trendingAccessories.length > 0 ? (
+                          trendingAccessories.map((product) => (
+                            <Link
+                              key={product.id}
+                              href={`/product/${product.id}`}
+                              className="flex items-center gap-2 pr-4 group w-full text-left cursor-pointer"
+                            >
+                              {product.images && product.images.length > 0 ? (
+                                <div className="w-8 h-8 rounded-md border border-border overflow-hidden p-1 bg-white">
+                                  <Image
+                                    src={product.images[0]}
+                                    alt={product.name}
+                                    width={32}
+                                    height={32}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              ) : (
+                                <div className="w-8 h-8 rounded bg-gray-200" />
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <p className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors truncate font-medium tracking-tight">
+                                  {product.name}
+                                </p>
+                              </div>
+                            </Link>
+                          ))
+                        ) : (
+                          <p className="text-xs text-gray-500"></p>
+                        )
+                      ) : (
+                        <div className="flex items-center justify-center py-4">
+                          <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-foreground mb-3">
+                      Popular brands
+                    </h3>
+                    <div className="space-y-4">
+                      {isDataLoaded ? (
+                        trendingAccessoryBrands.length > 0 ? (
+                          trendingAccessoryBrands.map((brand) => (
+                            <Link
+                              key={brand.id}
+                              href={`/${brand.brand_username}?category=accesories`}
+                              onClick={() => setActiveTooltip(null)}
+                              className="flex items-center gap-2 transition-colors group"
+                            >
+                              {brand.logo_url ? (
+                                <div className="w-8 h-8 rounded-full border border-border overflow-hidden">
+                                  <Image
+                                    src={brand.logo_url}
+                                    alt={brand.brand_name}
+                                    width={24}
+                                    height={24}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              ) : (
+                                <div className="w-6 h-6 rounded bg-gray-200 flex items-center justify-center text-[10px] font-semibold text-gray-600">
+                                  {brand.brand_name.charAt(0)}
+                                </div>
+                              )}
+                              <span className="text-left text-sm text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate">
+                                {brand.brand_name}
+                              </span>
+                            </Link>
+                          ))
+                        ) : (
+                          <p className="text-xs text-gray-500"></p>
+                        )
+                      ) : (
+                        <div className="flex items-center justify-center py-4">
+                          <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold text-foreground mb-3">
+                      Accessories for:
+                    </h3>
+                    <div className="space-y-2">
+                      <Link
+                        href="/category/accesories?gender=men"
+                        onClick={() => setActiveTooltip(null)}
+                        className="block w-full text-left text-base text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate"
+                      >
+                        Men
+                      </Link>
+                      <Link
+                        href="/category/accesories?gender=women"
+                        onClick={() => setActiveTooltip(null)}
+                        className="block w-full text-left text-base text-muted-foreground hover:text-foreground py-1 transition-colors font-medium tracking-tight truncate"
+                      >
+                        Women
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

@@ -28,13 +28,14 @@ const sections = [
     ],
   },
   {
-    title: "Try-Ons",
+    title: "Wearing clothing items",
     id: "tryons",
     items: [
-      { title: "What are Try-Ons?", href: "/guide/try-ons" },
-      { title: "Partner Brands", href: "/guide/partner-brands" },
-      { title: "Best Practices", href: "/guide/best-practices" },
-      { title: "Common Issues", href: "/guide/common-issues" },
+      { title: "Getting started", href: "/guide/start-wearing" },
+      { title: "Try-ons", href: "/guide/try-ons" },
+      { title: "Partner brands", href: "/guide/partner-brands" },
+      { title: "Best practices", href: "/guide/best-practices" },
+      { title: "Common issues", href: "/guide/common-issues" },
     ],
   },
 ];

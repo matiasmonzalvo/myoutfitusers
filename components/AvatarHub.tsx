@@ -638,23 +638,30 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
                       className="absolute ml-[38px]  left-1/2 top-4.5 -translate-x-1/2 -translate-y-1/2 z-50"
                     >
                       <button className="text-white hover:text-white/80 transition-colors">
-                        <HelpCircle className="w-3.5 h-3.5" />
+                        <HelpCircle className="w-3.5 h-3.5" strokeWidth={2.5} />
                       </button>
                     </TooltipTrigger>
-                    <TooltipContent className="w-[260px] shadow-[0_0_40px_0_rgba(0,0,0,0.1)] p-3 rounded-2xl border border-border bg-white flex flex-col gap-2">
+                    <TooltipContent className="w-[260px] shadow-[0_0_40px_0_rgba(0,0,0,0.1)] p-3 rounded-2xl border border-border flex flex-col gap-2">
                       <h3 className="text-base font-semibold tracking-tight">
-                        IMPORTANTE
+                        IMPORTANT
                       </h3>
                       <p className="text-xs text-muted-foreground">
-                        - El modelo funciona mejor con dos prendas a la vez.
+                        - You should try on 1-2 items at a time for the best
+                        results.
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        - Si la prenda tiene muchos detalles es mejor es
-                        seleccionar esa sola y vestirla.
+                        - If the item has many details, it's better to select
+                        that item alone and wear it.
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        - Para aprender a usar el modelo, puedes ver la guía de
-                        uso aquí.
+                        - To learn how to use the model, you can view the guide{" "}
+                        <Link
+                          href="/guide/best-practices"
+                          className="text-primary"
+                        >
+                          here
+                        </Link>
+                        .
                       </p>
                     </TooltipContent>
                   </Tooltip>

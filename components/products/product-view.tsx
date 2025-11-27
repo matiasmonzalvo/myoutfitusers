@@ -246,10 +246,9 @@ export function ProductView({
               <div className="flex flex-col  items-stretch gap-3 pt-4">
                 <button
                   onClick={handleViewProduct}
-                  className="flex-1 flex items-center justify-center gap-2 px-6 py-2 rounded-full transition-colors cursor-pointer font-medium text-sm lg:text-base border border-border bg-background hover:bg-muted"
+                  className="flex-1 bg-muted flex items-center justify-center gap-2 px-6 py-2 rounded-full transition-all cursor-pointer font-medium text-sm lg:text-base border border-border hover:opacity-80 "
                 >
-                  <ExternalLink className="w-5 h-5" />
-                  <span>Ver en la tienda</span>
+                  <span>View in store</span>
                 </button>
                 <button
                   onClick={isInCart ? handleRemoveFromCart : handleAddToCart}
@@ -272,12 +271,11 @@ export function ProductView({
                   {isInCart ? (
                     <>
                       <Check className="w-5 h-5" />
-                      <span>En el outfit</span>
+                      <span>Added</span>
                     </>
                   ) : (
                     <>
-                      <Plus className="w-5 h-5" />
-                      <span>Agregar al outfit</span>
+                      <span>Add to outfit</span>
                     </>
                   )}
                 </button>
