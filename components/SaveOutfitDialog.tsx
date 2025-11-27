@@ -426,7 +426,7 @@ export function SaveOutfitDialog({
         <div className="space-y-4">
           {/* Imagen del outfit */}
           <div
-            className={`h-[300px] sm:h-[400px] relative ${getAspectRatioClass()} rounded-2xl overflow-hidden border border-border bg-white flex items-center justify-center mx-auto`}
+            className={`h-[100px] sm:h-[200px] 2xl:h-[400px] relative ${getAspectRatioClass()} rounded-2xl overflow-hidden border border-border bg-white flex items-center justify-center mx-auto`}
           >
             <img
               ref={outfitImgRef}
@@ -485,7 +485,7 @@ export function SaveOutfitDialog({
                   htmlFor="show-products"
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                 >
-                  Mostrar productos
+                  Show products
                 </label>
               </div>
 
@@ -505,7 +505,7 @@ export function SaveOutfitDialog({
                     !showProducts ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                 >
-                  Mostrar nombres
+                  Show names
                 </label>
               </div>
 
@@ -518,12 +518,12 @@ export function SaveOutfitDialog({
                   }
                 >
                   <SelectTrigger id="aspect-ratio" className="w-full">
-                    <SelectValue placeholder="Selecciona aspect ratio" />
+                    <SelectValue placeholder="Select aspect ratio" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1:1">1:1 (Cuadrado)</SelectItem>
+                    <SelectItem value="1:1">1:1 (Square)</SelectItem>
                     <SelectItem value="9:16">9:16 (Vertical)</SelectItem>
-                    <SelectItem value="3:4">3:4 (Retrato)</SelectItem>
+                    <SelectItem value="3:4">3:4 (Portrait)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -546,7 +546,7 @@ export function SaveOutfitDialog({
               </h3>
               <Input
                 id="outfit-name"
-                placeholder="Ej: Outfit casual de verano"
+                placeholder="Example: Summer casual outfit"
                 value={outfitName}
                 onChange={(e) => setOutfitName(e.target.value)}
                 disabled={isSaving}
@@ -567,7 +567,7 @@ export function SaveOutfitDialog({
                 {isSaving ? (
                   <Loader className="h-4 w-4 animate-spin" />
                 ) : (
-                  "Guardar outfit"
+                  "Save outfit"
                 )}
               </button>
             </div>
