@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ShoppingCartProvider } from "@/lib/contexts/shopping-cart-context";
 import { OutfitProvider } from "@/lib/contexts/outfit-context";
 import { CategoryFilterProvider } from "@/lib/contexts/category-filter-context";
+import { FeedCacheProvider } from "@/lib/contexts/feed-cache-context";
 
 interface AppShellProps {
   isAuthenticated: boolean;
@@ -36,9 +37,11 @@ export function AppShell({ isAuthenticated, children }: AppShellProps) {
         <ShoppingCartProvider>
           <OutfitProvider>
             <CategoryFilterProvider>
-              <DashboardWrapper isAuthenticated={isAuthenticated}>
-                {children}
-              </DashboardWrapper>
+              <FeedCacheProvider>
+                <DashboardWrapper isAuthenticated={isAuthenticated}>
+                  {children}
+                </DashboardWrapper>
+              </FeedCacheProvider>
             </CategoryFilterProvider>
           </OutfitProvider>
         </ShoppingCartProvider>

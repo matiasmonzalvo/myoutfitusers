@@ -7,9 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import { useCategoryFilter } from "@/lib/contexts/category-filter-context";
 import { useSearch } from "@/lib/contexts/search-context";
+import { useFeedCache } from "@/lib/contexts/feed-cache-context";
 import { createServerClient } from "@/lib/supabase/client";
 import { AvatarHub } from "../AvatarHub";
 import { WelcomeDialog } from "../WelcomeDialog";
+import { usePathname } from "next/navigation";
 
 interface HomeContentProps {
   isAuthenticated: boolean;
@@ -18,12 +20,29 @@ interface HomeContentProps {
 const PRODUCTS_PER_PAGE = 16;
 
 export function HomeContent({ isAuthenticated }: HomeContentProps) {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const pathname = usePathname();
+  const {
+    cache,
+    setCachedProducts,
+    appendCachedProducts,
+    setCachedOffset,
+    setCachedHasMore,
+    setCachedScrollPosition,
+    setInitialized,
+    setCachedFilter,
+    clearCache,
+    getRandomSeed,
+  } = useFeedCache();
+
+  // Usar productos del caché o estado vacío
+  const [products, setProducts] = useState<Product[]>(cache.products);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>(
+    cache.filteredProducts
+  );
   const [searchResults, setSearchResults] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!cache.isInitialized);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore] = useState(cache.hasMore);
   const [searchHasMore, setSearchHasMore] = useState(true);
   const [userGender, setUserGender] = useState<
     "male" | "female" | "other" | null
@@ -31,13 +50,45 @@ export function HomeContent({ isAuthenticated }: HomeContentProps) {
   const [isGenderLoaded, setIsGenderLoaded] = useState(false);
   const { selectedFilter } = useCategoryFilter();
   const { searchQuery, isSearching, setIsSearching } = useSearch();
-  // observerTarget ya no se usa, se reemplazó por callback ref setObserverTarget
-  const offsetRef = useRef(0);
+
+  // Refs para el scroll y la carga
+  const offsetRef = useRef(cache.offset);
   const searchOffsetRef = useRef(0);
   const isLoadingRef = useRef(false);
   const isSearchLoadingRef = useRef(false);
-  const randomSeedRef = useRef<number>(Math.floor(Math.random() * 1000000));
-  const hasInitialLoadRef = useRef(false);
+  const randomSeedRef = useRef<number>(cache.randomSeed);
+  const hasInitialLoadRef = useRef(cache.isInitialized);
+  const scrollContainerRef = useRef<HTMLElement | null>(null);
+  const hasMountedRef = useRef(false);
+
+  // Función para obtener la posición actual del scroll
+  const getCurrentScrollPosition = useCallback(() => {
+    // En mobile, usar window.scrollY
+    if (window.innerWidth < 1024) {
+      return window.scrollY;
+    }
+    // En desktop, usar el contenedor scrollable
+    if (scrollContainerRef.current) {
+      return scrollContainerRef.current.scrollTop;
+    }
+    return 0;
+  }, []);
+
+  // Función para restaurar la posición del scroll
+  const restoreScrollPosition = useCallback((position: number) => {
+    if (position <= 0) return;
+
+    // Usar requestAnimationFrame para asegurar que el DOM esté listo
+    requestAnimationFrame(() => {
+      if (window.innerWidth < 1024) {
+        // Mobile: scroll del window
+        window.scrollTo(0, position);
+      } else if (scrollContainerRef.current) {
+        // Desktop: scroll del contenedor
+        scrollContainerRef.current.scrollTop = position;
+      }
+    });
+  }, []);
 
   // Función para cargar productos con recomendación personalizada
   const loadProducts = useCallback(
@@ -52,6 +103,7 @@ export function HomeContent({ isAuthenticated }: HomeContentProps) {
           setLoading(true);
           offsetRef.current = 0;
           setHasMore(true);
+          setCachedHasMore(true);
         } else {
           setLoadingMore(true);
         }
@@ -67,12 +119,15 @@ export function HomeContent({ isAuthenticated }: HomeContentProps) {
 
         if (data.length < PRODUCTS_PER_PAGE) {
           setHasMore(false);
+          setCachedHasMore(false);
         }
 
         if (reset) {
           setProducts(data);
           setFilteredProducts(data);
+          setCachedProducts(data, data);
           offsetRef.current = PRODUCTS_PER_PAGE;
+          setCachedOffset(PRODUCTS_PER_PAGE);
         } else {
           setProducts((prev) => {
             // Filtrar duplicados usando un Set
@@ -85,8 +140,15 @@ export function HomeContent({ isAuthenticated }: HomeContentProps) {
             const newProducts = data.filter((p) => !existingIds.has(p.id));
             return [...prev, ...newProducts];
           });
+          // Actualizar el caché con los nuevos productos
+          appendCachedProducts(data, data);
           offsetRef.current = currentOffset + PRODUCTS_PER_PAGE;
+          setCachedOffset(currentOffset + PRODUCTS_PER_PAGE);
         }
+
+        // Marcar como inicializado
+        setInitialized(true);
+        setCachedFilter(selectedFilter);
       } catch (error) {
         console.error("Error fetching products:", error);
       } finally {
@@ -95,8 +157,144 @@ export function HomeContent({ isAuthenticated }: HomeContentProps) {
         isLoadingRef.current = false;
       }
     },
-    [selectedFilter, userGender]
+    [
+      selectedFilter,
+      userGender,
+      setCachedProducts,
+      appendCachedProducts,
+      setCachedOffset,
+      setCachedHasMore,
+      setInitialized,
+      setCachedFilter,
+    ]
   );
+
+  // Efecto para encontrar y guardar referencia al contenedor scrollable
+  useEffect(() => {
+    // Buscar el contenedor scrollable del layout
+    const findContainer = () => {
+      // En desktop, el scroll está en el div con overflow-y-auto dentro de SidebarInset
+      // Buscar todos los contenedores con overflow-y-auto que tengan scroll real
+      const containers = document.querySelectorAll(".overflow-y-auto");
+      for (const container of containers) {
+        if (container instanceof HTMLElement) {
+          // Verificar que sea un contenedor de scroll válido (tiene contenido scrollable)
+          const rect = container.getBoundingClientRect();
+          // Priorizar contenedores grandes que probablemente sean el contenedor principal
+          if (
+            rect.height > 200 &&
+            container.scrollHeight > container.clientHeight
+          ) {
+            scrollContainerRef.current = container;
+            return;
+          }
+        }
+      }
+
+      // Si no encontramos uno con scroll activo, buscar el más grande
+      let largestContainer: HTMLElement | null = null;
+      let largestHeight = 0;
+      for (const container of containers) {
+        if (container instanceof HTMLElement) {
+          const rect = container.getBoundingClientRect();
+          if (rect.height > largestHeight) {
+            largestHeight = rect.height;
+            largestContainer = container;
+          }
+        }
+      }
+      if (largestContainer) {
+        scrollContainerRef.current = largestContainer;
+      }
+    };
+
+    // Esperar a que el DOM esté listo y los productos se rendericen
+    const timer = setTimeout(findContainer, 100);
+    return () => clearTimeout(timer);
+  }, [products.length]);
+
+  // Efecto para restaurar la posición del scroll cuando hay productos en caché
+  useEffect(() => {
+    // Solo intentar restaurar una vez al montar y cuando hay productos en caché
+    if (
+      !cache.isInitialized ||
+      cache.products.length === 0 ||
+      pathname !== "/"
+    ) {
+      return;
+    }
+
+    // Evitar restaurar múltiples veces
+    if (hasMountedRef.current) return;
+    hasMountedRef.current = true;
+
+    // Esperar a que el contenedor de scroll se encuentre y los productos se rendericen
+    const attemptRestore = (attempts: number = 0) => {
+      if (attempts > 10) return; // Máximo 10 intentos
+
+      const position = cache.scrollPosition;
+      if (position <= 0) return;
+
+      // Verificar si ya tenemos el contenedor de scroll
+      if (window.innerWidth >= 1024 && !scrollContainerRef.current) {
+        // En desktop, esperar al contenedor
+        setTimeout(() => attemptRestore(attempts + 1), 50);
+        return;
+      }
+
+      restoreScrollPosition(position);
+    };
+
+    // Dar tiempo para que los productos se rendericen
+    const timer = setTimeout(() => attemptRestore(), 150);
+    return () => clearTimeout(timer);
+  }, [
+    cache.isInitialized,
+    cache.products.length,
+    cache.scrollPosition,
+    pathname,
+    restoreScrollPosition,
+  ]);
+
+  // Efecto para guardar la posición del scroll antes de navegar
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      const position = getCurrentScrollPosition();
+      setCachedScrollPosition(position);
+    };
+
+    // Guardar scroll position periódicamente mientras el usuario scrollea
+    let scrollTimeout: NodeJS.Timeout;
+    const handleScroll = () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        const position = getCurrentScrollPosition();
+        setCachedScrollPosition(position);
+      }, 150);
+    };
+
+    // Agregar listeners para desktop y mobile
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.addEventListener("scroll", handleScroll, {
+        passive: true,
+      });
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      clearTimeout(scrollTimeout);
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.removeEventListener("scroll", handleScroll);
+      }
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+
+      // Guardar posición al desmontar (cuando navega a otra página)
+      const position = getCurrentScrollPosition();
+      setCachedScrollPosition(position);
+    };
+  }, [getCurrentScrollPosition, setCachedScrollPosition]);
 
   // Obtener género del usuario si está autenticado
   useEffect(() => {
@@ -142,13 +340,39 @@ export function HomeContent({ isAuthenticated }: HomeContentProps) {
   }, [isAuthenticated]);
 
   // Cargar productos inicial SOLO cuando el género está cargado (una sola vez)
+  // O usar el caché si ya hay productos y el filtro no cambió
   useEffect(() => {
-    if (isGenderLoaded && !hasInitialLoadRef.current) {
+    if (!isGenderLoaded) return;
+
+    // Si ya hay productos en caché y el filtro es el mismo, no recargar
+    if (
+      cache.isInitialized &&
+      cache.products.length > 0 &&
+      cache.lastFilter === selectedFilter
+    ) {
+      // Usar los productos del caché
+      setProducts(cache.products);
+      setFilteredProducts(cache.filteredProducts);
+      setHasMore(cache.hasMore);
+      offsetRef.current = cache.offset;
+      hasInitialLoadRef.current = true;
+      setLoading(false);
+      return;
+    }
+
+    // Si el filtro cambió, limpiar el caché y recargar
+    if (cache.isInitialized && cache.lastFilter !== selectedFilter) {
+      clearCache();
+      hasInitialLoadRef.current = false;
+    }
+
+    // Cargar productos si no hay caché o si el filtro cambió
+    if (!hasInitialLoadRef.current) {
       hasInitialLoadRef.current = true;
       loadProducts(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isGenderLoaded]);
+  }, [isGenderLoaded, selectedFilter]);
 
   // Búsqueda de productos con paginación
   const searchProducts = useCallback(
@@ -230,13 +454,7 @@ export function HomeContent({ isAuthenticated }: HomeContentProps) {
   }, [searchQuery, searchProducts, setIsSearching]);
 
   // Recargar productos cuando cambia el filtro de categoría
-  useEffect(() => {
-    // Solo recargar si ya se hizo la carga inicial y no hay búsqueda activa
-    if (hasInitialLoadRef.current && !searchQuery.trim()) {
-      loadProducts(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedFilter]);
+  // La lógica de verificación del caché ya está en el efecto de carga inicial
 
   // Referencia al observer para poder limpiarlo
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -336,7 +554,7 @@ export function HomeContent({ isAuthenticated }: HomeContentProps) {
       <Suspense fallback={null}>
         <WelcomeDialog />
       </Suspense>
-      
+
       <div className=" lg:hidden w-auto pt-0 lg:p-10 mb-10 lg:h-screen flex flex-col items-center justify-start ">
         <AvatarHub isAuthenticated={isAuthenticated} />
       </div>
