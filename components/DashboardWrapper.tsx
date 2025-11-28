@@ -28,7 +28,6 @@ import {
 } from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import PromptInput from "./PromptInput";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Jelly, Quantum } from "ldrs/react";
 import "ldrs/react/Jelly.css";
@@ -56,8 +55,8 @@ export function DashboardWrapper({
   const [currentStep, setCurrentStep] = useState<0 | 1 | 2>(0);
   const [isStepVisible, setIsStepVisible] = useState(false);
   const stepTimeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
-  const [selectedPlan, setSelectedPlan] = useState<"tablium" | "pro">(
-    "tablium"
+  const [selectedPlan, setSelectedPlan] = useState<"My Outfit" | "pro">(
+    "My Outfit"
   );
 
   const toggleSidebar = () => {
@@ -222,7 +221,8 @@ export function DashboardWrapper({
                     </Link>
                   </div>
                   <span className="text-sm text-muted-foreground">
-                    All rights reserved © {new Date().getFullYear()}
+                    My Outfit © {new Date().getFullYear()} - All rights
+                    reserved
                   </span>
                 </div>
               </div>

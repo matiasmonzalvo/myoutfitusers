@@ -14,6 +14,7 @@ Tu plataforma ahora tiene un sistema completo de **pricing dual** que diferencia
 Una hermosa página con dos cards:
 
 #### Card de Usuarios
+
 - Muestra el precio: **$0.05 / try-on**
 - Explica que solo se cobra por productos de catálogo general
 - Destaca que los productos de marcas verificadas son GRATIS
@@ -22,34 +23,41 @@ Una hermosa página con dos cards:
 - CTA: "Comenzar Ahora"
 
 #### Card de Marcas (Enterprise)
+
 - Plan personalizado para marcas que quieran unirse
 - Beneficios: sus productos se prueban GRATIS para usuarios
 - Badge verificado verde
 - Analytics y estadísticas
-- CTA: "Contactar Ventas" (mailto:brands@tablium.com)
+- CTA: "Contactar Ventas" (mailto:brands@My Outfit.com)
 
 ### 2. Sistema de Badges Verificados
 
 #### Base de Datos (`BRANDS_VERIFICATION.sql`)
+
 ```sql
 -- Nueva columna en tabla brands
-ALTER TABLE brands 
+ALTER TABLE brands
 ADD COLUMN is_verified_brand BOOLEAN DEFAULT false;
 ```
 
 **Cómo funciona:**
+
 - `is_verified_brand = false` → Badge Azul (#0095f6) → Usuario paga $0.05
 - `is_verified_brand = true` → Badge Verde (#10b981) → Usuario NO paga (GRATIS)
 
 #### Actualización de Queries
+
 Todas las queries de productos ahora incluyen `is_verified_brand`:
+
 - `getProducts()`
 - `getProductsByCategory()`
 - `getProductById()`
 - `getSuggestedProducts()`
 
 #### Product Card Actualizado
+
 El componente `product-card.tsx` ahora:
+
 - Muestra badge **VERDE** si `product.brands.is_verified_brand === true`
 - Muestra badge **AZUL** si `product.brands.is_verified_brand === false`
 - Tooltip indica si es gratis o cuesta $0.05
@@ -66,10 +74,10 @@ const hasNonVerifiedProducts = productsData?.some(
 
 if (hasNonVerifiedProducts) {
   // COBRAR $0.05 - Hay productos de catálogo general
-  cost: 0.05
+  cost: 0.05;
 } else {
   // GRATIS - Todos los productos son de marcas verificadas
-  cost: 0.00
+  cost: 0.0;
 }
 ```
 
@@ -82,13 +90,13 @@ Si el usuario mezcla productos (algunos verificados, otros no), SE COBRA $0.05 p
 
 ```sql
 -- En Supabase SQL Editor
-UPDATE brands 
-SET is_verified_brand = true 
+UPDATE brands
+SET is_verified_brand = true
 WHERE brand_username = 'nike';  -- Reemplaza con el username de la marca
 
 -- O por ID
-UPDATE brands 
-SET is_verified_brand = true 
+UPDATE brands
+SET is_verified_brand = true
 WHERE id = 'uuid-de-la-marca';
 ```
 
@@ -99,9 +107,9 @@ WHERE id = 'uuid-de-la-marca';
 SELECT * FROM brands WHERE is_verified_brand = true;
 
 -- Contar productos por tipo
-SELECT 
+SELECT
   b.is_verified_brand,
-  CASE 
+  CASE
     WHEN b.is_verified_brand THEN 'Marca Verificada (Verde - Gratis)'
     ELSE 'Catálogo General (Azul - $0.05)'
   END as tipo,
@@ -115,8 +123,8 @@ GROUP BY b.is_verified_brand;
 
 ```sql
 -- Ver usos gratuitos vs pagados
-SELECT 
-  CASE 
+SELECT
+  CASE
     WHEN cost = 0 THEN 'GRATIS (Marca Verificada)'
     ELSE 'PAGADO ($0.05)'
   END as tipo_uso,
@@ -144,17 +152,20 @@ GROUP BY cost;
 ### Ventajas del Sistema
 
 **Para Usuarios:**
+
 - No pagan por marcas oficiales (incentivo para probar productos reales)
 - Solo pagan por productos del catálogo general
 - Transparencia total (ven el badge de color)
 
 **Para Marcas:**
+
 - Mayor conversión al ofrecer pruebas gratis
 - Badge verde de verificación (confianza)
 - Analytics de productos más probados
 - Visibilidad premium en la plataforma
 
 **Para Ti (Plataforma):**
+
 - Doble stream de ingresos
 - Incentivo para que marcas se unan
 - Los usuarios siguen pagando por catálogo general
@@ -163,6 +174,7 @@ GROUP BY cost;
 ## 🎯 Pasos para Activar el Sistema
 
 1. **Ejecutar SQL en Supabase**
+
    ```sql
    -- En SQL Editor, ejecuta:
    -- 1. docs/BILLING_SETUP.sql (si no lo has hecho)
@@ -170,10 +182,11 @@ GROUP BY cost;
    ```
 
 2. **Marcar tus Primeras Marcas**
+
    ```sql
    -- Marca algunas marcas como verificadas para testing
-   UPDATE brands 
-   SET is_verified_brand = true 
+   UPDATE brands
+   SET is_verified_brand = true
    WHERE brand_username IN ('nike', 'adidas', 'puma');
    ```
 
@@ -186,11 +199,13 @@ GROUP BY cost;
 ## 📁 Archivos Creados/Modificados
 
 ### Nuevos Archivos
+
 - ✅ `app/pricing/page.tsx` - Página de pricing con 2 cards
 - ✅ `docs/BRANDS_VERIFICATION.sql` - Schema para badges verificados
 - ✅ `docs/PRICING_IMPLEMENTATION_SUMMARY.md` - Esta documentación
 
 ### Archivos Modificados
+
 - ✅ `lib/actions/products.ts` - Actualizado para incluir `is_verified_brand`
 - ✅ `components/products/product-card.tsx` - Badge dinámico (verde/azul)
 - ✅ `app/api/generate-outfit/route.ts` - Lógica de cobro inteligente
@@ -199,10 +214,10 @@ GROUP BY cost;
 
 ```css
 /* Badge Azul - Catálogo General */
-color: #0095f6;  /* Instagram Blue */
+color: #0095f6; /* Instagram Blue */
 
 /* Badge Verde - Marca Verificada */
-color: #10b981;  /* Emerald Green / Tailwind green-500 */
+color: #10b981; /* Emerald Green / Tailwind green-500 */
 ```
 
 ## 💡 Ideas Futuras
@@ -230,8 +245,9 @@ color: #10b981;  /* Emerald Green / Tailwind green-500 */
 ## 📧 Contacto para Marcas
 
 En la página de pricing, el botón "Contactar Ventas" envía a:
+
 ```
-mailto:brands@tablium.com
+mailto:brands@My Outfit.com
 ```
 
 **Recuerda actualizar este email a tu email real!**
@@ -239,8 +255,3 @@ mailto:brands@tablium.com
 ---
 
 **¡El sistema está listo para usar!** 🚀
-
-
-
-
-

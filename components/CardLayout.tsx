@@ -72,6 +72,10 @@ export function CardLayout({
 
   // Estado para detectar si es pantalla menor a lg (1024px)
   const [isLgScreen, setIsLgScreen] = useState(false);
+  // Estado para detectar scroll y animar logo/texto
+  const [isScrolled, setIsScrolled] = useState(false);
+  // Ref para el contenedor del layout
+  const layoutRef = useRef<HTMLDivElement>(null);
 
   // Detectar tamaño de pantalla
   useEffect(() => {
@@ -81,7 +85,47 @@ export function CardLayout({
 
     checkScreenSize();
     window.addEventListener("resize", checkScreenSize);
-    return () => window.removeEventListener("resize", checkScreenSize);
+    return () => {
+      window.removeEventListener("resize", checkScreenSize);
+    };
+  }, []);
+
+  // Detectar scroll en el contenedor padre scrollable
+  useEffect(() => {
+    const handleScroll = (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (target) {
+        setIsScrolled(target.scrollTop > 30);
+      }
+    };
+
+    // Buscar el contenedor scrollable más cercano
+    const findScrollableParent = (
+      element: HTMLElement | null
+    ): HTMLElement | null => {
+      if (!element) return null;
+      let parent = element.parentElement;
+      while (parent) {
+        const style = getComputedStyle(parent);
+        const overflowY = style.overflowY;
+        if (overflowY === "auto" || overflowY === "scroll") {
+          return parent;
+        }
+        parent = parent.parentElement;
+      }
+      return null;
+    };
+
+    const scrollContainer = findScrollableParent(layoutRef.current);
+
+    if (scrollContainer) {
+      // Verificar estado inicial
+      setIsScrolled(scrollContainer.scrollTop > 30);
+      scrollContainer.addEventListener("scroll", handleScroll);
+      return () => {
+        scrollContainer.removeEventListener("scroll", handleScroll);
+      };
+    }
   }, []);
 
   // Estado unificado para tooltip activo
@@ -636,7 +680,7 @@ export function CardLayout({
   };
 
   return (
-    <div className=" w-full h-auto relative">
+    <div ref={layoutRef} className=" w-full h-auto relative">
       <div className="fixed lg:sticky top-0 left-0 w-full z-50">
         {/* <div className="flex space-x-4 w-full justify-between items-center px-6 pt-6 relative">
         <button
@@ -675,14 +719,28 @@ export function CardLayout({
         </button>
       </div> */}
         <div className="relative w-full pt-1 px-4 lg:px-0 lg:pt-9.5  pb-2  2xl:pb-6 border-b border-border z-20 flex items-center justify-between gap-4 bg-background">
-          <Link href="/">
-            <Image
-              src="/logo.png"
-              alt="Outfiterz"
-              width={120}
-              height={120}
-              className="w-10 h-10 lg:w-12 lg:h-12 dark:invert"
-            />
+          <Link href="/" className="flex items-center gap-2">
+            <div className="relative h-10 lg:h-12 flex items-center">
+              {/* Texto que se desvanece al hacer scroll */}
+              <span
+                className={`text-[21px] leading-[1.1] font-bold tracking-tighter whitespace-nowrap transition-opacity duration-300 ease-out ${
+                  isScrolled ? "opacity-0" : "opacity-100"
+                }`}
+              >
+                My <br />
+                <span className="tracking-[0px]">Outfit</span>
+              </span>
+              {/* Logo que aparece al hacer scroll */}
+              <Image
+                src="/logo.png"
+                alt="My Outfit"
+                width={120}
+                height={120}
+                className={`w-10 h-10 lg:w-13.5 lg:h-13.5 dark:invert absolute left-0 top-1/2 -translate-y-1/2 transition-opacity duration-300 ease-out ${
+                  isScrolled ? "opacity-100" : "opacity-0"
+                }`}
+              />
+            </div>
           </Link>
 
           {/* Buscador de productos */}

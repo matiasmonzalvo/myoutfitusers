@@ -1,4 +1,4 @@
-# Sistema de Onboarding - Tablium
+# Sistema de Onboarding - My Outfit
 
 ## 📋 Resumen
 

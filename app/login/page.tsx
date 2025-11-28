@@ -11,7 +11,7 @@ export default function LoginPage() {
         <Link href="/" className="flex items-center justify-center w-12 h-12">
           <Image
             src="/logo.png"
-            alt="Tablium"
+            alt="My Outfit"
             width={100}
             height={100}
             className="w-full h-full dark:invert"

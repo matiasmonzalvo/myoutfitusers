@@ -318,7 +318,7 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
         </div>
         <div className="w-full relative px-6 items-center justify-between mt-2 hidden lg:flex">
           <span className="text-[11px] 2xl:text-sm text-muted-foreground">
-            All rights reserved © {new Date().getFullYear()}
+            My Outfit © {new Date().getFullYear()} - All rights reserved
           </span>
           <div className="flex items-center gap-3">
             <Link
@@ -758,7 +758,7 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
         )}
         <div className="w-full relative px-6 items-center justify-between mt-2 -mb-2 hidden lg:flex">
           <span className="text-[11px] 2xl:text-sm text-muted-foreground">
-            All rights reserved © {new Date().getFullYear()}
+            My Outfit © {new Date().getFullYear()} - All rights reserved
           </span>
           <div className="flex items-center gap-3">
             <Link
