@@ -1,6 +1,3 @@
-import { Header } from "@/components/layout/header";
-import Footer from "@/components/Footer";
-
 export default function TermsPage() {
   return (
     <div className="bg-background">
