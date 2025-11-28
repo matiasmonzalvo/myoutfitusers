@@ -19,7 +19,7 @@ export default function StartWearingPage() {
         Follow these simple steps to start wearing any product you like.
       </p>
       <section>
-        <div className="bg-primary/5 rounded-3xl p-6 mb-8">
+        <div className="bg-primary/5 rounded-3xl p-3 lg:p-6 mb-8">
           <div className="flex items-start">
             <div>
               <h3 className="font-bold text-xl mb-3">

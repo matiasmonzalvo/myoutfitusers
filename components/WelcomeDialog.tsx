@@ -45,7 +45,7 @@ export function WelcomeDialog() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent
-        className="sm:max-w-md p-0 overflow-hidden border-0 space-y-0 gap-0"
+        className="sm:max-w-md p-0 overflow-hidden border-0 space-y-0 gap-0 rounded-3xl"
         showCloseButton={false}
       >
         <div className="w-full aspect-[5/3]">
@@ -72,7 +72,7 @@ export function WelcomeDialog() {
         </div>
 
         {/* Contenido */}
-        <div className="px-6 pb-6 space-y-4">
+        <div className="px-6 pb-6 space-y-4 mt-2 lg:mt-0">
           <button
             className="text-base font-medium cursor-pointer text-center w-full text-primary hover:text-primary/80 transition-colors"
             onClick={handleClose}
