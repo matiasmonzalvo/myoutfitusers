@@ -78,6 +78,7 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
   const [isAvatarLoading, setIsAvatarLoading] = useState(true);
   const [showBuyTryonsDialog, setShowBuyTryonsDialog] = useState(false);
   const [tryOnsLeft, setTryOnsLeft] = useState<number>(0);
+  const [isRollingBack, setIsRollingBack] = useState(false);
 
   // Detectar el tamaño de la pantalla
   useEffect(() => {
@@ -100,6 +101,18 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
   const sortedCurrentOutfitProducts = sortProductsByCategory(
     currentOutfitProducts
   );
+
+  // Función wrapper para rollback con protección contra clics múltiples
+  const handleRollback = async () => {
+    if (isRollingBack || !outfitImageUrl) return;
+
+    setIsRollingBack(true);
+    try {
+      await rollbackOutfit();
+    } finally {
+      setIsRollingBack(false);
+    }
+  };
 
   // Función para manejar la carga de la imagen y obtener sus dimensiones
   const handleImageLoad = (productId: string) => {
@@ -371,11 +384,15 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
           {/* Botón de rollback cuando hay un outfit aplicado */}
           <div className="flex items-center justify-start gap-2 w-1/3">
             <button
-              onClick={rollbackOutfit}
-              disabled={!showRestoreButton}
+              onClick={handleRollback}
+              disabled={!showRestoreButton || isRollingBack}
               className="rounded-full bg-muted border border-border transition-all cursor-pointer flex items-center justify-center gap-2 px-2.5 lg:px-3 py-2.5 hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <RotateCcw className="w-4 h-4" />
+              {isRollingBack ? (
+                <Loader className="w-4 h-4 animate-spin text-foreground" />
+              ) : (
+                <RotateCcw className="w-4 h-4" />
+              )}
               <span className="text-sm">Rollback</span>
             </button>
 
@@ -478,8 +495,8 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
             )} */}
             <button
               onClick={() => setShowSaveDialog(true)}
-              disabled={!outfitImageUrl || currentOutfitProducts.length === 0}
-              className="rounded-full bg-primary text-white transition-all cursor-pointer flex items-center justify-center gap-2 px-3 lg:px-5 py-2.5 hover:opacity-80"
+              disabled={!avatarUrl}
+              className="rounded-full bg-primary text-white transition-all cursor-pointer flex items-center justify-center gap-2 px-3 lg:px-5 py-2.5 hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <HugeiconsIcon
                 icon={Share03Icon}
@@ -671,12 +688,13 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
           </div>
         </div>
         {/* Save Outfit Dialog */}
-        {outfitImageUrl && (
+        {avatarUrl && (
           <SaveOutfitDialog
             open={showSaveDialog}
             onOpenChange={setShowSaveDialog}
-            outfitImageUrl={outfitImageUrl}
+            outfitImageUrl={avatarUrl}
             products={currentOutfitProducts}
+            mode={currentOutfitProducts.length > 0 ? "save" : "share"}
             onSave={() => {
               // Opcional: Hacer algo después de guardar
               console.log("Outfit saved successfully");
