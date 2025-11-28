@@ -90,13 +90,19 @@ export function CardLayout({
     };
   }, []);
 
-  // Detectar scroll en el contenedor padre scrollable
+  // Detectar scroll en el contenedor padre scrollable o window
   useEffect(() => {
-    const handleScroll = (e: Event) => {
+    // Handler para contenedor scrollable
+    const handleContainerScroll = (e: Event) => {
       const target = e.target as HTMLElement;
       if (target) {
         setIsScrolled(target.scrollTop > 30);
       }
+    };
+
+    // Handler para window scroll (mobile)
+    const handleWindowScroll = () => {
+      setIsScrolled(window.scrollY > 30);
     };
 
     // Buscar el contenedor scrollable más cercano
@@ -119,13 +125,21 @@ export function CardLayout({
     const scrollContainer = findScrollableParent(layoutRef.current);
 
     if (scrollContainer) {
-      // Verificar estado inicial
+      // Desktop: usar el contenedor scrollable
       setIsScrolled(scrollContainer.scrollTop > 30);
-      scrollContainer.addEventListener("scroll", handleScroll);
-      return () => {
-        scrollContainer.removeEventListener("scroll", handleScroll);
-      };
+      scrollContainer.addEventListener("scroll", handleContainerScroll);
     }
+
+    // Mobile fallback: también escuchar el scroll del window
+    setIsScrolled(window.scrollY > 30);
+    window.addEventListener("scroll", handleWindowScroll);
+
+    return () => {
+      if (scrollContainer) {
+        scrollContainer.removeEventListener("scroll", handleContainerScroll);
+      }
+      window.removeEventListener("scroll", handleWindowScroll);
+    };
   }, []);
 
   // Estado unificado para tooltip activo
@@ -723,7 +737,7 @@ export function CardLayout({
             <div className="relative h-10 lg:h-12 flex items-center">
               {/* Texto que se desvanece al hacer scroll */}
               <span
-                className={`text-[21px] leading-[1.1] font-bold tracking-tighter whitespace-nowrap transition-opacity duration-300 ease-out ${
+                className={`text-base lg:text-[21px] leading-[1.1] font-bold tracking-tighter whitespace-nowrap transition-opacity duration-300 ease-out ${
                   isScrolled ? "opacity-0" : "opacity-100"
                 }`}
               >
