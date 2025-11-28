@@ -156,6 +156,27 @@ export function ProductForm({
       return;
     }
 
+    // Verificar si ya existe un producto con la misma URL
+    if (formData.product_link) {
+      let query = supabase
+        .from("products")
+        .select("id")
+        .eq("product_link", formData.product_link);
+
+      // Si estamos editando, excluir el producto actual de la verificación
+      if (product) {
+        query = query.neq("id", product.id);
+      }
+
+      const { data: existingProduct } = await query.maybeSingle();
+
+      if (existingProduct) {
+        setError("Este producto ya existe");
+        setLoading(false);
+        return;
+      }
+    }
+
     try {
       if (product) {
         // ====================================
