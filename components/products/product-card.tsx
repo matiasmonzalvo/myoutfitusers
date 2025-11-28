@@ -17,6 +17,17 @@ import { useOutfit } from "@/lib/contexts/outfit-context";
 import { useState, useRef, useEffect } from "react";
 import { AuthRequiredDialog } from "@/components/auth/auth-required-dialog";
 import Image from "next/image";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface ProductCardProps {
   product: Product;
@@ -50,6 +61,20 @@ export function ProductCard({ product, isAuthenticated }: ProductCardProps) {
     height: number;
   } | null>(null);
   const imgRef = useRef<HTMLImageElement>(null);
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+
+  // Detectar el tamaño de la pantalla
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsLargeScreen(window.innerWidth >= 1024); // lg breakpoint
+    };
+
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
 
   const isInCart = selectedProducts.some((p) => p.id === product.id);
   const canAdd = canAddProduct(product, currentOutfitProducts);
@@ -189,32 +214,81 @@ export function ProductCard({ product, isAuthenticated }: ProductCardProps) {
                   </h3>
                 </Link>
                 <div className="flex items-center justify-center gap-2">
-                  <button
-                    onClick={isInCart ? handleRemoveFromCart : handleAddToCart}
-                    disabled={
-                      !isAuthenticated && !isInCart
-                        ? false
-                        : !canAdd && !isInCart
-                    }
-                    title={
-                      categoryInOutfit && !isInCart
-                        ? `Ya tienes un producto de tipo ${CATEGORY_LABELS[product.category] || product.category} en tu outfit. Haz rollback para cambiarlo.`
-                        : ""
-                    }
-                    className={`p-1 rounded-full cursor-pointer transition-colors ${
-                      isInCart
-                        ? "bg-green-500 hover:bg-green-600"
-                        : !isAuthenticated || canAdd
-                          ? "bg-primary hover:bg-primary/90"
-                          : "bg-neutral-300 dark:bg-neutral-800 cursor-not-allowed"
-                    }`}
-                  >
-                    {isInCart ? (
-                      <Check className="w-4 h-4 text-white" />
+                  {/* Mostrar tooltip/dropdown cuando la categoría ya está en el outfit */}
+                  {categoryInOutfit && !isInCart ? (
+                    isLargeScreen ? (
+                      // Desktop: Tooltip
+                      <TooltipProvider>
+                        <Tooltip delayDuration={0}>
+                          <TooltipTrigger asChild>
+                            <button className="p-1 rounded-full cursor-not-allowed transition-colors bg-neutral-300 dark:bg-neutral-800">
+                              <Plus className="w-4 h-4 text-white" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent
+                            side="top"
+                            className="max-w-[200px] text-center p-2 rounded-xl border-0 backdrop-blur-sm bg-background/80"
+                          >
+                            <p className="text-xs">
+                              You already have a product of type{" "}
+                              {CATEGORY_LABELS[product.category] ||
+                                product.category}{" "}
+                              in your outfit. Rollback to change it.
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     ) : (
-                      <Plus className="w-4 h-4 text-white" />
-                    )}
-                  </button>
+                      // Mobile: DropdownMenu
+                      <DropdownMenu
+                        open={showCategoryDropdown}
+                        onOpenChange={setShowCategoryDropdown}
+                      >
+                        <DropdownMenuTrigger asChild>
+                          <button className="p-1 rounded-full cursor-pointer transition-colors bg-neutral-300 dark:bg-neutral-800">
+                            <Plus className="w-4 h-4 text-white" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          align="end"
+                          side="top"
+                          className="max-w-[200px] p-2"
+                        >
+                          <p className="text-xs text-center">
+                            Ya tienes un producto de tipo{" "}
+                            {CATEGORY_LABELS[product.category] ||
+                              product.category}{" "}
+                            en tu outfit. Haz rollback para cambiarlo.
+                          </p>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )
+                  ) : (
+                    // Botón normal cuando no hay conflicto de categoría
+                    <button
+                      onClick={
+                        isInCart ? handleRemoveFromCart : handleAddToCart
+                      }
+                      disabled={
+                        !isAuthenticated && !isInCart
+                          ? false
+                          : !canAdd && !isInCart
+                      }
+                      className={`p-1 rounded-full cursor-pointer transition-colors ${
+                        isInCart
+                          ? "bg-green-500 hover:bg-green-600"
+                          : !isAuthenticated || canAdd
+                            ? "bg-primary hover:bg-primary/90"
+                            : "bg-neutral-300 dark:bg-neutral-800 cursor-not-allowed"
+                      }`}
+                    >
+                      {isInCart ? (
+                        <Check className="w-4 h-4 text-white" />
+                      ) : (
+                        <Plus className="w-4 h-4 text-white" />
+                      )}
+                    </button>
+                  )}
                 </div>
               </div>
               {/* {product.subcategory && (
