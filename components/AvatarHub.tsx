@@ -507,7 +507,7 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
             </button>
           </div>
         </div>
-        <div className="w-full h-auto lg:h-full border border-border rounded-[24px] overflow-hidden relative flex items-center justify-center bg-background">
+        <div className="w-full aspect-square h-auto lg:aspect-auto lg:h-full border border-border rounded-[24px] overflow-hidden relative flex items-center justify-center bg-background">
           {avatarUrl && (
             <img
               src={avatarUrl}

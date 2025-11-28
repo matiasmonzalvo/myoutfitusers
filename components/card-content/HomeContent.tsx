@@ -529,24 +529,12 @@ export function HomeContent({ isAuthenticated }: HomeContentProps) {
 
   // Determinar qué productos mostrar
   const displayProducts = searchQuery.trim() ? searchResults : filteredProducts;
-  const isLoadingState = loading || isSearching;
 
-  if (loading) {
-    return (
-      <div className="pb-6 h-auto w-full">
-        <div className=" lg:hidden w-auto pt-0 lg:p-10 mb-10 lg:h-screen flex flex-col items-center justify-start ">
-          <AvatarHub isAuthenticated={isAuthenticated} />
-        </div>
-        <div className="w-full mx-auto">
-          <div className="grid grid-cols-2 lg:grid-cols-4 2xl:grid-cols-4 gap-4">
-            {Array.from({ length: 12 }).map((_, index) => (
-              <ProductCardSkeleton key={index} />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Determinar si mostrar skeletons de productos (carga inicial o búsqueda)
+  const showProductSkeletons =
+    loading ||
+    isSearching ||
+    (displayProducts.length === 0 && searchQuery.trim());
 
   return (
     <div className="pb-6 h-auto w-full overflow-hidden">
@@ -555,18 +543,14 @@ export function HomeContent({ isAuthenticated }: HomeContentProps) {
         <WelcomeDialog />
       </Suspense>
 
-      <div className=" lg:hidden w-auto pt-0 lg:p-10 mb-10 lg:h-screen flex flex-col items-center justify-start ">
+      {/* AvatarHub - siempre visible en mobile, se renderiza una sola vez */}
+      <div className="lg:hidden w-auto pt-0 lg:p-10 mb-10 lg:h-screen flex flex-col items-center justify-start">
         <AvatarHub isAuthenticated={isAuthenticated} />
       </div>
+
       <div className="w-full mx-auto">
-        {/* Mostrar skeletons mientras se busca */}
-        {isSearching ? (
-          <div className="grid grid-cols-2 lg:grid-cols-4 2xl:grid-cols-4 gap-4">
-            {Array.from({ length: 12 }).map((_, index) => (
-              <ProductCardSkeleton key={index} />
-            ))}
-          </div>
-        ) : displayProducts.length === 0 && searchQuery.trim() ? (
+        {/* Mostrar skeletons mientras se cargan productos o se busca */}
+        {showProductSkeletons ? (
           <div className="grid grid-cols-2 lg:grid-cols-4 2xl:grid-cols-4 gap-4">
             {Array.from({ length: 12 }).map((_, index) => (
               <ProductCardSkeleton key={index} />
