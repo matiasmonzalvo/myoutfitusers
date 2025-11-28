@@ -4,11 +4,12 @@ import { getProducts, type Product } from "@/lib/actions/products";
 import { ProductCard } from "@/components/products/product-card";
 import { ProductCardSkeleton } from "@/components/products/product-card-skeleton";
 import { Badge } from "@/components/ui/badge";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import { useCategoryFilter } from "@/lib/contexts/category-filter-context";
 import { useSearch } from "@/lib/contexts/search-context";
 import { createServerClient } from "@/lib/supabase/client";
 import { AvatarHub } from "../AvatarHub";
+import { WelcomeDialog } from "../WelcomeDialog";
 
 interface HomeContentProps {
   isAuthenticated: boolean;
@@ -331,6 +332,11 @@ export function HomeContent({ isAuthenticated }: HomeContentProps) {
 
   return (
     <div className="pb-6 h-auto w-full overflow-hidden">
+      {/* Welcome Dialog - solo aparece una vez después del onboarding */}
+      <Suspense fallback={null}>
+        <WelcomeDialog />
+      </Suspense>
+      
       <div className=" lg:hidden w-auto pt-0 lg:p-10 mb-10 lg:h-screen flex flex-col items-center justify-start ">
         <AvatarHub isAuthenticated={isAuthenticated} />
       </div>

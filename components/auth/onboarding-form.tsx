@@ -603,8 +603,8 @@ export function OnboardingForm() {
         throw updateError;
       }
 
-      // Redirigir al home
-      router.push("/");
+      // Redirigir al home con parámetro de bienvenida
+      router.push("/?welcome=true");
       router.refresh();
     } catch (err) {
       console.error("Error completing setup:", err);
