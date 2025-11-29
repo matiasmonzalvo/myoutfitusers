@@ -443,9 +443,9 @@ export function SaveOutfitDialog({
                 {sortedProducts.map((product) => (
                   <div
                     key={product.id}
-                    className="flex items-center gap-1.5 text-xs"
+                    className="flex items-center text-xs gap-1"
                   >
-                    <div className="w-6 h-6 overflow-hidden flex-shrink-0 border border-border rounded-md p-1">
+                    <div className="w-4.5 h-4.5 overflow-hidden flex-shrink-0 border border-border rounded-md p-0.5 bg-white">
                       <img
                         src={product.images?.[0] || "/placeholder.png"}
                         alt={product.name}
@@ -453,7 +453,7 @@ export function SaveOutfitDialog({
                       />
                     </div>
                     {showProductNames && (
-                      <span className="text-[8px] truncate font-medium tracking-tight">
+                      <span className="text-[6px] text-black truncate font-medium tracking-tight">
                         {product.name}
                       </span>
                     )}
