@@ -999,7 +999,7 @@ export function CardLayout({
               onMouseLeave={() => {
                 closeTooltip();
               }}
-              className={`absolute bg-neutral-50 border-x border-b border-border rounded-b-3xl z-[5] p-6 w-full duration-300 ease-out ${
+              className={`absolute bg-neutral-50 dark:bg-[#171717] border-x border-b border-border rounded-b-3xl z-[5] p-6 w-full duration-300 ease-out ${
                 isTooltipClosing
                   ? "animate-out slide-out-to-top-full"
                   : "animate-in slide-in-from-top-full"
