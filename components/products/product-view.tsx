@@ -281,11 +281,11 @@ export function ProductView({
                 </button>
                 {categoryInOutfit && !isInCart && (
                   <p className="text-sm text-muted-foreground text-center">
-                    Ya tienes un producto de tipo{" "}
+                    You already have a product of type{" "}
                     <span className="font-semibold">
                       {CATEGORY_LABELS[product.category] || product.category}
                     </span>{" "}
-                    en tu outfit. Haz rollback para cambiarlo.
+                    in your outfit. Rollback to change it.
                   </p>
                 )}
               </div>

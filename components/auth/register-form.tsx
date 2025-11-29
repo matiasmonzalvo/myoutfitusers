@@ -245,7 +245,7 @@ export function RegisterForm() {
         <Button
           type="button"
           variant="outline"
-          className="w-full relative cursor-pointer h-10 rounded-full"
+          className="w-full relative cursor-pointer h-10 rounded-full bg-muted"
           onClick={handleGoogleSignIn}
           disabled={loading || googleLoading}
         >

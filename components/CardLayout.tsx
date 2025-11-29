@@ -737,7 +737,7 @@ export function CardLayout({
             <div className="relative h-10 lg:h-12 flex items-center">
               {/* Texto que se desvanece al hacer scroll */}
               <span
-                className={`text-base lg:text-[21px] leading-[1.1] font-bold tracking-tighter whitespace-nowrap transition-opacity duration-300 ease-out ${
+                className={`text-base lg:text-[21px] leading-[1] font-bold tracking-tighter whitespace-nowrap transition-opacity duration-300 ease-out ${
                   isScrolled ? "opacity-0" : "opacity-100"
                 }`}
               >
@@ -750,7 +750,7 @@ export function CardLayout({
                 alt="My Outfit"
                 width={120}
                 height={120}
-                className={`w-10 h-10 lg:w-13.5 lg:h-13.5 dark:invert absolute left-0 top-1/2 -translate-y-1/2 transition-opacity duration-300 ease-out ${
+                className={`w-10 h-10 lg:w-13.5 lg:h-13.5 dark:invert absolute left-0 top-[50.2%] -translate-y-1/2 transition-opacity duration-300 ease-out ${
                   isScrolled ? "opacity-100" : "opacity-0"
                 }`}
               />
@@ -999,7 +999,7 @@ export function CardLayout({
               onMouseLeave={() => {
                 closeTooltip();
               }}
-              className={`absolute bg-background border-x border-b border-border rounded-b-2xl z-[5] p-6 w-full duration-300 ease-out ${
+              className={`absolute bg-neutral-50 border-x border-b border-border rounded-b-3xl z-[5] p-6 w-full duration-300 ease-out ${
                 isTooltipClosing
                   ? "animate-out slide-out-to-top-full"
                   : "animate-in slide-in-from-top-full"

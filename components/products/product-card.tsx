@@ -255,10 +255,10 @@ export function ProductCard({ product, isAuthenticated }: ProductCardProps) {
                           className="max-w-[200px] p-2"
                         >
                           <p className="text-xs text-center">
-                            Ya tienes un producto de tipo{" "}
+                            You already have a product of type{" "}
                             {CATEGORY_LABELS[product.category] ||
                               product.category}{" "}
-                            en tu outfit. Haz rollback para cambiarlo.
+                            in your outfit. Rollback to change it.
                           </p>
                         </DropdownMenuContent>
                       </DropdownMenu>

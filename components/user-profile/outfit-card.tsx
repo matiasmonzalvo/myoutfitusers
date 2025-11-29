@@ -1,7 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { MoreVertical, Trash2, Heart, MoreHorizontal } from "lucide-react";
+import {
+  MoreVertical,
+  Trash2,
+  Heart,
+  MoreHorizontal,
+  Shirt,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
+import { useOutfit } from "@/lib/contexts/outfit-context";
 
 interface Outfit {
   id: string;
@@ -35,10 +42,12 @@ export function OutfitCard({
   username,
 }: OutfitCardProps) {
   const router = useRouter();
+  const { refreshOutfitFromDatabase } = useOutfit();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLiked, setIsLiked] = useState(initialIsLiked);
   const [likesCount, setLikesCount] = useState(outfit.likes_count || 0);
   const [isLiking, setIsLiking] = useState(false);
+  const [isWearing, setIsWearing] = useState(false);
 
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this outfit?")) return;
@@ -60,6 +69,46 @@ export function OutfitCard({
       alert("Error deleting outfit");
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const handleWearOutfit = async () => {
+    if (!outfit.products || outfit.products.length === 0) {
+      alert("This outfit has no products");
+      return;
+    }
+
+    setIsWearing(true);
+    try {
+      // Llamar al endpoint para guardar el outfit en avatar_history
+      const response = await fetch("/api/wear-outfit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          imageUrl: outfit.image_url,
+          products: outfit.products,
+        }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Error wearing outfit");
+      }
+
+      // Refrescar el contexto desde la base de datos
+      await refreshOutfitFromDatabase();
+
+      // Navegar al home para ver el outfit en el AvatarHub
+      router.push("/");
+    } catch (error) {
+      console.error("Error wearing outfit:", error);
+      alert(
+        error instanceof Error ? error.message : "Error al vestir el outfit"
+      );
+    } finally {
+      setIsWearing(false);
     }
   };
 
@@ -153,11 +202,19 @@ export function OutfitCard({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
+                onClick={handleWearOutfit}
+                disabled={isWearing}
+                className="cursor-pointer"
+              >
+                <Shirt className="w-4 h-4" />
+                {isWearing ? "Loading..." : "Wear Outfit"}
+              </DropdownMenuItem>
+              <DropdownMenuItem
                 onClick={handleDelete}
                 disabled={isDeleting}
                 className="text-red-600 cursor-pointer"
               >
-                <Trash2 className="w-4 h-4 mr-2" />
+                <Trash2 className="w-4 h-4" />
                 {isDeleting ? "Deleting..." : "Delete"}
               </DropdownMenuItem>
             </DropdownMenuContent>

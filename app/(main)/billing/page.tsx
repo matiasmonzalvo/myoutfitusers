@@ -78,7 +78,7 @@ export default function BillingPage() {
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Try-ons Left - Big Card */}
-        <Card className="border-border bg-white dark:bg-black/50 rounded-3xl max-w-2xl">
+        <Card className="border-border bg-white dark:bg-black/50 rounded-3xl max-w-2xl shadow-none">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-2xl font-semibold tracking-tight">
               Try-ons Balance
@@ -178,7 +178,7 @@ export default function BillingPage() {
         </div> */}
 
         {/* Purchase History */}
-        <Card className="border-border bg-white dark:bg-black/50 rounded-3xl">
+        <Card className="border-border bg-white dark:bg-black/50 rounded-3xl shadow-none">
           <CardHeader>
             <CardTitle>Purchase History</CardTitle>
           </CardHeader>
@@ -244,7 +244,7 @@ export default function BillingPage() {
         </Card>
 
         {/* Usage History */}
-        <Card className="border-border bg-white dark:bg-black/50 rounded-3xl">
+        {/* <Card className="border-border bg-white dark:bg-black/50 rounded-3xl">
           <CardHeader>
             <CardTitle>Usage History (Last 30 days)</CardTitle>
           </CardHeader>
@@ -293,10 +293,10 @@ export default function BillingPage() {
               </div>
             )}
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* Information Card */}
-        <Card className="bg-muted/50 rounded-3xl">
+        <Card className="bg-muted/50 rounded-3xl shadow-none">
           <CardHeader>
             <CardTitle className="text-lg">How does it work?</CardTitle>
           </CardHeader>

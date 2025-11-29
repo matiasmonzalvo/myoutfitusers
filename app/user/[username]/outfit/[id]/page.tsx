@@ -55,10 +55,30 @@ export default async function OutfitPage({ params }: PageProps) {
     isLiked = !!like;
   }
 
+  // Obtener los productos completos con información de brands desde la BD
+  const outfitProducts = outfit.products || [];
+  const productIds = outfitProducts.map((p: any) => p.id).filter(Boolean);
+
+  let fullProducts: any[] = [];
+  if (productIds.length > 0) {
+    const { data: productsData } = await supabase
+      .from("products")
+      .select("*, brands(*)")
+      .in("id", productIds);
+
+    if (productsData) {
+      // Mantener el orden original de los productos del outfit
+      fullProducts = productIds
+        .map((id: string) => productsData.find((p) => p.id === id))
+        .filter(Boolean);
+    }
+  }
+
   // Ordenar productos por categoría
-  const sortedProducts = sortProductsByCategory(outfit.products || []);
+  const sortedProducts = sortProductsByCategory(fullProducts);
 
   const isOwnOutfit = currentUser?.id === outfit.user_id;
+  const isAuthenticated = !!currentUser;
 
   return (
     <OutfitDetailView
@@ -67,7 +87,7 @@ export default async function OutfitPage({ params }: PageProps) {
       sortedProducts={sortedProducts}
       isLiked={isLiked}
       isOwnOutfit={isOwnOutfit}
+      isAuthenticated={isAuthenticated}
     />
   );
 }
-
