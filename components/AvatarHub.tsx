@@ -310,7 +310,7 @@ export function AvatarHub({ isAuthenticated }: AvatarHubProps) {
                 Wear your outfits
               </h3>
               <p className="text-base 2xl:text-lg text-muted-foreground">
-                Your real self, dressed in real products.
+                Your real self, wearing real brands.
               </p>
             </div>
             <div className="flex mt-2 lg:mt-0 gap-3 w-full max-w-[80%] sm:max-w-sm">
