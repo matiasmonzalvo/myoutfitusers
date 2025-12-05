@@ -302,11 +302,10 @@ export function ProductCard({ product, isAuthenticated }: ProductCardProps) {
                   href={`/${product.brands?.brand_username}`}
                   className="flex items-center justify-start gap-1 self-start mt-0.5"
                 >
-                  <Image
+                  <img
                     src={product.brands?.logo_url || ""}
                     alt={product.brands?.brand_name || ""}
-                    width={16}
-                    height={16}
+                    loading="lazy"
                     className="w-4 h-4 rounded-full border border-border object-cover"
                   />
                   <p className="text-[13px] leading-[1] text-muted-foreground font-medium capitalize">
