@@ -750,7 +750,7 @@ export function CardLayout({
                 alt="My Outfit"
                 width={120}
                 height={120}
-                className={`w-10 h-10 lg:w-13.5 lg:h-13.5 dark:invert absolute left-0 top-[50.2%] -translate-y-1/2 transition-opacity duration-300 ease-out ${
+                className={`w-10 h-10 lg:w-12.5 2xl:w-13.5 lg:h-12.5 2xl:h-13.5 dark:invert absolute left-0 top-[50.2%] -translate-y-1/2 transition-opacity duration-300 ease-out ${
                   isScrolled ? "opacity-100" : "opacity-0"
                 }`}
               />
@@ -792,7 +792,12 @@ export function CardLayout({
             >
               Guide
             </Link>
-
+            <Link
+              href="/feedback"
+              className="py-1 px-2 font-medium text-foreground hover:text-foreground/80 transition-colors cursor-pointer hidden lg:flex text-sm 2xl:text-base rounded-full items-center justify-center"
+            >
+              Feedback
+            </Link>
             <Link
               href="/pricing"
               className="py-1 px-2 font-medium text-foreground hover:text-foreground/80 transition-colors cursor-pointer hidden lg:flex text-sm 2xl:text-base rounded-full items-center justify-center"

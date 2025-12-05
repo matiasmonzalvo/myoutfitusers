@@ -594,7 +594,7 @@ export function OnboardingForm() {
         .update({
           onboarding_completed: true,
           avatar_url: generatedAvatar,
-          try_ons_left: 5,
+          try_ons_left: 15,
         })
         .eq("id", user.id);
 

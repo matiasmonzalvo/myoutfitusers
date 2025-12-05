@@ -183,6 +183,7 @@ export function ProductCard({ product, isAuthenticated }: ProductCardProps) {
                 src={product.images?.[0] || "/placeholder.png"}
                 alt={product.name}
                 className={getImageClasses()}
+                loading="lazy"
                 onLoad={handleImageLoad}
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = "/placeholder.png";

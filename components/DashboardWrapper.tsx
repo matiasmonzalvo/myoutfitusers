@@ -169,6 +169,13 @@ export function DashboardWrapper({
                       Guide
                     </Link>
                     <Link
+                      href="/feedback"
+                      className="block py-3 rounded-lg font-medium text-foreground hover:bg-muted transition-colors cursor-pointer"
+                      onClick={() => setIsMobileSidebarOpen(false)}
+                    >
+                      Feedback
+                    </Link>
+                    <Link
                       href="/pricing"
                       className="block py-3 rounded-lg font-medium text-foreground hover:bg-muted transition-colors cursor-pointer"
                       onClick={() => setIsMobileSidebarOpen(false)}
