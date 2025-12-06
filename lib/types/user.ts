@@ -1,4 +1,5 @@
 export type Gender = "male" | "female" | "other";
+export type MeasurementSystem = "metric" | "imperial";
 export type BodyType =
   | "underweight"
   | "slim"
@@ -13,6 +14,7 @@ export interface UserProfile {
   gender: Gender;
   height: number; // in centimeters
   weight: number; // in kilograms
+  measurement_system?: MeasurementSystem;
   body_type: BodyType;
   avatar_url: string | null;
   profile_photo_url: string | null;
@@ -29,6 +31,7 @@ export interface OnboardingFormData {
   gender: Gender;
   height: number;
   weight: number;
+  measurement_system: MeasurementSystem;
   body_type: BodyType;
 }
 

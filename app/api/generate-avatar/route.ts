@@ -91,9 +91,14 @@ export async function POST(request: Request) {
           ? "She"
           : "They";
     const pronounLower = pronoun.toLowerCase();
+    const measurementSystem =
+      profileData?.measurement_system === "imperial" ? "imperial" : "metric";
+    const isMetric = measurementSystem === "metric";
+    const heightDescriptor = `${profileData.height} ${isMetric ? "cm" : "ft"}`;
+    const weightDescriptor = `${profileData.weight} ${isMetric ? "kg" : "lb"}`;
 
     // Construir el prompt para Gemini
-    const systemPrompt = `Create a 1:1 aspect ratio full body shot of the person standing straight centered with a white background. ${pronoun} weighs ${profileData.weight} kg and is ${profileData.height} cm tall, respect these body proportions. ${pronoun} is wearing a regular white tee, regular black shorts and crew socks with no shoes. Regardless of the expression in the reference photos (whether smiling, laughing, or any other expression) he should have a neutral expression. The background should have no studio lighting, no shadows. Completely pure white background (#FFFFFF), no gradients, no horizon, no floor, no reflections, no textures. Only the shape of the full body of the person.`;
+    const systemPrompt = `Create a 1:1 aspect ratio full body shot of the person standing straight centered with a white background. ${pronoun} weighs ${weightDescriptor} and is ${heightDescriptor} tall, respect these body proportions. ${pronoun} is wearing a regular white tee, regular black shorts and crew socks with no shoes. Regardless of the expression in the reference photos (whether smiling, laughing, or any other expression) ${pronounLower} should have a neutral expression. The background should have no studio lighting, no shadows. Completely pure white background (#FFFFFF), no gradients, no horizon, no floor, no reflections, no textures. Only the shape of the full body of the person.`;
 
     const prompt = [
       {
@@ -121,7 +126,7 @@ export async function POST(request: Request) {
         },
       },
     });
-
+    console.log(systemPrompt);
     console.log(response);
 
     // Extraer la imagen generada
