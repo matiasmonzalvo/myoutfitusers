@@ -12,7 +12,10 @@ import {
 } from "lucide-react";
 import type { Product } from "@/lib/actions/products";
 import Link from "next/link";
-import { useShoppingCart } from "@/lib/contexts/shopping-cart-context";
+import {
+  useShoppingCart,
+  MAX_SELECTED_PRODUCTS,
+} from "@/lib/contexts/shopping-cart-context";
 import { useOutfit } from "@/lib/contexts/outfit-context";
 import { useState, useRef, useEffect } from "react";
 import { AuthRequiredDialog } from "@/components/auth/auth-required-dialog";
@@ -51,8 +54,13 @@ const SEX_LABELS: Record<string, string> = {
 };
 
 export function ProductCard({ product, isAuthenticated }: ProductCardProps) {
-  const { addProduct, canAddProduct, selectedProducts, removeProduct } =
-    useShoppingCart();
+  const {
+    addProduct,
+    canAddProduct,
+    selectedProducts,
+    removeProduct,
+    isMaxProductsReached,
+  } = useShoppingCart();
   const { currentOutfitProducts } = useOutfit();
   const [isAdding, setIsAdding] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
@@ -63,6 +71,7 @@ export function ProductCard({ product, isAuthenticated }: ProductCardProps) {
   const imgRef = useRef<HTMLImageElement>(null);
   const [isLargeScreen, setIsLargeScreen] = useState(false);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [showMaxProductsDropdown, setShowMaxProductsDropdown] = useState(false);
 
   // Detectar el tamaño de la pantalla
   useEffect(() => {
@@ -260,6 +269,53 @@ export function ProductCard({ product, isAuthenticated }: ProductCardProps) {
                             {CATEGORY_LABELS[product.category] ||
                               product.category}{" "}
                             in your outfit. Rollback to change it.
+                          </p>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )
+                  ) : isMaxProductsReached && !isInCart ? (
+                    // Mostrar tooltip/dropdown cuando se alcanzó el máximo de productos
+                    isLargeScreen ? (
+                      // Desktop: Tooltip para máximo de productos
+                      <TooltipProvider>
+                        <Tooltip delayDuration={0}>
+                          <TooltipTrigger asChild>
+                            <button className="p-1 rounded-full cursor-not-allowed transition-colors bg-neutral-300 dark:bg-neutral-800">
+                              <Plus className="w-4 h-4 text-white" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent
+                            side="top"
+                            className="max-w-[200px] text-center p-2 rounded-xl border-0 backdrop-blur-sm bg-background/80"
+                          >
+                            <p className="text-xs">
+                              The maximum number of products per try-on is{" "}
+                              {MAX_SELECTED_PRODUCTS}. Remove a product to add
+                              another one.
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ) : (
+                      // Mobile: DropdownMenu para máximo de productos
+                      <DropdownMenu
+                        open={showMaxProductsDropdown}
+                        onOpenChange={setShowMaxProductsDropdown}
+                      >
+                        <DropdownMenuTrigger asChild>
+                          <button className="p-1 rounded-full cursor-pointer transition-colors bg-neutral-300 dark:bg-neutral-800">
+                            <Plus className="w-4 h-4 text-white" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          align="end"
+                          side="top"
+                          className="max-w-[200px] p-2"
+                        >
+                          <p className="text-xs text-center">
+                            The maximum number of products per try-on is{" "}
+                            {MAX_SELECTED_PRODUCTS}. Remove a product to add
+                            another one.
                           </p>
                         </DropdownMenuContent>
                       </DropdownMenu>

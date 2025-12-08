@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import type { Product } from "@/lib/actions/products";
 
+export const MAX_SELECTED_PRODUCTS = 3;
+
 interface ShoppingCartContextType {
   selectedProducts: Product[];
   addProduct: (product: Product, currentOutfitProducts?: Product[]) => boolean;
@@ -12,6 +14,7 @@ interface ShoppingCartContextType {
     product: Product,
     currentOutfitProducts?: Product[]
   ) => boolean;
+  isMaxProductsReached: boolean;
 }
 
 const ShoppingCartContext = createContext<ShoppingCartContextType | undefined>(
@@ -21,10 +24,18 @@ const ShoppingCartContext = createContext<ShoppingCartContextType | undefined>(
 export function ShoppingCartProvider({ children }: { children: ReactNode }) {
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
 
+  // Check if the maximum number of products has been reached
+  const isMaxProductsReached = selectedProducts.length >= MAX_SELECTED_PRODUCTS;
+
   const canAddProduct = (
     product: Product,
     currentOutfitProducts: Product[] = []
   ): boolean => {
+    // Check if maximum products limit is reached
+    if (isMaxProductsReached) {
+      return false;
+    }
+
     // Check if product category is already in cart
     const existingCategoriesInCart = selectedProducts.map((p) => p.category);
 
@@ -68,6 +79,7 @@ export function ShoppingCartProvider({ children }: { children: ReactNode }) {
         removeProduct,
         clearCart,
         canAddProduct,
+        isMaxProductsReached,
       }}
     >
       {children}
