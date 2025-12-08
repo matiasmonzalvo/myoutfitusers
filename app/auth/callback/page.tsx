@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createServerClient } from "@/lib/supabase/client";
 import { Loader } from "lucide-react";
@@ -8,72 +8,43 @@ import { Loader } from "lucide-react";
 export default function AuthCallbackPage() {
   const router = useRouter();
   const supabase = createServerClient();
-  const hasHandledCallback = useRef(false);
 
   useEffect(() => {
-    // Función para manejar la redirección según el estado del perfil
-    const handleRedirect = async (userId: string) => {
-      // Evitar múltiples redirecciones
-      if (hasHandledCallback.current) return;
-      hasHandledCallback.current = true;
+    // Este componente actúa como fallback
+    // El route.ts maneja el intercambio del código OAuth
+    // Este useEffect verifica si ya existe una sesión (en caso de que
+    // el usuario llegue a esta página directamente)
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
 
-      try {
-        // Verificar si el usuario ha completado el onboarding
+      if (data.session) {
+        // Ya hay sesión, verificar onboarding
         const { data: profile } = await supabase
           .from("user_profiles")
           .select("onboarding_completed")
-          .eq("id", userId)
+          .eq("id", data.session.user.id)
           .single();
 
-        // Si no tiene perfil o no ha completado el onboarding, redirigir a onboarding
         if (!profile || !profile.onboarding_completed) {
-          router.replace("/onboarding");
+          router.push("/onboarding");
         } else {
-          router.replace("/");
+          router.push("/");
         }
-        router.refresh();
-      } catch (error) {
-        console.error("Error checking profile:", error);
-        router.replace("/");
-        router.refresh();
-      }
-    };
-
-    // Escuchar cambios de autenticación para detectar cuando Supabase
-    // procesa los tokens del OAuth callback
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event: any, session: any) => {
-      console.log("Auth state change:", event, session?.user?.id);
-
-      if (event === "SIGNED_IN" && session?.user) {
-        // El usuario acaba de iniciar sesión (OAuth callback procesado)
-        await handleRedirect(session.user.id);
-      } else if (event === "INITIAL_SESSION" && session?.user) {
-        // Sesión inicial detectada (usuario ya estaba autenticado)
-        await handleRedirect(session.user.id);
-      } else if (event === "INITIAL_SESSION" && !session) {
-        // No hay sesión, pero esperamos un momento por si Supabase
-        // aún está procesando los tokens del hash
+      } else {
+        // No hay sesión, esperar un momento y reintentar
+        // (el route.ts puede estar procesando)
         setTimeout(async () => {
-          if (hasHandledCallback.current) return;
-
-          // Verificar una vez más si hay sesión
-          const { data } = await supabase.auth.getSession();
-          if (data.session?.user) {
-            await handleRedirect(data.session.user.id);
+          const { data: retryData } = await supabase.auth.getSession();
+          if (retryData.session) {
+            router.push("/");
           } else {
-            // Definitivamente no hay sesión, redirigir al login
-            hasHandledCallback.current = true;
-            router.replace("/login?error=auth_callback_failed");
+            router.push("/login");
           }
-        }, 1000);
+        }, 2000);
       }
-    });
-
-    return () => {
-      subscription.unsubscribe();
     };
+
+    checkSession();
   }, [router, supabase]);
 
   return (

@@ -35,7 +35,6 @@ import { AvatarHub } from "./AvatarHub";
 import { SearchProvider } from "@/lib/contexts/search-context";
 import { MobileShoppingCart } from "./MobileShoppingCart";
 import Image from "next/image";
-import { createServerClient } from "@/lib/supabase/client";
 
 interface DashboardWrapperProps {
   children: React.ReactNode;
@@ -44,29 +43,10 @@ interface DashboardWrapperProps {
 
 export function DashboardWrapper({
   children,
-  isAuthenticated: initialIsAuthenticated,
+  isAuthenticated,
 }: DashboardWrapperProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const pathname = usePathname();
-  // Estado de autenticación del cliente que puede actualizarse dinámicamente
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    initialIsAuthenticated
-  );
-  const supabase = createServerClient();
-
-  // Escuchar cambios de autenticación del lado del cliente
-  useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
-      const isAuth = !!session?.user;
-      setIsAuthenticated(isAuth);
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [supabase.auth]);
   const insetRef = useRef<HTMLDivElement | null>(null);
   const [showCreatingOverlay, setShowCreatingOverlay] = useState(false);
   const [showEditingOverlay, setShowEditingOverlay] = useState(false);
