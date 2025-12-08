@@ -28,6 +28,7 @@ import { Dropzone } from "@/components/ui/dropzone";
 import type {
   Gender,
   BodyType,
+  MeasurementSystem,
   OnboardingFormData,
   AvatarHistory,
 } from "@/lib/types/user";
@@ -43,6 +44,7 @@ export function OnboardingForm() {
     gender: "other",
     height: 0,
     weight: 0,
+    measurement_system: "imperial",
     body_type: "average",
   });
   const [loading, setLoading] = useState(false);
@@ -246,6 +248,9 @@ export function OnboardingForm() {
         }
       } else {
         // Si el perfil no existe, crearlo
+        const defaultHeight = formData.measurement_system === "metric" ? 50 : 2; // mínimos válidos para pasar checks
+        const defaultWeight =
+          formData.measurement_system === "metric" ? 20 : 44;
         const { error: insertError } = await supabase
           .from("user_profiles")
           .insert({
@@ -253,8 +258,9 @@ export function OnboardingForm() {
             username: formData.username,
             age: 18,
             gender: "other",
-            height: 170,
-            weight: 70,
+            height: defaultHeight,
+            weight: defaultWeight,
+            measurement_system: formData.measurement_system,
             body_type: "average",
             onboarding_completed: false,
           });
@@ -280,10 +286,59 @@ export function OnboardingForm() {
     }
   };
 
+  const convertHeight = (
+    value: number,
+    from: MeasurementSystem,
+    to: MeasurementSystem
+  ) => {
+    if (!value || from === to) return value || 0;
+    const converted = from === "imperial" ? value * 30.48 : value / 30.48; // ft -> cm or cm -> ft
+    return parseFloat(converted.toFixed(to === "metric" ? 1 : 2));
+  };
+
+  const convertWeight = (
+    value: number,
+    from: MeasurementSystem,
+    to: MeasurementSystem
+  ) => {
+    if (!value || from === to) return value || 0;
+    const converted =
+      from === "imperial" ? value * 0.45359237 : value / 0.45359237; // lb -> kg or kg -> lb
+    return parseFloat(converted.toFixed(1));
+  };
+
+  const handleMeasurementSystemChange = (system: MeasurementSystem) => {
+    setFormData((prev) => {
+      if (prev.measurement_system === system) return prev;
+      const height = convertHeight(
+        prev.height,
+        prev.measurement_system,
+        system
+      );
+      const weight = convertWeight(
+        prev.weight,
+        prev.measurement_system,
+        system
+      );
+      return {
+        ...prev,
+        measurement_system: system,
+        height,
+        weight,
+      };
+    });
+  };
+
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    const isMetric = formData.measurement_system === "metric";
+    const heightMin = isMetric ? 50 : 2;
+    const heightMax = isMetric ? 300 : 8;
+    const weightMin = isMetric ? 20 : 44;
+    const weightMax = isMetric ? 500 : 1100;
 
     // Validaciones de características físicas
     if (formData.age < 13 || formData.age > 120) {
@@ -292,14 +347,18 @@ export function OnboardingForm() {
       return;
     }
 
-    if (formData.height < 50 || formData.height > 300) {
-      setError("Please enter a valid height (50-300 cm)");
+    if (formData.height < heightMin || formData.height > heightMax) {
+      setError(
+        `Please enter a valid height (${isMetric ? "50-300 cm" : "2-8 ft"})`
+      );
       setLoading(false);
       return;
     }
 
-    if (formData.weight < 20 || formData.weight > 500) {
-      setError("Please enter a valid weight (20-500 kg)");
+    if (formData.weight < weightMin || formData.weight > weightMax) {
+      setError(
+        `Please enter a valid weight (${isMetric ? "20-500 kg" : "44-1100 lb"})`
+      );
       setLoading(false);
       return;
     }
@@ -323,6 +382,7 @@ export function OnboardingForm() {
           gender: formData.gender,
           height: formData.height,
           weight: formData.weight,
+          measurement_system: formData.measurement_system,
           body_type: formData.body_type,
         })
         .eq("id", user.id);
@@ -939,6 +999,7 @@ export function OnboardingForm() {
   }
 
   // Step 2: Profile form (características físicas)
+  const isMetric = formData.measurement_system === "metric";
   return (
     <div className="w-full lg:max-w-3xl mx-auto lg:p-6 p-2">
       <div className="mb-8 text-center">
@@ -1026,16 +1087,49 @@ export function OnboardingForm() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label>
+            Units <span className="text-destructive">*</span>
+          </Label>
+          <div className="flex">
+            <button
+              type="button"
+              onClick={() => handleMeasurementSystemChange("imperial")}
+              disabled={loading}
+              className={` rounded-l-3xl border w-20 py-1.5 text-base font-medium transition-all cursor-pointer ${
+                formData.measurement_system === "imperial"
+                  ? "border-primary bg-primary text-white"
+                  : "border-border bg-muted text-foreground hover:border-primary/60"
+              }`}
+            >
+              lb / ft
+            </button>
+            <button
+              type="button"
+              onClick={() => handleMeasurementSystemChange("metric")}
+              disabled={loading}
+              className={` rounded-r-3xl border w-20 py-1.5 text-base font-medium transition-all cursor-pointer ${
+                formData.measurement_system === "metric"
+                  ? "border-primary bg-primary text-white"
+                  : "border-border bg-muted text-foreground hover:border-primary/60"
+              }`}
+            >
+              kg / cm
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 -mt-1">
           {/* Height */}
           <div className="space-y-2">
             <Label htmlFor="height">
-              Height (cm) <span className="text-destructive">*</span>
+              Height ({isMetric ? "cm" : "ft"}){" "}
+              <span className="text-destructive">*</span>
             </Label>
             <input
               id="height"
               type="number"
-              placeholder="170"
+              placeholder={isMetric ? "170" : "5.8"}
               value={formData.height || ""}
               onChange={(e) => {
                 const value = e.target.value;
@@ -1047,21 +1141,22 @@ export function OnboardingForm() {
               required
               disabled={loading}
               className="text-lg px-4 py-2 w-full rounded-full bg-muted border border-border focus:outline-none"
-              min={50}
-              max={300}
-              step={0.1}
+              min={isMetric ? 50 : 2}
+              max={isMetric ? 300 : 8}
+              step={isMetric ? 0.1 : 0.01}
             />
           </div>
 
           {/* Weight */}
           <div className="space-y-2">
             <Label htmlFor="weight">
-              Weight (kg) <span className="text-destructive">*</span>
+              Weight ({isMetric ? "kg" : "lb"}){" "}
+              <span className="text-destructive">*</span>
             </Label>
             <input
               id="weight"
               type="number"
-              placeholder="70"
+              placeholder={isMetric ? "70" : "154"}
               value={formData.weight || ""}
               onChange={(e) => {
                 const value = e.target.value;
@@ -1073,8 +1168,8 @@ export function OnboardingForm() {
               required
               disabled={loading}
               className="text-lg px-4 py-2 w-full rounded-full bg-muted border border-border focus:outline-none"
-              min={20}
-              max={500}
+              min={isMetric ? 20 : 44}
+              max={isMetric ? 500 : 1100}
               step={0.1}
             />
           </div>
