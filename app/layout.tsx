@@ -99,6 +99,23 @@ export default async function RootLayout({
             }}
           />
         )}
+        {/* Google tag (gtag.js) */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=AW-17789085648"
+          strategy="afterInteractive"
+        />
+        <Script
+          id="google-gtag"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'AW-17789085648');
+            `,
+          }}
+        />
       </head>
       <body className="table-scroll font-sans antialiased">
         {META_PIXEL_ID && (
