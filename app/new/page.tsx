@@ -13,7 +13,7 @@ export default async function NewPage() {
       <NewContent isAuthenticated={!!user} />
       <Script
         src="https://hiderkai.vercel.app/widget.js"
-        data-project-id="11ed4100-b4e2-46b1-a02e-0ac5b4a8c096"
+        data-project-id="bfd1d04c-76a9-4d70-b605-a8d31ad9699e"
         async
       />
     </>
